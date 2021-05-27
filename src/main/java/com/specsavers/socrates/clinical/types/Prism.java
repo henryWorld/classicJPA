@@ -1,6 +1,9 @@
 package com.specsavers.socrates.clinical.types;
 
+import lombok.Data;
+
+@Data
 public class Prism {
-    public String horizontal;
-    public String vertical;
+    private String horizontal;
+    private String vertical;
 }
