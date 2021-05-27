@@ -1,0 +1,97 @@
+"""
+DateTime scalar must use ISO 8601 timestamp format with optional timezone
+
+i.e. 2020-12-08T10:33:45+00:00 OR 2020-12-08T10:33:45Z
+"""
+scalar DateTime
+
+"Prismatic power prescribed to compensate for eye alignment"
+type Prism {
+    "Prism diopters and direction for horizontal alignment. e.g 1.50 Out or 2.00 In"
+    horizontal: String
+
+    "Prism diopters and direction for vertical alignment. e.g 1.50 Down or 1.00 Up"
+    vertical: String
+}
+
+"Naked eye visual acuity"
+type UnaidedVA {
+    rightEye: String
+    leftEye: String
+    binocular: String
+}
+
+"Prescribed assisted eye measurements"
+type PrescribedEyeRX {
+  """
+  The lens power measured in diopters. e.g. +1.50
+  Use a `-` sign for short-sighted and `+` sign for long-sighted
+  """
+  sphere: String!
+
+  "The amount of correction for astigmatism. Matches the same sign as sphere. e.g. +1.25"
+  cylinder: String
+
+  "The axis for astigmatism correction. An int between 0 and 180"
+  axis: Int
+
+  "The measure of the ability of the eye to distinguish shapes and the details of objects at distance. e.g. 20/20"
+  distanceVisualAcuity: String
+
+  "The measure of the ability of the eye to distinguish shapes and the details of objects at close range. e.g. 6/6"
+  nearVisualAcuity: String
+
+  "PD: The distance between the pupils"
+  pupillaryDistance: Float
+
+  nearAddition: Float
+
+  interAddtion: Float
+
+  "Prismatic power prescribed to compensate for eye alignment on distance vision"
+  distancePrism: Prism
+
+  "Prismatic power prescribed to compensate for eye alignment on near vision"
+  nearPrism: Prism
+}
+
+"A RX prescribed by an optometrist after a sight test."
+type PrescribedRX  {
+  "The id of the prescription"
+  id: ID!
+
+  "The clinician who wrote the prescription"
+  clinicianName: String!
+
+  "The Test Room (TR) number for the appointment"
+  testRoomNumber: Int!
+
+  "The RX for the right eye"
+  rightEye: PrescribedEyeRX!
+
+  "The RX for the left eye"
+  leftEye: PrescribedEyeRX!
+
+  "BIN Vision: The binocular visual acuity of the patient. e.g. 20/20"
+  distanceBinVisualAcuity: String
+
+  "Naked eye visual acuity"
+  unaidedVisualAcuity: UnaidedVA!
+
+  "Back Vertex Distance - What distance the lenses should sit from the eyes. e.g. 8.00"
+  bvd: Float
+
+  "Recall Period. e.g 12 or 24"
+  recallPeriod: Int
+
+  "Test Date. e.g 2021-05-25"
+  testDate: DateTime
+
+  dispenseNotes: String
+
+  recommendations: String
+}
+
+type Query {
+  prescribedRX(id: ID, testRoomNumber: Int): PrescribedRX
+}
