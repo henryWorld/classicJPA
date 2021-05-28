@@ -1,8 +1,10 @@
 server:
   port: 8080
-  compression:    enabled: true
+  compression:
+    enabled: true
     min-response-size: 2KB
-    mime-types:    - text/html
+    mime-types:
+    - text/html
     - text/xml
     - text/plain
     - text/css
@@ -17,4 +19,12 @@ spring:
     database-platform: org.hibernate.dialect.H2Dialect
     show-sql: true
 
-graphiql:  cdn:    enabled: true
+graphql:
+  extended-scalars: DateTime, Date
+  servlet:
+    max-query-depth: 20
+    cors:
+      allowed-origins: "*"
+      allowed-methods: GET, HEAD, POST, OPTIONS
+    
+

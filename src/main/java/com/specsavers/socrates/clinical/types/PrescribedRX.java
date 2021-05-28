@@ -1,9 +1,13 @@
 package com.specsavers.socrates.clinical.types;
 
+import java.time.OffsetDateTime;
+
+import lombok.Builder;
 import lombok.Data;
 import lombok.NonNull;
 
 @Data
+@Builder
 public class PrescribedRX {
     @NonNull
     private String id;
@@ -15,7 +19,7 @@ public class PrescribedRX {
     private UnaidedVA unaidedVisualAcuity;
     private Float bvd;
     private Integer recallPeriod;
-    private String testDate;
+    private OffsetDateTime testDate;
     private String dispenseNotes;
     private String recommendations;
 }

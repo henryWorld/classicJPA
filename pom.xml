@@ -20,7 +20,6 @@
 
 	<properties>
 		<java.version>11</java.version>
-		<graphql-java-spring-boot-starter-webflux.version>2.0</graphql-java-spring-boot-starter-webflux.version>
 		<graphql-java-extended-scalars.version>16.0.1</graphql-java-extended-scalars.version>
 		<mapstruct.version>1.4.2.Final</mapstruct.version>
 		<lombok.version>1.18.20</lombok.version>
@@ -28,11 +27,10 @@
 	</properties>
 
 	<dependencies>
-
 		<!-- Spring Boot dependencies -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-webflux</artifactId>
+			<artifactId>spring-boot-starter</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -75,16 +73,6 @@
 			<artifactId>graphql-java-extended-scalars</artifactId>
 			<version>${graphql-java-extended-scalars.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>com.graphql-java</groupId>
-			<artifactId>graphql-java-spring-boot-starter-webflux</artifactId>
-			<version>${graphql-java-spring-boot-starter-webflux.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.graphql-java</groupId>
-			<artifactId>graphiql-spring-boot-starter</artifactId>
-			<version>5.0.2</version>
-		</dependency>
 
 		<!-- GraphQL Java Kickstart dependencies -->
 		<dependency>
@@ -93,10 +81,16 @@
 			<version>11.0.0</version>
 		</dependency>
 		<dependency>
-			<groupId>com.graphql-java</groupId>
-			<artifactId>graphiql-spring-boot-autoconfigure</artifactId>
-			<version>5.0.2</version>
+			<groupId>com.graphql-java-kickstart</groupId>
+			<artifactId>altair-spring-boot-starter</artifactId>
+			<version>11.1.0</version>
 		</dependency>
+		<dependency>
+			<groupId>com.graphql-java-kickstart</groupId>
+			<artifactId>graphql-spring-boot-starter</artifactId>
+			<version>11.1.0</version>
+		</dependency>
+
 
 		<!-- Lombok dependencies -->
 		<dependency>
