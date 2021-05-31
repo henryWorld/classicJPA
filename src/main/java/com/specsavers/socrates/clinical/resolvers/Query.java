@@ -2,17 +2,22 @@ package com.specsavers.socrates.clinical.resolvers;
 
 import java.time.OffsetDateTime;
 
+import com.specsavers.socrates.clinical.repository.PrescribedRxRepository;
 import com.specsavers.socrates.clinical.types.PrescribedEyeRX;
 import com.specsavers.socrates.clinical.types.PrescribedRX;
 import com.specsavers.socrates.clinical.types.Prism;
 import com.specsavers.socrates.clinical.types.UnaidedVA;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import graphql.kickstart.tools.GraphQLQueryResolver;
 
 @Component
 public class Query implements GraphQLQueryResolver {
+    
+    @Autowired
+    private PrescribedRxRepository prescribedRxRepository;
     
     // TODO: Create repositorie to  get prescrion data
     public PrescribedRX prescribedRX(String id, Integer testRoomNumber) {        
@@ -55,6 +60,7 @@ public class Query implements GraphQLQueryResolver {
             .recommendations("Always buy your spectacles on Specsavers")
             .build();
 
-        return prescribedRX;
+        //return prescribedRX;
+        return prescribedRxRepository.findById(id).get();
     }
 }
