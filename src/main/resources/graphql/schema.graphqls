@@ -76,7 +76,7 @@ type PrescribedRX  {
   distanceBinVisualAcuity: String
 
   "Naked eye visual acuity"
-  unaidedVisualAcuity: UnaidedVA!
+  unaidedVisualAcuity: UnaidedVA
 
   "Back Vertex Distance - What distance the lenses should sit from the eyes. e.g. 8.00"
   bvd: Float

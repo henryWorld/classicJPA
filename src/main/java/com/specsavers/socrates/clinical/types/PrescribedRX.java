@@ -1,17 +1,17 @@
 package com.specsavers.socrates.clinical.types;
 
-import java.time.OffsetDateTime;
-
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 import javax.persistence.SecondaryTable;
 import javax.persistence.SecondaryTables;
 import javax.persistence.Table;
-import javax.persistence.Transient;
+
+import com.specsavers.socrates.clinical.model.SightTest;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -34,17 +34,8 @@ public class PrescribedRX {
     @Column(name = "rx_id")
     private String id;
 
-    @Transient
-    private String clinicianName;
-
-    @Transient
-    private Integer testRoomNumber;
-
-    @Transient
-    private OffsetDateTime testDate;
-
-    @Transient
-    private String dispenseNotes;
+    @OneToOne(mappedBy = "prescribedRX")
+    private SightTest sightTest;
 
     @Column(name = "dist_bin_va_as_string")
     private String distanceBinVisualAcuity;
