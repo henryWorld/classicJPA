@@ -54,20 +54,6 @@
 			<version>${graphql-java-kickstart.version}</version>
 		</dependency>
 		
-		<!-- Project Reactor dependencies -->
-		<dependency>
-			<groupId>io.projectreactor</groupId>
-			<artifactId>reactor-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-
-		<!-- H2 dependencies -->
-		<dependency>
-			<groupId>com.h2database</groupId>
-			<artifactId>h2</artifactId>
-			<scope>runtime</scope>
-		</dependency>
-
 		<!-- QueryDSL dependencies -->
 		<dependency>
 			<groupId>com.querydsl</groupId>
@@ -84,13 +70,6 @@
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<optional>true</optional>
-		</dependency>
-
-		<!-- MapStruct Dependencies -->
-		<dependency>
-			<groupId>org.mapstruct</groupId>
-			<artifactId>mapstruct</artifactId>
-			<version>${mapstruct.version}</version>
 		</dependency>
 
 	</dependencies>

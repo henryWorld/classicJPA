@@ -14,10 +14,12 @@ public class Query implements GraphQLQueryResolver {
     @Autowired
     private PrescribedRxRepository prescribedRxRepository;
     
-    // TODO: Create code to handle testRoomNumber and errors
     public PrescribedRX prescribedRX(String id, Integer testRoomNumber) {     
         if(id != null && !id.trim().isEmpty())   
             return prescribedRxRepository.findById(id).get();
+
+        if(testRoomNumber > 0)
+            return prescribedRxRepository.findByTestRoomNumber(testRoomNumber);
         
         //TODO: Create proper error handler
         return null;
