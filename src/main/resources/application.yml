@@ -1,8 +1,10 @@
 server:
   port: 8080
-  compression:    enabled: true
+  compression:
+    enabled: true
     min-response-size: 2KB
-    mime-types:    - text/html
+    mime-types:
+    - text/html
     - text/xml
     - text/plain
     - text/css
@@ -12,9 +14,21 @@ server:
 
 spring:
   datasource:
-    url: jdbc:h2:mem:testdb
+    url: jdbc:mysql://dbaasem4sotf001.mysql.database.azure.com:3306/soa8306?useSSL=true&requireSSL=false
+    username: bjssadmin@dbaasem4sotf001
+    password: 7VQmzJe@6r25
   jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
     show-sql: true
+    properties:
+      hibernate.format_sql: true
 
-graphiql:  cdn:    enabled: true
+
+graphql:
+  extended-scalars: DateTime, Date
+  servlet:
+    max-query-depth: 20
+    cors:
+      allowed-origins: "*"
+      allowed-methods: GET, HEAD, POST, OPTIONS
+    
+
