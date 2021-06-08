@@ -1,0 +1,42 @@
+---
+trigger: none
+pr: none
+
+resources:
+  pipelines:
+  - pipeline: java-clinical-microservice-build
+    source: java-clinical-microservice-build
+    trigger:
+      enabled: true
+      branches:
+        include:
+          - main
+
+variables:
+- template: ../vars/common.yml
+
+stages:
+- ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/main') }}:
+  - stage: DeployDev
+    displayName: Deploy Dev Stage
+    jobs:
+    - deployment: Development
+      displayName: Deploy Clinical API
+      variables:
+      - template: ../vars/development.yml
+      pool:
+        vmImage: ${{ variables.vmImage }}
+      environment: ${{ variables.adoEnvironment }}
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+            - template: deployment-steps.yml
+              parameters:
+                artifactFeed: ${{ variables.artifactFeed }}
+                azureSubscription: ${{ variables.azureSubscription }}
+                buildArtifactName: ${{ variables.buildArtifactName }}
+                buildMetadataName: ${{ variables.buildMetadataName }}
+                ciPipeline: ${{ variables.ciPipeline }}
+                projectName: ${{ variables.projectName }}
+                appServiceName: ${{ variables.appServiceName }}

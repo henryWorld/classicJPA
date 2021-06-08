@@ -1,0 +1,14 @@
+---
+variables:
+- name: artifactFeed
+  value: 'Socrates-Cloud/Socrates-Cloud'
+- name: buildArtifactName
+  value: 'clinical'
+- name: buildMetadataName
+  value: 'build-metadata'
+- name: ciPipeline
+  value: 'java-clinical-microservice-build'
+- name: projectName
+  value: 'Socrates-Cloud'
+- name: vmImage
+  value: 'ubuntu-20.04'
