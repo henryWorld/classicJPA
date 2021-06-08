@@ -1,0 +1,8 @@
+---
+variables:
+- name: adoEnvironment
+  value: 'Development-App'
+- name: azureSubscription
+  value: 'Specsavers IT - EMEA - SOCUK - DEV'
+- name: appServiceName
+  value: 'asem4devsotf001'
