@@ -4,8 +4,8 @@ pr: none
 
 resources:
   pipelines:
-  - pipeline: java-customer-microservice-build
-    source: java-customer-microservice-build
+  - pipeline: java-clinical-microservice-build
+    source: java-clinical-microservice-build
     trigger:
       enabled: true
       branches:
@@ -21,7 +21,7 @@ stages:
     displayName: Deploy Dev Stage
     jobs:
     - deployment: Development
-      displayName: Deploy Customer API
+      displayName: Deploy Clinical API
       variables:
       - template: ../vars/development.yml
       pool:
