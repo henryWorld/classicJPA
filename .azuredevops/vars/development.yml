@@ -5,4 +5,4 @@ variables:
 - name: azureSubscription
   value: 'Specsavers IT - EMEA - SOCUK - DEV'
 - name: appServiceName
-  value: 'asem4devsotf001'
+  value: 'asem4devsotf002'
