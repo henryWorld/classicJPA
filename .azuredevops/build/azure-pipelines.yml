@@ -24,7 +24,7 @@ resources:
       ref: refs/tags/10.1.3
 
 jobs:
-  # - template: 'jobs/versioning/conventional-commit.yml@templates'
+  - template: 'jobs/versioning/conventional-commit.yml@templates'
   - template: "jobs/maven/maven-ci.yml@templates"
     parameters:
       jobName: mavenBuild
