@@ -14,7 +14,7 @@
 
 	<groupId>com.specsavers.socrates</groupId>
 	<artifactId>clinical</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>${buildVersion}</version>
 	<name>clinical</name>
 	<description>GraphQL service to get clinical data</description>
 
