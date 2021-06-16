@@ -24,41 +24,22 @@ resources:
       ref: refs/tags/10.1.3
 
 jobs:
-  # - template: 'jobs/versioning/conventional-commit.yml@templates'
+  - template: 'jobs/versioning/conventional-commit.yml@templates'
   - template: "jobs/maven/maven-ci.yml@templates"
     parameters:
       jobName: mavenBuild
-      # dependsOn: [ GitVersion]
+      dependsOn: [ GitVersion]
       sonarServiceConnection: $(sonarQubeServiceConnection)
       buildGoals: test
       runComponentTest: false
       componentGoals: verify
-      # artifactVersion: # $[dependencies.GitVersion.outputs['setVersion.semVer']]
+      artifactVersion: $[dependencies.GitVersion.outputs['setVersion.semVer']]
       authenticationFeeds:
         - ${{ variables.artifactFeed }}
       publishToFeed: true
-      gitTag: false
-      customPreSteps:
-        - script: |
-            VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-            echo "##vso[task.setvariable variable=version]$VERSION"
-            echo "${VERSION}"
-          condition: and(succeeded(), startsWith(variables['build.sourceBranch'], 'refs/heads/release'), notIn(variables['Build.Reason'], 'PullRequest'))
-          displayName: Get Version Info Release Branch - pom.xml
-        - script: |
-            mvn versions:set -DnewVersion=$(Build.BuildNumber).$(Build.BuildId)-develop
-            VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-            echo "##vso[task.setvariable variable=version]$VERSION"
-            echo "${VERSION}"
-          condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/main'), notIn(variables['Build.Reason'], 'PullRequest'))
-          displayName: Get Version Info Develop Branch - Build.BuildNumber.Build.BuildId-develop
-        - script: |
-            mvn versions:set -DnewVersion=$(Build.BuildNumber).$(Build.BuildId)-feat
-            VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-            echo "##vso[task.setvariable variable=version]$VERSION"
-            echo "${VERSION}"
-          condition: and(succeeded(), startsWith(variables['build.sourceBranch'], 'refs/heads/feat'))
-          displayName: Get Version Info Feature Branch - Build.BuildNumber.Build.BuildId
+      gitTag: true
+      logToDeliveryDb: false
+      customPreSteps: []
       customPostSteps:
         - script: |
             mkdir -p $(build.artifactStagingDirectory)/$(buildMetadataName)
@@ -73,5 +54,4 @@ jobs:
             ls -la $(Build.ArtifactStagingDirectory)
           displayName: Stage Jar Files
         - publish: $(Build.ArtifactStagingDirectory)
-          artifact: ${{ variables.buildArtifactName }}
-          
+          artifact: ${{ variables.buildArtifactName }} 
