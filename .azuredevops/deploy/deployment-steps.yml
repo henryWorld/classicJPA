@@ -55,4 +55,3 @@ steps:
     webAppKind: webAppLinux
     webAppName: ${{ parameters.appServiceName }}
     package: $(Pipeline.Workspace)/${{ parameters.ciPipeline }}/${{ parameters.buildArtifactName }}/*.jar
-    startupCommand: 'java -jar /home/site/wwwroot/${{ parameters.buildArtifactName }}-$(version).jar'
