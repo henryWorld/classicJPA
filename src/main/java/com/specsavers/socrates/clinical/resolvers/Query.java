@@ -1,11 +1,13 @@
 package com.specsavers.socrates.clinical.resolvers;
 
+import com.specsavers.socrates.clinical.exception.NotFoundException;
+import com.specsavers.socrates.clinical.model.rx.RX;
 import com.specsavers.socrates.clinical.repository.PrescribedRxRepository;
-import com.specsavers.socrates.clinical.types.PrescribedRX;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import graphql.GraphqlErrorException;
 import graphql.kickstart.tools.GraphQLQueryResolver;
 
 @Component
@@ -14,14 +16,23 @@ public class Query implements GraphQLQueryResolver {
     @Autowired
     private PrescribedRxRepository prescribedRxRepository;
     
-    public PrescribedRX prescribedRX(String id, Integer testRoomNumber) {     
-        if(id != null && !id.trim().isEmpty())   
-            return prescribedRxRepository.findById(id).get();
+    public RX prescribedRX(int id, int testRoomNumber) {  
+        var hasId =   id > 0; 
+        var hasTrNumber = testRoomNumber > 0;
 
-        if(testRoomNumber > 0)
-            return prescribedRxRepository.findByTestRoomNumber(testRoomNumber);
+        if(hasId && hasTrNumber)
+            throw new GraphqlErrorException.Builder()
+            .message("Cannot search by id and testRoomNumber at same time").build();
+       
+        if(hasId)   
+            return prescribedRxRepository.findById(id)
+            .orElseThrow(NotFoundException::new).getRx();
+
+        if(hasTrNumber)
+            return prescribedRxRepository.findByTestRoomNumber(testRoomNumber)
+            .orElseThrow(NotFoundException::new).getRx();
         
-        //TODO: Create proper error handler
-        return null;
+        throw new GraphqlErrorException.Builder()
+        .message("Provide a valid id OR testRoomNumber").build();
     }
 }

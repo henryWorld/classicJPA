@@ -1,4 +1,4 @@
-package com.specsavers.socrates.clinical.types;
+package com.specsavers.socrates.clinical.model.rx;
 
 import javax.persistence.Embeddable;
 

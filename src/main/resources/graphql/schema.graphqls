@@ -27,7 +27,7 @@ type PrescribedEyeRX {
   The lens power measured in diopters. e.g. +1.50
   Use a `-` sign for short-sighted and `+` sign for long-sighted
   """
-  sphere: String!
+  sphere: String
 
   "The amount of correction for astigmatism. Matches the same sign as sphere. e.g. +1.25"
   cylinder: String
@@ -61,16 +61,16 @@ type PrescribedRX  {
   id: ID!
 
   "The clinician who wrote the prescription"
-  clinicianName: String!
+  clinicianName: String
 
   "The Test Room (TR) number for the appointment"
-  testRoomNumber: Int!
+  testRoomNumber: Int
 
   "The RX for the right eye"
-  rightEye: PrescribedEyeRX!
+  rightEye: PrescribedEyeRX
 
   "The RX for the left eye"
-  leftEye: PrescribedEyeRX!
+  leftEye: PrescribedEyeRX
 
   "BIN Vision: The binocular visual acuity of the patient. e.g. 20/20"
   distanceBinVisualAcuity: String
@@ -93,5 +93,6 @@ type PrescribedRX  {
 }
 
 type Query {
+  "Returns a prescribedRX, searching by id OR testRoomNumber"
   prescribedRX(id: ID, testRoomNumber: Int): PrescribedRX
 }

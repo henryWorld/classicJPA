@@ -1,13 +1,15 @@
 package com.specsavers.socrates.clinical.model;
 
+import java.util.Collection;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
-
-import com.specsavers.socrates.clinical.types.PrescribedRX;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -23,6 +25,14 @@ public class SightTest {
     @OneToOne
     @JoinColumn(name = "prescribed_rx_id")
     private PrescribedRX prescribedRX;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+        name = "prescribed_option_recommendation",
+        joinColumns = @JoinColumn(name="sight_test_id"),
+        inverseJoinColumns = @JoinColumn(name = "option_recommendation_id")
+    )
+    private Collection<OptionRecommendation> optionRecommendations;
 
     @ManyToOne
     @JoinColumn(name = "staff_id")

@@ -1,32 +1,42 @@
 package com.specsavers.socrates.clinical.resolvers;
 
 import java.time.OffsetDateTime;
+import java.util.stream.Collectors;
 
-import com.specsavers.socrates.clinical.types.PrescribedRX;
+import com.specsavers.socrates.clinical.model.OptionRecommendation;
+import com.specsavers.socrates.clinical.model.rx.RX;
 
 import org.springframework.stereotype.Component;
 
 import graphql.kickstart.tools.GraphQLResolver;
 
 @Component
-public class PrescribedRXResolver implements GraphQLResolver<PrescribedRX> {
-    
-    public String getDispenseNotes(PrescribedRX prescribedRX) {
-        return prescribedRX.getSightTest().getDispenseNotes();
+public class PrescribedRXResolver implements GraphQLResolver<RX> {
+
+    public String getDispenseNotes(RX rx) {
+        return rx.getPrescribedRX().getSightTest().getDispenseNotes();
     }
 
-    // TODO: Check why graphql exception handler is not working
-    // When a excption occurs in a field, only this field should return null
-    public String getClinicianName(PrescribedRX prescribedRX) {
-        var staffName = prescribedRX.getSightTest().getStaff().getName();
+    public String getRecommendations(RX rx) {
+        return rx.getPrescribedRX().getSightTest().getOptionRecommendations().stream()
+            .map(OptionRecommendation::getText)
+            .collect(Collectors.joining(", "));
+    }
+
+    public String getClinicianName(RX rx) {
+        var staffName = rx.getPrescribedRX().getSightTest().getStaff().getName();
         return staffName.getFirstName() + " " + staffName.getLastName();
     }
 
-    public Integer getTestRoomNumber(PrescribedRX prescribedRX) {
-        return prescribedRX.getSightTest().getTrNumber();
+    public Integer getTestRoomNumber(RX rx) {
+        return rx.getPrescribedRX().getSightTest().getTrNumber();
     }
 
-    public OffsetDateTime getTestDate(PrescribedRX prescribedRX) {
-        return prescribedRX.getSightTest().getRecord().getCustomerArrivalTime();
+    public OffsetDateTime getTestDate(RX rx) {
+        return rx.getPrescribedRX().getSightTest().getRecord().getCustomerArrivalTime();
+    }
+
+    public Integer getRecallPeriod(RX rx) {
+        return rx.getPrescribedRX().getRecallPeriod();
     }
 }

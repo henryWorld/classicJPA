@@ -1,4 +1,4 @@
-package com.specsavers.socrates.clinical.types;
+package com.specsavers.socrates.clinical.model.rx;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PrescribedEyeRX {
+public class EyeRX {
     private String sphere;
     private String cylinder;
     private Integer axis;
