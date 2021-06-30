@@ -4,8 +4,8 @@ pr: none
 
 resources:
   pipelines:
-  - pipeline: java-clinical-microservice-build
-    source: java-clinical-microservice-build
+  - pipeline: java-clinical_microservice-build
+    source: java-clinical_microservice-build
     trigger:
       enabled: true
       branches:

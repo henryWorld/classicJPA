@@ -7,7 +7,7 @@ variables:
 - name: buildMetadataName
   value: 'build-metadata'
 - name: ciPipeline
-  value: 'java-clinical-microservice-build'
+  value: 'java-clinical_microservice-build'
 - name: projectName
   value: 'Socrates-Cloud'
 - name: vmImage
