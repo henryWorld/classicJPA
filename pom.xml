@@ -133,4 +133,26 @@
 		</plugins>
 	</build>
 
+	<repositories>
+		<repository>
+			<id>Socrates-Cloud</id>
+			<url>https://pkgs.dev.azure.com/Specsavers/Socrates-Cloud/_packaging/Socrates-Cloud/maven/v1
+            </url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
+
+	<distributionManagement>
+		<repository>
+			<id>Socrates-Cloud</id>
+			<url>https://pkgs.dev.azure.com/Specsavers/Socrates-Cloud/_packaging/Socrates-Cloud/maven/v1
+            </url>
+		</repository>
+	</distributionManagement>
+
 </project>
