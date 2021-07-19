@@ -14,9 +14,9 @@ server:
 
 spring:
   datasource:
-    url: jdbc:mysql://dbaasem4sotf001.mysql.database.azure.com:3306/soa8306?useSSL=true&requireSSL=false
-    username: bjssadmin@dbaasem4sotf001
-    password: 7VQmzJe@6r25
+    url: jdbc:mysql://${DATABASE_SERVER}/soa8306?useSSL=true&requireSSL=false
+    username: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
   jpa:
     show-sql: true
     properties:
