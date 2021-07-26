@@ -1,0 +1,16 @@
+query ($trNumber: Int) {
+    prescribedRX(testRoomNumber: $trNumber) {
+        id
+        recallPeriod
+        clinicianName
+        testDate
+        rightEye {
+            sphere
+            axis
+        }
+        leftEye {
+            distanceVisualAcuity
+            nearVisualAcuity
+        }
+    }
+}

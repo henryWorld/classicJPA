@@ -1,0 +1,23 @@
+spring:
+  jpa:
+    show-sql: true
+    generate-dll: true
+    database-platform: org.hibernate.dialect.H2Dialect
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_ON_EXIT=FALSE
+    driverClassName: org.h2.Driver
+    username: sa
+    password: password
+
+graphql:
+  extended-scalars: DateTime, Date
+  servlet:
+    max-query-depth: 20
+    cors:
+      allowed-origins: "*"
+      allowed-methods: GET, HEAD, POST, OPTIONS
