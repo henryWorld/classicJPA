@@ -11,8 +11,14 @@ pr:
 
 pool:
   vmImage: 'ubuntu-latest'
+
 variables:
-- template: ../vars/common.yml
+- name: artifactFeed
+  value: 'Socrates-Cloud/Socrates-Cloud'
+- name: buildArtifactName
+  value: 'clinical'
+- name: buildMetadataName
+  value: 'build-metadata'  
 - name: sonarQubeServiceConnection
   value: 'Specsavers IT - SonarQube - Prod'
 - name: acrServiceConnection
@@ -47,11 +53,9 @@ jobs:
         - script: |
             mkdir -p $(build.artifactStagingDirectory)/$(buildMetadataName)
             echo $(jq -n --arg version "$(version)" '{version: $version}') > $(build.artifactStagingDirectory)/$(buildMetadataName)/metadata.json
-          condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), startsWith(variables['Build.SourceBranch'], 'refs/heads/release'),startsWith(variables['Build.SourceBranch'], 'refs/heads/feat')), notIn(variables['Build.Reason'], 'PullRequest'))
           displayName: Create Build Metadata
         - publish: $(Build.ArtifactStagingDirectory)/$(buildMetadataName)
           artifact: $(buildMetadataName)
-          condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), startsWith(variables['Build.SourceBranch'], 'refs/heads/release'),startsWith(variables['Build.SourceBranch'], 'refs/heads/feat')), notIn(variables['Build.Reason'], 'PullRequest'))
         - script: |
             mv ./target/*.jar $(Build.ArtifactStagingDirectory)
             ls -la $(Build.ArtifactStagingDirectory)
