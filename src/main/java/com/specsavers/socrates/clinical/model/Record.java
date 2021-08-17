@@ -1,6 +1,6 @@
 package com.specsavers.socrates.clinical.model;
 
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -16,6 +16,6 @@ public class Record {
     @Id
     @Column(name = "record_id")
     private Integer id;
-    private OffsetDateTime customerArrivalTime;
+    private LocalDateTime customerArrivalTime;
 
 }

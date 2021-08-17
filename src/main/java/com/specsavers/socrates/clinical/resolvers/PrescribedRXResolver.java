@@ -1,6 +1,7 @@
 package com.specsavers.socrates.clinical.resolvers;
 
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.stream.Collectors;
 
 import com.specsavers.socrates.clinical.model.OptionRecommendation;
@@ -12,6 +13,10 @@ import graphql.kickstart.tools.GraphQLResolver;
 
 @Component
 public class PrescribedRXResolver implements GraphQLResolver<RX> {
+
+    public int getId(RX rx){
+        return rx.getPrescribedRX().getId();
+    }
 
     public String getDispenseNotes(RX rx) {
         return rx.getPrescribedRX().getSightTest().getDispenseNotes();
@@ -33,7 +38,8 @@ public class PrescribedRXResolver implements GraphQLResolver<RX> {
     }
 
     public OffsetDateTime getTestDate(RX rx) {
-        return rx.getPrescribedRX().getSightTest().getRecord().getCustomerArrivalTime();
+        var dbDate = rx.getPrescribedRX().getSightTest().getRecord().getCustomerArrivalTime();
+        return OffsetDateTime.of(dbDate, ZoneOffset.UTC);
     }
 
     public Integer getRecallPeriod(RX rx) {

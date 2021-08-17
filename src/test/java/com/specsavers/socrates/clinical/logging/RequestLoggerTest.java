@@ -16,11 +16,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.io.IOException;
 import java.util.regex.Pattern;
 
+import static com.specsavers.socrates.clinical.Utils.CommonStaticValues.GET_PRESCRIBEDRX_BY_TRNUMBER;
+import static com.specsavers.socrates.clinical.Utils.CommonStaticValues.UNKNOWN_REQUEST;
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class RequestLoggerTest {
-
-    private static final String KNOWN_REQUEST = "graphql/query/known_request.graphql";
-    private static final String UNKNOWN_REQUEST = "graphql/query/unknown_request.graphql";
 
     @Autowired
     private GraphQLTestTemplate graphQLTestTemplate;
@@ -37,7 +37,7 @@ class RequestLoggerTest {
         final ObjectNode variables = new ObjectMapper().createObjectNode();
         variables.put("trNumber", 123);
 
-        this.graphQLTestTemplate.perform(KNOWN_REQUEST, variables);
+        this.graphQLTestTemplate.perform(GET_PRESCRIBEDRX_BY_TRNUMBER, variables);
 
         var logList = listAppender.list;
         Assertions.assertEquals(2, logList.size());
@@ -54,7 +54,7 @@ class RequestLoggerTest {
         this.graphQLTestTemplate
             .withAdditionalHeader("SOCRATES_HEADER", "header1")
             .withAdditionalHeader("SOCRATES_HEADER2", "header2")
-            .perform(KNOWN_REQUEST, variables);
+            .perform(GET_PRESCRIBEDRX_BY_TRNUMBER, variables);
 
         var logList = listAppender.list;
         Assertions.assertEquals(2, logList.size());
@@ -68,7 +68,7 @@ class RequestLoggerTest {
         var listAppender = getListAppender();
         final ObjectNode variables = new ObjectMapper().createObjectNode();
 
-        this.graphQLTestTemplate.perform(KNOWN_REQUEST, variables);
+        this.graphQLTestTemplate.perform(GET_PRESCRIBEDRX_BY_TRNUMBER, variables);
 
         var logList = listAppender.list;
         Assertions.assertEquals(2, logList.size());
@@ -96,7 +96,7 @@ class RequestLoggerTest {
         final ObjectNode variables = new ObjectMapper().createObjectNode();
         variables.put("trNumber", 999);
 
-        this.graphQLTestTemplate.perform(KNOWN_REQUEST, variables);
+        this.graphQLTestTemplate.perform(GET_PRESCRIBEDRX_BY_TRNUMBER, variables);
 
         var logList = listAppender.list;
         Assertions.assertEquals(2, logList.size());

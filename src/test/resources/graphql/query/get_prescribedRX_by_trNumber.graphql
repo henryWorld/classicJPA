@@ -1,0 +1,54 @@
+query ($trNumber: Int) {
+    prescribedRX(testRoomNumber: $trNumber) {
+        id
+        recallPeriod
+        clinicianName
+        testDate
+        testRoomNumber
+        recommendations
+        dispenseNotes
+        rightEye {
+            sphere
+            cylinder
+            axis
+            distanceVisualAcuity
+            nearVisualAcuity
+            pupillaryDistance
+            nearAddition
+            interAddtion
+            distancePrism{
+                horizontal
+                vertical
+            }
+            nearPrism{
+                horizontal
+                vertical
+            }
+        }
+        leftEye {
+            sphere
+            cylinder
+            axis
+            distanceVisualAcuity
+            nearVisualAcuity
+            pupillaryDistance
+            nearAddition
+            interAddtion
+            distancePrism{
+                horizontal
+                vertical
+            }
+            nearPrism{
+                horizontal
+                vertical
+            }
+        }
+        bvd
+        distanceBinVisualAcuity
+        unaidedVisualAcuity{
+            rightEye
+            leftEye
+            binocular
+        }
+    }
+}
