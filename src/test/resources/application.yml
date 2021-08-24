@@ -1,7 +1,10 @@
 spring:
+  profiles:
+    include: common
   jpa:
+    defer-datasource-initialization: true
     show-sql: true
-    generate-dll: true
+    generate-ddl: false
     database-platform: org.hibernate.dialect.H2Dialect
     properties:
       hibernate:
@@ -13,6 +16,8 @@ spring:
     driverClassName: org.h2.Driver
     username: sa
     password: password
+  liquibase:
+    enabled: false
 
 graphql:
   extended-scalars: DateTime, Date

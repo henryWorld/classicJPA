@@ -4,34 +4,17 @@ server:
     enabled: true
     min-response-size: 2KB
     mime-types:
-    - text/html
-    - text/xml
-    - text/plain
-    - text/css
-    - text/javascript
-    - application/javascript
-    - application/json
+      - text/html
+      - text/xml
+      - text/plain
+      - text/css
+      - text/javascript
+      - application/javascript
+      - application/json
 
 spring:
+  profiles:
+    include: common
   datasource:
     url: jdbc:mysql://${DATABASE_SERVER}/soa8306?useSSL=true&requireSSL=false
-    username: ${DATABASE_USERNAME}
-    password: ${DATABASE_PASSWORD}
-  jpa:
-    show-sql: false
-    properties:
-      hibernate.format_sql: true
-
-graphql:
-  extended-scalars: DateTime, Date
-  servlet:
-    max-query-depth: 20
-    cors:
-      allowed-origins: "*"
-      allowed-methods: GET, HEAD, POST, OPTIONS
-
-logging:
-  level:
-    notprivacysafe.graphql.GraphQL: ERROR
-    
 

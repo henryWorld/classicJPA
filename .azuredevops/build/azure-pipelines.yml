@@ -31,15 +31,20 @@ resources:
       type: git
       name: DevOpsEngineering/azure-pipeline_templates
       ref: refs/tags/10.6.0
+    - repository: local_templates
+      type: git
+      name: Socrates-Cloud/azure-pipeline_templates
+      ref: refs/tags/1.1.0        
 
 jobs:
   - template: 'jobs/versioning/conventional-commit.yml@templates'
-  - template: "jobs/maven/maven-ci.yml@templates"
+  - template: "jobs/maven/maven-ci.yml@local_templates"
     parameters:
       jobName: mavenBuild
       dependsOn: [ GitVersion]
       sonarServiceConnection: $(sonarQubeServiceConnection)
       buildGoals: test
+      effectivePomSkip: true      
       runComponentTest: false
       componentGoals: verify
       artifactVersion: $[dependencies.GitVersion.outputs['setVersion.semVer']]
