@@ -17,4 +17,5 @@ spring:
     include: common
   datasource:
     url: jdbc:mysql://${DATABASE_SERVER}/soa8306?useSSL=true&requireSSL=false
-
+  liquibase:
+    enabled: false
