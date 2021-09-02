@@ -1,21 +1,15 @@
 server:
   port: 8080
-  compression:
-    enabled: true
-    min-response-size: 2KB
-    mime-types:
-      - text/html
-      - text/xml
-      - text/plain
-      - text/css
-      - text/javascript
-      - application/javascript
-      - application/json
 
 spring:
   profiles:
-    include: common
+    group:
+      default:
+        - "common"
+        - "commonDbLegacyAsMain"
+      dev:
+        - "common"
+        - "commonDev"
+        - "commonDbLegacyAsMain"
   datasource:
     url: jdbc:mysql://${DATABASE_SERVER}/soa8306?useSSL=true&requireSSL=false
-  liquibase:
-    enabled: false

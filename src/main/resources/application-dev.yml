@@ -2,13 +2,5 @@ server:
   port: 8082
 
 spring:
-  profiles:
-    include: common
   datasource:
     url: jdbc:mysql://localhost:3306/soa8306
-    username: root
-    password: root
-  jpa:
-    show-sql: false
-    properties:
-      hibernate.format_sql: true
