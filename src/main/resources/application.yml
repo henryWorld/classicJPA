@@ -6,10 +6,10 @@ spring:
     group:
       default:
         - "common"
-        - "commonDbLegacyAsMain"
+        - "commonDbLegacyAsMainProd"
       dev:
         - "common"
         - "commonDev"
-        - "commonDbLegacyAsMain"
+        - "commonDbLegacyAsMainDev"
   datasource:
     url: jdbc:mysql://${DATABASE_SERVER}/soa8306?useSSL=true&requireSSL=false
