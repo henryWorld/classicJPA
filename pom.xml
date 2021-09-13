@@ -8,7 +8,7 @@
     <parent>
         <groupId>com.specsavers.socrates</groupId>
         <artifactId>socrates-parent</artifactId>
-        <version>0.3.0</version>
+        <version>0.4.0</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
@@ -36,7 +36,7 @@
         <dependency>
             <groupId>com.specsavers.socrates</groupId>
             <artifactId>socrates-common</artifactId>
-            <version>0.9.0</version>
+            <version>0.13.0</version>
         </dependency>
         <dependency>
             <groupId>mysql</groupId>

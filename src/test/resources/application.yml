@@ -4,3 +4,9 @@ spring:
       default:
         - "common"
         - "commonTest"
+        - "commonNoEnactor"
+        - "service"
+
+logging:
+  level:
+    com.specsavers.socrates.clinical: INFO

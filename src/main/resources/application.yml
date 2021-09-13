@@ -7,9 +7,15 @@ spring:
       default:
         - "common"
         - "commonDbLegacyAsMainProd"
+        - "service"
       dev:
         - "common"
         - "commonDev"
         - "commonDbLegacyAsMainDev"
+        - "service"
   datasource:
     url: jdbc:mysql://${DATABASE_SERVER}/soa8306?useSSL=true&requireSSL=false
+
+logging:
+  level:
+    com.specsavers.socrates.clinical: INFO
