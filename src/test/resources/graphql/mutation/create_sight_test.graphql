@@ -1,0 +1,7 @@
+mutation ($trNumber: Int!, $type: SightTestType!) {
+    createSightTest(trNumber: $trNumber, type: $type) {
+        id
+        trNumber
+        type
+    }
+}

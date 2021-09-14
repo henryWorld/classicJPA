@@ -4,8 +4,8 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.stream.Collectors;
 
-import com.specsavers.socrates.clinical.model.OptionRecommendation;
-import com.specsavers.socrates.clinical.model.rx.RX;
+import com.specsavers.socrates.clinical.legacy.model.OptionRecommendation;
+import com.specsavers.socrates.clinical.legacy.model.rx.RX;
 
 import org.springframework.stereotype.Component;
 

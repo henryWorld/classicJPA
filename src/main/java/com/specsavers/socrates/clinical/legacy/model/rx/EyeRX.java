@@ -1,4 +1,4 @@
-package com.specsavers.socrates.clinical.model.rx;
+package com.specsavers.socrates.clinical.legacy.model.rx;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -1,2 +1,6 @@
 server:
   port: 8082
+
+spring:
+  datasource:
+    url: jdbc:sqlserver://localhost;databaseName=clinical_microservice

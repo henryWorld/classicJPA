@@ -1,4 +1,4 @@
-package com.specsavers.socrates.clinical.model;
+package com.specsavers.socrates.clinical.legacy.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

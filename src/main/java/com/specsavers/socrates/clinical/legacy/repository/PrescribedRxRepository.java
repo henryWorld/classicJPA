@@ -1,6 +1,6 @@
-package com.specsavers.socrates.clinical.repository;
+package com.specsavers.socrates.clinical.legacy.repository;
 
-import com.specsavers.socrates.clinical.model.PrescribedRX;
+import com.specsavers.socrates.clinical.legacy.model.PrescribedRX;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;

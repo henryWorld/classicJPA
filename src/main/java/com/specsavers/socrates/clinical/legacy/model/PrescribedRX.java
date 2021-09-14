@@ -1,4 +1,4 @@
-package com.specsavers.socrates.clinical.model;
+package com.specsavers.socrates.clinical.legacy.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -7,7 +7,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import com.specsavers.socrates.clinical.model.rx.RX;
+import com.specsavers.socrates.clinical.legacy.model.rx.RX;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

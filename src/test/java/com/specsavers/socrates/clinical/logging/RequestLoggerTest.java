@@ -18,6 +18,8 @@ import java.util.regex.Pattern;
 
 import static com.specsavers.socrates.clinical.Utils.CommonStaticValues.GET_PRESCRIBEDRX_BY_TRNUMBER;
 import static com.specsavers.socrates.clinical.Utils.CommonStaticValues.UNKNOWN_REQUEST;
+import static com.specsavers.socrates.clinical.Utils.CommonStaticValues.VALID_STORE_ID;
+import static com.specsavers.socrates.clinical.Utils.CommonStaticValues.STORE_ID_HTTP_HEADER_NAME;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class RequestLoggerTest {
@@ -28,7 +30,9 @@ class RequestLoggerTest {
     @BeforeEach
     public void setup() {
         // Clear any headers from previous tests
-        this.graphQLTestTemplate.withClearHeaders();
+        this.graphQLTestTemplate
+            .withClearHeaders()
+            .withAdditionalHeader(STORE_ID_HTTP_HEADER_NAME, VALID_STORE_ID);
     }
 
     @Test
@@ -41,7 +45,7 @@ class RequestLoggerTest {
 
         var logList = listAppender.list;
         Assertions.assertEquals(2, logList.size());
-        assertLogLine(logList.get(0), "operation prescribedRX");
+        assertLogLine(logList.get(0), "operation prescribedRX, headers socrates_store_id=8306");
         assertCompletedLog(logList.get(1));
     }
 
@@ -59,7 +63,7 @@ class RequestLoggerTest {
         var logList = listAppender.list;
         Assertions.assertEquals(2, logList.size());
         assertLogLine(logList.get(0), "operation prescribedRX, " +
-                "headers socrates_header2=header2, socrates_header=header1");
+                "headers socrates_header2=header2, socrates_store_id=8306, socrates_header=header1");
         assertCompletedLog(logList.get(1));
     }
 
@@ -72,7 +76,7 @@ class RequestLoggerTest {
 
         var logList = listAppender.list;
         Assertions.assertEquals(2, logList.size());
-        assertLogLine(logList.get(0), "operation prescribedRX");
+        assertLogLine(logList.get(0), "operation prescribedRX, headers socrates_store_id=8306");
         assertLogLine(logList.get(1), "Error executing: Exception while fetching data " +
             "(/prescribedRX) : Provide a valid id OR testRoomNumber");
     }
@@ -100,7 +104,7 @@ class RequestLoggerTest {
 
         var logList = listAppender.list;
         Assertions.assertEquals(2, logList.size());
-        assertLogLine(logList.get(0), "operation prescribedRX");
+        assertLogLine(logList.get(0), "operation prescribedRX, headers socrates_store_id=8306");
         assertLogLine(logList.get(1), "Error executing: Exception while fetching data " +
             "(/prescribedRX) : Object not found");
     }

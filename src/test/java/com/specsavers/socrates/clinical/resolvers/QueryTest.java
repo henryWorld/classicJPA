@@ -8,9 +8,9 @@ import java.util.Optional;
 import static com.specsavers.socrates.clinical.Utils.CommonStaticValues.*;
 
 import com.specsavers.socrates.clinical.exception.NotFoundException;
-import com.specsavers.socrates.clinical.model.PrescribedRX;
-import com.specsavers.socrates.clinical.model.rx.RX;
-import com.specsavers.socrates.clinical.repository.PrescribedRxRepository;
+import com.specsavers.socrates.clinical.legacy.model.PrescribedRX;
+import com.specsavers.socrates.clinical.legacy.model.rx.RX;
+import com.specsavers.socrates.clinical.legacy.repository.PrescribedRxRepository;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

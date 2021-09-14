@@ -1,8 +1,8 @@
 package com.specsavers.socrates.clinical.resolvers;
 
 import com.specsavers.socrates.clinical.exception.NotFoundException;
-import com.specsavers.socrates.clinical.model.rx.RX;
-import com.specsavers.socrates.clinical.repository.PrescribedRxRepository;
+import com.specsavers.socrates.clinical.legacy.model.rx.RX;
+import com.specsavers.socrates.clinical.legacy.repository.PrescribedRxRepository;
 import graphql.GraphqlErrorException;
 import graphql.kickstart.tools.GraphQLQueryResolver;
 import org.springframework.beans.factory.annotation.Autowired;

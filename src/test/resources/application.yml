@@ -3,6 +3,8 @@ spring:
     group:
       default:
         - "common"
+        - "commonLiquibase"
+        - "commonDbLegacyTest"
         - "commonTest"
         - "commonNoEnactor"
         - "service"

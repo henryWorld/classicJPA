@@ -1,0 +1,5 @@
+# Set the default behavior, in case people don't have core.autocrlf set.
+* text=auto
+
+# Unix script files should keep LF even on Windows, since they are used on docker.
+*.sh text eol=lf

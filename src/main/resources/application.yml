@@ -6,15 +6,17 @@ spring:
     group:
       default:
         - "common"
-        - "commonDbLegacyAsMainProd"
+        - "commonLiquibase"
+        - "commonDbLegacyProd"
         - "service"
       dev:
         - "common"
+        - "commonLiquibase"
+        - "commonDbLegacyDev"
         - "commonDev"
-        - "commonDbLegacyAsMainDev"
         - "service"
   datasource:
-    url: jdbc:mysql://${DATABASE_SERVER}/soa8306?useSSL=true&requireSSL=false
+    url: jdbc:sqlserver://${DATABASE_SERVER};databaseName=clinical_microservice
 
 logging:
   level:

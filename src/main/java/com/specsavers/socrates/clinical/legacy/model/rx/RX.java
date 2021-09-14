@@ -1,4 +1,4 @@
-package com.specsavers.socrates.clinical.model.rx;
+package com.specsavers.socrates.clinical.legacy.model.rx;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.Column;
@@ -7,7 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
 
-import com.specsavers.socrates.clinical.model.PrescribedRX;
+import com.specsavers.socrates.clinical.legacy.model.PrescribedRX;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -92,7 +92,25 @@ type PrescribedRX  {
   recommendations: String
 }
 
+enum SightTestType {
+  MY_SIGHT_TEST,
+  SIGHT_TEST
+}
+
+type SightTest {
+  id: ID!
+  trNumber: Int
+  type: SightTestType
+}
+
 type Query {
-  "Returns a prescribedRX, searching by id OR testRoomNumber"
+  "Returns a prescribedRX from legacy DB, searching by id OR testRoomNumber"
   prescribedRX(id: ID, testRoomNumber: Int): PrescribedRX
+}
+
+type Mutation {
+  """
+  Creates and return a new Sight Test record on the main DB
+  """
+  createSightTest(trNumber: Int!, type: SightTestType!): SightTest!
 }
