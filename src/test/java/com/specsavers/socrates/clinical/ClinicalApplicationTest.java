@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.io.IOException;
 import java.util.UUID;
 
+import static com.specsavers.socrates.clinical.Utils.CommonStaticValues.CREATE_HABITUAL_RX;
 import static com.specsavers.socrates.clinical.Utils.CommonStaticValues.CREATE_SIGHT_TEST;
 import static com.specsavers.socrates.clinical.Utils.CommonStaticValues.GET_PRESCRIBEDRX_BY_ID;
 import static com.specsavers.socrates.clinical.Utils.CommonStaticValues.GET_PRESCRIBEDRX_BY_TRNUMBER;
@@ -20,7 +21,10 @@ import static com.specsavers.socrates.clinical.Utils.CommonStaticValues.NOT_FOUN
 import static com.specsavers.socrates.clinical.Utils.CommonStaticValues.RIGHT_EYE;
 import static com.specsavers.socrates.clinical.Utils.CommonStaticValues.SIGHT_TEST;
 import static com.specsavers.socrates.clinical.Utils.CommonStaticValues.STORE_ID_HTTP_HEADER_NAME;
+import static com.specsavers.socrates.clinical.Utils.CommonStaticValues.UPDATE_HABITUAL_RX;
+import static com.specsavers.socrates.clinical.Utils.CommonStaticValues.VALID_HABITUAL_RX_ID;
 import static com.specsavers.socrates.clinical.Utils.CommonStaticValues.VALID_PRESCRIBEDRX_ID;
+import static com.specsavers.socrates.clinical.Utils.CommonStaticValues.VALID_SIGHT_TEST_ID;
 import static com.specsavers.socrates.clinical.Utils.CommonStaticValues.VALID_STORE_ID;
 import static com.specsavers.socrates.clinical.Utils.CommonStaticValues.VALID_TR_NUMBER_ID;
 
@@ -89,6 +93,42 @@ class ClinicalApplicationTest {
                 .and()
                 .assertThatField("$.data.createSightTest.type").asString()
                 .isEqualTo(SIGHT_TEST);
+    }
+
+    @Test
+    void testCreateHabitualRx() throws IOException {
+        var variables = new ObjectMapper().createObjectNode()
+                .put("sightTestId", VALID_SIGHT_TEST_ID.toString())
+                .put("pairNumber", 4)
+                .put("name", "a name")
+                .put("leftCylinder", "+2.50");
+
+        var response = graphQLTestTemplate.perform(CREATE_HABITUAL_RX, variables);
+
+        response
+                .assertThatNoErrorsArePresent()
+                .assertThatField("$.data.createHabitualRx.id").as(UUID.class).isNotNull()
+                .and()
+                .assertThatField("$.data.createHabitualRx.pairNumber").asInteger().isEqualTo(4)
+                .and()
+                .assertThatField("$.data.createHabitualRx.clinicianName").asString().isEqualTo("a name")
+                .and()
+                .assertThatField("$.data.createHabitualRx.leftEye.cylinder").asString().isEqualTo("+2.50");
+    }
+
+    @Test
+    void testUpdateHabitualRx() throws IOException {
+        var variables = new ObjectMapper().createObjectNode()
+                .put("id", VALID_HABITUAL_RX_ID.toString())
+                .put("clinicianName", "new name");
+
+        var response = graphQLTestTemplate.perform(UPDATE_HABITUAL_RX, variables);
+
+        response
+                .assertThatNoErrorsArePresent()
+                .assertThatField("$.data.updateHabitualRx.id").as(UUID.class).isEqualTo(VALID_HABITUAL_RX_ID)
+                .and()
+                .assertThatField("$.data.updateHabitualRx.clinicianName").asString().isEqualTo("new name");
     }
 
     private void validateFullResponse(GraphQLResponse graphQLResponse) {

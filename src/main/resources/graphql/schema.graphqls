@@ -14,6 +14,14 @@ type Prism {
     vertical: String
 }
 
+input PrismInput {
+    "Prism diopters and direction for horizontal alignment. e.g 1.50 Out or 2.00 In"
+    horizontal: String
+
+    "Prism diopters and direction for vertical alignment. e.g 1.50 Down or 1.00 Up"
+    vertical: String
+}
+
 "Naked eye visual acuity"
 type UnaidedVA {
     rightEye: String
@@ -33,13 +41,16 @@ type PrescribedEyeRX {
   cylinder: String
 
   "The axis for astigmatism correction. An int between 0 and 180"
-  axis: Int
+  axis: Float
 
   "The measure of the ability of the eye to distinguish shapes and the details of objects at distance. e.g. 20/20"
   distanceVisualAcuity: String
 
   "The measure of the ability of the eye to distinguish shapes and the details of objects at close range. e.g. 6/6"
   nearVisualAcuity: String
+
+  "The measure of the ability of the eye to distinguish shapes and the details of objects"
+  visualAcuity: String
 
   "PD: The distance between the pupils"
   pupillaryDistance: Float
@@ -48,11 +59,17 @@ type PrescribedEyeRX {
 
   interAddtion: Float
 
+  "ADD Addition"
+  addition: Float
+
   "Prismatic power prescribed to compensate for eye alignment on distance vision"
   distancePrism: Prism
 
   "Prismatic power prescribed to compensate for eye alignment on near vision"
   nearPrism: Prism
+
+  "General prismatic power"
+  prism: Prism
 }
 
 "A RX prescribed by an optometrist after a sight test."
@@ -103,6 +120,75 @@ type SightTest {
   type: SightTestType
 }
 
+input HabitualRxInput {
+  "Age of the pair in years"
+  age: Float
+
+  "The clinician who wrote the rx"
+  clinicianName: String
+
+  "Left Eye rx"
+  leftEye: PrescribedEyeRXInput!
+
+  "Right Eye rx"
+  rightEye: PrescribedEyeRXInput!
+
+  "Notes"
+  notes: String
+}
+
+type HabitualRx {
+  "The id of the pair"
+  id: ID!
+
+  "The sight test ID"
+  sightTestId: ID!
+
+  "The pair number 1-3"
+  pairNumber: Int!
+
+  "Age of the pair in years"
+  age: Float
+
+  "The clinician who wrote the rx"
+  clinicianName: String
+
+  "Left Eye rx"
+  leftEye: PrescribedEyeRX
+
+  "Right Eye rx"
+  rightEye: PrescribedEyeRX
+
+  "Notes"
+  notes: String
+}
+
+input PrescribedEyeRXInput {
+  """
+  The lens power measured in diopters. e.g. +1.50
+  Use a `-` sign for short-sighted and `+` sign for long-sighted
+  """
+  sphere: String
+
+  "The amount of correction for astigmatism. Matches the same sign as sphere. e.g. +1.25"
+  cylinder: String
+
+  "The axis for astigmatism correction. An int between 0 and 180"
+  axis: Float
+
+  "The measure of the ability of the eye to distinguish shapes and the details of objects"
+  visualAcuity: String
+
+  "PD: The distance between the pupils"
+  pupillaryDistance: Float
+
+  "ADD Addition"
+  addition: Float
+
+  "General prismatic power"
+  prism: PrismInput
+}
+
 type Query {
   "Returns a prescribedRX from legacy DB, searching by id OR testRoomNumber"
   prescribedRX(id: ID, testRoomNumber: Int): PrescribedRX
@@ -113,4 +199,14 @@ type Mutation {
   Creates and return a new Sight Test record on the main DB
   """
   createSightTest(trNumber: Int!, type: SightTestType!): SightTest!
+
+  """
+  Creates and return a new habitual rx pair
+  """
+  createHabitualRx(sightTestId: ID!, pairNumber: Int!, pair: HabitualRxInput!): HabitualRx!
+
+  """
+  Updates and returns an existing habitual rx pair
+  """
+  updateHabitualRx(id: ID!, pair: HabitualRxInput!): HabitualRx!
 }

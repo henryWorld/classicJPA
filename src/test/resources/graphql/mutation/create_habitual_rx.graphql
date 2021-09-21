@@ -1,0 +1,28 @@
+mutation ($sightTestId: ID!, $pairNumber: Int!, $name: String!, $leftCylinder: String!) {
+  createHabitualRx(
+    sightTestId: $sightTestId
+    pairNumber: $pairNumber
+    pair: {
+      clinicianName: $name
+      age: 2
+      leftEye: {
+        addition: 1.23
+        axis: 2.25
+        cylinder: $leftCylinder
+        sphere: "+1.50"
+      }
+      rightEye: {
+        addition: 1.23
+        axis: 4.56
+        cylinder: "+1.25"
+        sphere: "+1.50"
+      }
+    }) {
+    id
+    pairNumber
+    clinicianName
+    leftEye {
+      cylinder
+    }
+  }
+}

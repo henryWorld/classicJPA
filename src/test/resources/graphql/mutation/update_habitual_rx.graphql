@@ -1,0 +1,23 @@
+mutation ($id: ID!, $clinicianName: String!) {
+  updateHabitualRx(
+    id: $id
+    pair: {
+      clinicianName: $clinicianName
+      age: 2
+      leftEye: {
+        addition: 1.23
+        axis: 2.25
+        cylinder: "-1.50"
+        sphere: "+1.50"
+      }
+      rightEye: {
+        addition: 1.23
+        axis: 4.56
+        cylinder: "+1.25"
+        sphere: "+1.50"
+      }
+    }) {
+    id
+    clinicianName
+  }
+}

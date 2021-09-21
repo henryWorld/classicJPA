@@ -63,6 +63,12 @@
             <artifactId>querydsl-jpa</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct</artifactId>
+            <version>${mapstruct.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
             <scope>test</scope>
@@ -81,13 +87,13 @@
                     <annotationProcessorPaths>
                         <path>
                             <groupId>org.projectlombok</groupId>
-                            <artifactId>lombok</artifactId>
-                            <version>${lombok.version}</version>
+                            <artifactId>lombok-mapstruct-binding</artifactId>
+                            <version>${lombok-mapstruct-binding.version}</version>
                         </path>
                         <path>
                             <groupId>org.projectlombok</groupId>
-                            <artifactId>lombok-mapstruct-binding</artifactId>
-                            <version>${lombok-mapstruct-binding.version}</version>
+                            <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version>
                         </path>
                         <path>
                             <groupId>org.mapstruct</groupId>

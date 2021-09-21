@@ -6,5 +6,5 @@
          http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
     <include file="/db/changelog/001-socrates_lookup_table.xml"/>
     <include file="/db/changelog/002-add_sight_test_table.xml"/>
+    <include file="/db/changelog/003-add_habitual_tables.xml"/>
 </databaseChangeLog>
-

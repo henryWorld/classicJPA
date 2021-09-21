@@ -1,23 +1,24 @@
-package com.specsavers.socrates.clinical.legacy.model.rx;
+package com.specsavers.socrates.clinical.model.type;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class EyeRX {
+public final class PrescribedEyeRxDto {
     private String sphere;
     private String cylinder;
     private Float axis;
     private String distanceVisualAcuity;
     private String nearVisualAcuity;
+    private String visualAcuity;
     private Float pupillaryDistance;
     private Float nearAddition;
     private Float interAddtion;
-    private Prism distancePrism;
-    private Prism nearPrism;
+    private Float addition;
+    private PrismDto distancePrism;
+    private PrismDto nearPrism;
+    private PrismDto prism;
 }

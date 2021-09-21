@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
+
+    <changeSet id="003-add_habitual_tables" author="jack.gough">
+        <createTable tableName="rx_eye">
+            <column name="id" type="uuid">
+                <constraints nullable="false" primaryKey="true" />
+            </column>
+            <column name="sphere" type="varchar(10)" />
+            <column name="cylinder" type="varchar(10)" />
+            <column name="axis" type="decimal(4,1)" />
+            <column name="visual_acuity" type="varchar(10)" />
+            <column name="pupillary_distance" type="decimal(4,1)" />
+            <column name="addition" type="decimal(4,2)" />
+            <column name="prism_horizontal" type="varchar(10)" />
+            <column name="prism_vertical" type="varchar(10)" />
+        </createTable>
+        
+        <createTable tableName="rx">
+            <column name="id" type="uuid">
+                <constraints nullable="false" primaryKey="true" />
+            </column>
+            <column name="left_rx_eye_id" type="uuid">
+                <constraints foreignKeyName="fk_rx_left_rx_eye" references="rx_eye(id)" />
+            </column>
+            <column name="right_rx_eye_id" type="uuid">
+                <constraints foreignKeyName="fk_rx_right_rx_eye" references="rx_eye(id)" />
+            </column>
+            <column name="notes" type="varchar(35)" />
+        </createTable>
+
+        <createTable tableName="habitual_rx">
+            <column name="id" type="uuid">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="sight_test_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            <column name="pair_number" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="age" type="decimal(4,1)" />
+            <column name="clinician_name" type="varchar(20)" />
+            <column name="rx_id" type="uuid">
+                <constraints foreignKeyName="fk_habitual_rx_rx" references="rx(id)" />
+            </column>
+        </createTable>
+
+        <addUniqueConstraint tableName="habitual_rx" columnNames="sight_test_id,pair_number" />
+    </changeSet>
+</databaseChangeLog>

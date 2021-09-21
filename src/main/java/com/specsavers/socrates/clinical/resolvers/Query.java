@@ -1,35 +1,37 @@
 package com.specsavers.socrates.clinical.resolvers;
 
 import com.specsavers.socrates.clinical.exception.NotFoundException;
-import com.specsavers.socrates.clinical.legacy.model.rx.RX;
 import com.specsavers.socrates.clinical.legacy.repository.PrescribedRxRepository;
+import com.specsavers.socrates.clinical.mapper.PrescribedRxMapper;
+import com.specsavers.socrates.clinical.model.type.PrescribedRxDto;
 import graphql.GraphqlErrorException;
 import graphql.kickstart.tools.GraphQLQueryResolver;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
+@AllArgsConstructor
 public class Query implements GraphQLQueryResolver {
     
-    @Autowired
-    private PrescribedRxRepository prescribedRxRepository;
+    private final PrescribedRxRepository prescribedRxRepository;
+    private final PrescribedRxMapper mapper;
 
-    public RX prescribedRX(int id, int testRoomNumber) {
+    public PrescribedRxDto prescribedRX(int id, int testRoomNumber) {
         var hasId = id > 0;
         var hasTrNumber = testRoomNumber > 0;
 
-        if(hasId && hasTrNumber)
+        if (hasId && hasTrNumber)
             throw new GraphqlErrorException.Builder()
             .message("Cannot search by id and testRoomNumber at same time").build();
        
-        if(hasId)   
-            return prescribedRxRepository.findById(id)
-            .orElseThrow(NotFoundException::new).getRx();
+        if(hasId)
+            return mapper.fromEntity(prescribedRxRepository.findById(id)
+            .orElseThrow(NotFoundException::new));
 
         if(hasTrNumber)
-            return prescribedRxRepository.findByTestRoomNumber(testRoomNumber)
-            .orElseThrow(NotFoundException::new).getRx();
-        
+            return mapper.fromEntity(prescribedRxRepository.findByTestRoomNumber(testRoomNumber)
+                    .orElseThrow(NotFoundException::new));
+
         throw new GraphqlErrorException.Builder()
         .message("Provide a valid id OR testRoomNumber").build();
     }

@@ -17,5 +17,4 @@ public class Record {
     @Column(name = "record_id")
     private Integer id;
     private LocalDateTime customerArrivalTime;
-
 }
