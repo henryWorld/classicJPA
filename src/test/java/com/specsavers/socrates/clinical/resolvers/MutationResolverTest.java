@@ -2,8 +2,10 @@ package com.specsavers.socrates.clinical.resolvers;
 
 import com.specsavers.socrates.clinical.exception.NotFoundException;
 import com.specsavers.socrates.clinical.mapper.HabitualRxMapper;
+import com.specsavers.socrates.clinical.mapper.SightTestMapper;
 import com.specsavers.socrates.clinical.model.entity.HabitualRx;
 import com.specsavers.socrates.clinical.model.type.HabitualRxDto;
+import com.specsavers.socrates.clinical.model.type.SightTestDto;
 import com.specsavers.socrates.clinical.repository.HabitualRxRepository;
 import com.specsavers.socrates.clinical.repository.SightTestRepository;
 
@@ -29,6 +31,7 @@ import static org.mockito.Mockito.when;
 import com.specsavers.socrates.clinical.model.entity.SightTest;
 import com.specsavers.socrates.clinical.model.entity.SightTestType;
 
+import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -43,6 +46,9 @@ class MutationResolverTest {
     @Mock
     private HabitualRxMapper mockMapper;
 
+    @Mock
+    private SightTestMapper sightTestMapper;
+
     @InjectMocks
     private MutationResolver mutationResolver;
 
@@ -52,15 +58,19 @@ class MutationResolverTest {
         @Test
         void testCreateSightTestWithValidValues(){
             var type = SightTestType.MY_SIGHT_TEST;
-            var expectedSightTest = new SightTest();
+            var sightTestDto = new SightTestDto();
+            var sightTest = new SightTest();
 
-            expectedSightTest.setTrNumber(VALID_TR_NUMBER_ID);
-            expectedSightTest.setType(type);
+            sightTest.setTrNumber(VALID_TR_NUMBER_ID);
+            sightTest.setType(type);
+            sightTest.setCreationDate(LocalDate.now());
+            when(sightTestMapper.map(sightTest)).thenReturn(sightTestDto);
 
             var result = mutationResolver.createSightTest(VALID_TR_NUMBER_ID, type);
 
-            assertEquals(expectedSightTest, result);
-            verify(sightTestRepository).save(expectedSightTest);
+            assertEquals(sightTestDto, result);
+            verify(sightTestRepository).save(sightTest);
+            verify(sightTestMapper).map(sightTest);
         }
     }
 

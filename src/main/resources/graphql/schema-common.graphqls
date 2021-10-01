@@ -5,6 +5,9 @@ i.e. 2020-12-08T10:33:45+00:00 OR 2020-12-08T10:33:45Z
 """
 scalar DateTime
 
+"Date scalar must use ISO 8601. i.e. 2020-12-08"
+scalar Date
+
 "Prismatic power prescribed to compensate for eye alignment"
 type Prism {
     "Prism diopters and direction for horizontal alignment. e.g 1.50 Out or 2.00 In"
@@ -30,7 +33,7 @@ type UnaidedVA {
 }
 
 "Prescribed assisted eye measurements"
-type PrescribedEyeRX {
+type EyeRX {
   """
   The lens power measured in diopters. e.g. +1.50
   Use a `-` sign for short-sighted and `+` sign for long-sighted
@@ -57,7 +60,7 @@ type PrescribedEyeRX {
 
   nearAddition: Float
 
-  interAddtion: Float
+  interAddition: Float
 
   "ADD Addition"
   addition: Float
@@ -73,7 +76,7 @@ type PrescribedEyeRX {
 }
 
 "A RX prescribed by an optometrist after a sight test."
-type PrescribedRX  {
+type PrescribedRx  {
   "The id of the prescription"
   id: ID!
 
@@ -84,10 +87,10 @@ type PrescribedRX  {
   testRoomNumber: Int
 
   "The RX for the right eye"
-  rightEye: PrescribedEyeRX
+  rightEye: EyeRX
 
   "The RX for the left eye"
-  leftEye: PrescribedEyeRX
+  leftEye: EyeRX
 
   "BIN Vision: The binocular visual acuity of the patient. e.g. 20/20"
   distanceBinVisualAcuity: String
@@ -109,6 +112,41 @@ type PrescribedRX  {
   recommendations: String
 }
 
+
+type SpecificAddition {
+    rightEye: Float
+    leftEye: Float
+    reason: String
+}
+
+"Current glasses(specs) visual acuity"
+type CurrentSpecsVA {
+    rightEye: String
+    leftEye: String
+}
+
+
+type RefractedRx  {
+  "BIN Vision: The binocular visual acuity of the patient. e.g. 20/20"
+  distanceBinVisualAcuity: String
+
+  "Naked eye visual acuity"
+  unaidedVisualAcuity: UnaidedVA
+
+  "Back Vertex Distance - What distance the lenses should sit from the eyes. e.g. 8.00"
+  bvd: Float
+
+  specificAddition: SpecificAddition
+
+  currentSpecsVA: CurrentSpecsVA
+
+  "The RX for the right eye"
+  rightEye: EyeRX
+
+  "The RX for the left eye"
+  leftEye: EyeRX
+}
+
 enum SightTestType {
   MY_SIGHT_TEST,
   SIGHT_TEST
@@ -118,6 +156,9 @@ type SightTest {
   id: ID!
   trNumber: Int
   type: SightTestType
+  creationDate: Date
+  prescribedRx: PrescribedRx
+  refractedRx: RefractedRx 
 }
 
 input HabitualRxInput {
@@ -128,10 +169,10 @@ input HabitualRxInput {
   clinicianName: String
 
   "Left Eye rx"
-  leftEye: PrescribedEyeRXInput!
+  leftEye: EyeRxInput!
 
   "Right Eye rx"
-  rightEye: PrescribedEyeRXInput!
+  rightEye: EyeRxInput!
 
   "Notes"
   notes: String
@@ -154,16 +195,16 @@ type HabitualRx {
   clinicianName: String
 
   "Left Eye rx"
-  leftEye: PrescribedEyeRX
+  leftEye: EyeRX
 
   "Right Eye rx"
-  rightEye: PrescribedEyeRX
+  rightEye: EyeRX
 
   "Notes"
   notes: String
 }
 
-input PrescribedEyeRXInput {
+input EyeRxInput {
   """
   The lens power measured in diopters. e.g. +1.50
   Use a `-` sign for short-sighted and `+` sign for long-sighted
@@ -191,7 +232,8 @@ input PrescribedEyeRXInput {
 
 type Query {
   "Returns a prescribedRX from legacy DB, searching by id OR testRoomNumber"
-  prescribedRX(id: ID, testRoomNumber: Int): PrescribedRX
+  prescribedRX(id: ID, testRoomNumber: Int): PrescribedRx
+  sightTests(customerID: ID!): [SightTest]
 }
 
 type Mutation {

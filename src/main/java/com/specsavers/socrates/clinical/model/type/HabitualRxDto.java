@@ -15,7 +15,7 @@ public final class HabitualRxDto {
     private Integer pairNumber;
     private Float age;
     private String clinicianName;
-    private PrescribedEyeRxDto leftEye;
-    private PrescribedEyeRxDto rightEye;
+    private EyeRxDto leftEye;
+    private EyeRxDto rightEye;
     private String notes;
 }

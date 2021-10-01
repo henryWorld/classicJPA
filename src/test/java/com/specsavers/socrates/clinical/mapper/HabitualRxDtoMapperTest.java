@@ -1,10 +1,11 @@
 package com.specsavers.socrates.clinical.mapper;
 
 import com.specsavers.socrates.clinical.model.entity.HabitualRx;
+import com.specsavers.socrates.clinical.model.entity.Prism;
 import com.specsavers.socrates.clinical.model.entity.Rx;
 import com.specsavers.socrates.clinical.model.entity.RxEye;
 import com.specsavers.socrates.clinical.model.type.HabitualRxDto;
-import com.specsavers.socrates.clinical.model.type.PrescribedEyeRxDto;
+import com.specsavers.socrates.clinical.model.type.EyeRxDto;
 import com.specsavers.socrates.clinical.model.type.PrismDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -65,7 +66,7 @@ class HabitualRxDtoMapperTest {
         void mapsEyeEntitiesFromInput() {
             // given
             var input = new HabitualRxDto();
-            var eye = new PrescribedEyeRxDto();
+            var eye = new EyeRxDto();
             eye.setSphere("sphere");
             eye.setCylinder("cylinder");
             eye.setAxis(1.23f);
@@ -77,7 +78,7 @@ class HabitualRxDtoMapperTest {
             prism.setVertical("vertical");
             eye.setPrism(prism);
             input.setLeftEye(eye);
-            input.setRightEye(new PrescribedEyeRxDto());
+            input.setRightEye(new EyeRxDto());
 
             // when
             var actual = sut.toEntity(UUID.randomUUID(), 2, input).getRx().getLeftEye();
@@ -90,8 +91,8 @@ class HabitualRxDtoMapperTest {
             assertEquals("va", actual.getVisualAcuity());
             assertEquals(4.56f, actual.getPupillaryDistance());
             assertEquals(5.67f, actual.getAddition());
-            assertEquals("horizontal", actual.getPrismHorizontal());
-            assertEquals("vertical", actual.getPrismVertical());
+            assertEquals("horizontal", actual.getPrism().getHorizontal());
+            assertEquals("vertical", actual.getPrism().getVertical());
         }
     }
 
@@ -131,14 +132,19 @@ class HabitualRxDtoMapperTest {
             HabitualRx entity = new HabitualRx();
             Rx rx = new Rx();
             RxEye eye = new RxEye();
+            Prism prism = new Prism();
+            
+            prism.setHorizontal("horizontal");
+            prism.setVertical("vertical");
+
             eye.setSphere("sphere");
             eye.setCylinder("cylinder");
             eye.setAxis(1.23f);
             eye.setVisualAcuity("va");
             eye.setPupillaryDistance(4.56f);
             eye.setAddition(6.78f);
-            eye.setPrismHorizontal("horizontal");
-            eye.setPrismVertical("vertical");
+            eye.setPrism(prism);
+
             rx.setLeftEye(eye);
             entity.setRx(rx);
 
@@ -154,7 +160,7 @@ class HabitualRxDtoMapperTest {
             assertEquals("va", actual.getVisualAcuity());
             assertEquals(4.56f, actual.getPupillaryDistance());
             assertNull(actual.getNearAddition());
-            assertNull(actual.getInterAddtion());
+            assertNull(actual.getInterAddition());
             assertEquals(6.78f, actual.getAddition());
             assertNull(actual.getDistancePrism());
             assertNull(actual.getNearPrism());
@@ -182,7 +188,7 @@ class HabitualRxDtoMapperTest {
             var input = new HabitualRxDto();
             input.setAge(3f);
             input.setClinicianName("bob");
-            input.setLeftEye(new PrescribedEyeRxDto());
+            input.setLeftEye(new EyeRxDto());
 
             // when
             sut.updateEntity(input, entity);

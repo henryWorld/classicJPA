@@ -17,6 +17,7 @@ public class CommonStaticValues {
     public static final String STORE_ID_HTTP_HEADER_NAME = "SOCRATES_STORE_ID";
     public static final int VALID_PRESCRIBEDRX_ID = 30;
     public static final int VALID_TR_NUMBER_ID = 123;
+    public static final int VALID_CUSTOMER_ID = 5001;
     public static final int NOT_FOUND_ID = 999;
     public static final String SIGHT_TEST = "SIGHT_TEST";
     public static final UUID VALID_SIGHT_TEST_ID = UUID.fromString("17396D3B-FD1F-4454-B309-41990D705E6B");
@@ -27,7 +28,7 @@ public class CommonStaticValues {
             .cylinder("-1.00")
             .distancePrism(Prism.builder().horizontal("3.00 Out").vertical("7.00 Down").build())
             .distanceVisualAcuity("6/6")
-            .interAddtion(5f)
+            .interAddition(5f)
             .nearAddition(2.5f)
             .nearPrism(Prism.builder().horizontal("2.00 In").vertical("7.00 Down").build())
             .nearVisualAcuity("N5")
@@ -39,7 +40,7 @@ public class CommonStaticValues {
             .cylinder("-0.50")
             .distancePrism(Prism.builder().horizontal("4.00 Out").vertical("7.00 Up").build())
             .distanceVisualAcuity("6/6")
-            .interAddtion(8f)
+            .interAddition(8f)
             .nearAddition(2.25f)
             .nearPrism(Prism.builder().horizontal("2.50 In").vertical("6.00 Down").build())
             .nearVisualAcuity("N5")

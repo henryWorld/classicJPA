@@ -109,7 +109,7 @@ class PrescribedRxDtoMapperTest {
         eye.setNearVisualAcuity("nva");
         eye.setPupillaryDistance(4.56f);
         eye.setNearAddition(7.89f);
-        eye.setInterAddtion(10.12f);
+        eye.setInterAddition(10.12f);
         eye.setDistancePrism(prism("dh", "dv"));
         eye.setNearPrism(prism("nh", "nv"));
         rx.setLeftEye(eye);
@@ -127,7 +127,7 @@ class PrescribedRxDtoMapperTest {
         assertNull(actual.getVisualAcuity());
         assertEquals(4.56f, actual.getPupillaryDistance());
         assertEquals(7.89f, actual.getNearAddition());
-        assertEquals(10.12f, actual.getInterAddtion());
+        assertEquals(10.12f, actual.getInterAddition());
         assertNull(actual.getAddition());
         assertEquals("dh", actual.getDistancePrism().getHorizontal());
         assertEquals("dv", actual.getDistancePrism().getVertical());

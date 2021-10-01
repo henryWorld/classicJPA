@@ -17,7 +17,7 @@ public class EyeRX {
     private String nearVisualAcuity;
     private Float pupillaryDistance;
     private Float nearAddition;
-    private Float interAddtion;
+    private Float interAddition;
     private Prism distancePrism;
     private Prism nearPrism;
 }

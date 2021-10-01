@@ -1,11 +1,13 @@
 package com.specsavers.socrates.clinical.resolvers;
 
 
-import com.specsavers.socrates.clinical.exception.NotFoundException;
-import com.specsavers.socrates.clinical.mapper.HabitualRxMapper;
 import com.specsavers.socrates.clinical.model.entity.SightTest;
 import com.specsavers.socrates.clinical.model.entity.SightTestType;
+import com.specsavers.socrates.clinical.exception.NotFoundException;
+import com.specsavers.socrates.clinical.mapper.HabitualRxMapper;
+import com.specsavers.socrates.clinical.mapper.SightTestMapper;
 import com.specsavers.socrates.clinical.model.type.HabitualRxDto;
+import com.specsavers.socrates.clinical.model.type.SightTestDto;
 import com.specsavers.socrates.clinical.repository.HabitualRxRepository;
 import com.specsavers.socrates.clinical.repository.SightTestRepository;
 
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Component;
 import graphql.kickstart.tools.GraphQLMutationResolver;
 import lombok.extern.slf4j.Slf4j;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Slf4j
@@ -24,18 +27,20 @@ public class MutationResolver implements GraphQLMutationResolver {
 
     private final SightTestRepository sightTestRepository;
     private final HabitualRxRepository habitualRxRepository;
-    private final HabitualRxMapper mapper;
+    private final HabitualRxMapper habitualRxMapper;
+    private final SightTestMapper sightTestMapper;
 
-    public SightTest createSightTest(Integer trNumber, SightTestType type) {
+    public SightTestDto createSightTest(Integer trNumber, SightTestType type) {
 		log.info("Called createSightTest mutation with the following parameters: trNumber={}, type={}", trNumber, type);
         
         var sightTest = new SightTest();
         sightTest.setTrNumber(trNumber);
         sightTest.setType(type);
+        sightTest.setCreationDate(LocalDate.now());
         
         sightTestRepository.save(sightTest);
 
-		return sightTest;
+		return sightTestMapper.map(sightTest);
 	}
 
     public HabitualRxDto createHabitualRx(UUID sightTestId, Integer pairNumber, HabitualRxDto input) {
@@ -43,19 +48,19 @@ public class MutationResolver implements GraphQLMutationResolver {
             throw new NotFoundException();
         }
 
-        var entity = mapper.toEntity(sightTestId, pairNumber, input);
+        var entity = habitualRxMapper.toEntity(sightTestId, pairNumber, input);
         entity = habitualRxRepository.save(entity);
 
-        return mapper.fromEntity(entity);
+        return habitualRxMapper.fromEntity(entity);
     }
 
     public HabitualRxDto updateHabitualRx(UUID id, HabitualRxDto input) {
         var entity = habitualRxRepository.findById(id)
                 .orElseThrow(NotFoundException::new);
 
-        mapper.updateEntity(input, entity);
+        habitualRxMapper.updateEntity(input, entity);
         habitualRxRepository.save(entity);
 
-        return mapper.fromEntity(entity);
+        return habitualRxMapper.fromEntity(entity);
     }
 }

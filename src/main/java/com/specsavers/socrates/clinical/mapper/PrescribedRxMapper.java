@@ -4,7 +4,7 @@ import com.specsavers.socrates.clinical.legacy.model.Name;
 import com.specsavers.socrates.clinical.legacy.model.OptionRecommendation;
 import com.specsavers.socrates.clinical.legacy.model.PrescribedRX;
 import com.specsavers.socrates.clinical.legacy.model.rx.EyeRX;
-import com.specsavers.socrates.clinical.model.type.PrescribedEyeRxDto;
+import com.specsavers.socrates.clinical.model.type.EyeRxDto;
 import com.specsavers.socrates.clinical.model.type.PrescribedRxDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -33,7 +33,7 @@ public abstract class PrescribedRxMapper {
     @Mapping(target = "recommendations", source = "sightTest.optionRecommendations")
     public abstract PrescribedRxDto fromEntity(PrescribedRX entity);
 
-    abstract PrescribedEyeRxDto mapEye(EyeRX from);
+    abstract EyeRxDto mapEye(EyeRX from);
 
     OffsetDateTime mapLocalDateTime(LocalDateTime dateTime) {
         if (null == dateTime) return null;

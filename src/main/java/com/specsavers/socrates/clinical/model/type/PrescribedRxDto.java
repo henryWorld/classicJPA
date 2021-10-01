@@ -12,8 +12,8 @@ public final class PrescribedRxDto {
     private final Object id;
     private final String clinicianName;
     private final Integer testRoomNumber;
-    private final PrescribedEyeRxDto rightEye;
-    private final PrescribedEyeRxDto leftEye;
+    private final EyeRxDto rightEye;
+    private final EyeRxDto leftEye;
     private final String distanceBinVisualAcuity;
     private final UnaidedVisualAcuityDto unaidedVisualAcuity;
     private final Float bvd;

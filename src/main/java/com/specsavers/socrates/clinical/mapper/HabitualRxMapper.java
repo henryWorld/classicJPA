@@ -4,7 +4,7 @@ import com.specsavers.socrates.clinical.model.entity.HabitualRx;
 import com.specsavers.socrates.clinical.model.entity.Rx;
 import com.specsavers.socrates.clinical.model.entity.RxEye;
 import com.specsavers.socrates.clinical.model.type.HabitualRxDto;
-import com.specsavers.socrates.clinical.model.type.PrescribedEyeRxDto;
+import com.specsavers.socrates.clinical.model.type.EyeRxDto;
 import org.mapstruct.InheritConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -34,17 +34,13 @@ public abstract class HabitualRxMapper {
     @Mapping(target = "rightEye", source = "rx.rightEye")
     public abstract HabitualRxDto fromEntity(HabitualRx entity);
 
-    @Mapping(target = "prismHorizontal", source = "prism.horizontal")
-    @Mapping(target = "prismVertical", source = "prism.vertical")
-    abstract void mapEye(PrescribedEyeRxDto input, @MappingTarget RxEye entity);
+    abstract void mapEye(EyeRxDto input, @MappingTarget RxEye entity);
 
     @Mapping(target = "id", ignore = true)
     abstract void updateRx(HabitualRxDto input, @MappingTarget Rx entity);
 
     @InheritConfiguration
-    abstract RxEye toRxEye(PrescribedEyeRxDto input);
+    abstract RxEye toRxEye(EyeRxDto input);
 
-    @Mapping(target = "prism.horizontal", source = "prismHorizontal")
-    @Mapping(target = "prism.vertical", source = "prismVertical")
-    abstract PrescribedEyeRxDto mapEye(RxEye entity);
+    abstract EyeRxDto mapEye(RxEye entity);
 }

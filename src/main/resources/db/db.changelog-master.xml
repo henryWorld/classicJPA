@@ -7,4 +7,5 @@
     <include file="/db/changelog/001-socrates_lookup_table.xml"/>
     <include file="/db/changelog/002-add_sight_test_table.xml"/>
     <include file="/db/changelog/003-add_habitual_tables.xml"/>
+    <include file="/db/changelog/004-add_columns_to_sight_test.xml"/>
 </databaseChangeLog>

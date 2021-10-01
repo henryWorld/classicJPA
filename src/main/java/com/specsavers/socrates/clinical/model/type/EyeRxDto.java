@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public final class PrescribedEyeRxDto {
+public final class EyeRxDto {
     private String sphere;
     private String cylinder;
     private Float axis;
@@ -16,7 +16,7 @@ public final class PrescribedEyeRxDto {
     private String visualAcuity;
     private Float pupillaryDistance;
     private Float nearAddition;
-    private Float interAddtion;
+    private Float interAddition;
     private Float addition;
     private PrismDto distancePrism;
     private PrismDto nearPrism;

@@ -15,7 +15,7 @@ query ($id: ID!) {
             nearVisualAcuity
             pupillaryDistance
             nearAddition
-            interAddtion
+            interAddition
             distancePrism{
                 horizontal
                 vertical
@@ -33,7 +33,7 @@ query ($id: ID!) {
             nearVisualAcuity
             pupillaryDistance
             nearAddition
-            interAddtion
+            interAddition
             distancePrism{
                 horizontal
                 vertical
