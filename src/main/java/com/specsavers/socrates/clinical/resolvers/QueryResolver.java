@@ -18,9 +18,11 @@ import graphql.kickstart.tools.GraphQLQueryResolver;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.UUID;
+
 @Component
 @AllArgsConstructor
-public class Query implements GraphQLQueryResolver {
+public class QueryResolver implements GraphQLQueryResolver {
     
     private final PrescribedRxRepository prescribedRxRepository;
     private final SightTestRepository sightTestRepository;
@@ -31,37 +33,46 @@ public class Query implements GraphQLQueryResolver {
         var hasId = id > 0;
         var hasTrNumber = testRoomNumber > 0;
 
-        if (hasId && hasTrNumber)
+        if (hasId && hasTrNumber) {
             throw new GraphqlErrorException.Builder()
-            .message("Cannot search by id and testRoomNumber at same time").build();
+                    .message("Cannot search by id and testRoomNumber at same time").build();
+        }
        
-        if(hasId)
+        if (hasId) {
             return mapper.fromEntity(prescribedRxRepository.findById(id)
-            .orElseThrow(NotFoundException::new));
+                    .orElseThrow(NotFoundException::new));
+        }
 
-        if(hasTrNumber)
+        if (hasTrNumber) {
             return mapper.fromEntity(prescribedRxRepository.findByTestRoomNumber(testRoomNumber)
                     .orElseThrow(NotFoundException::new));
+        }
 
         throw new GraphqlErrorException.Builder()
         .message("Provide a valid id OR testRoomNumber").build();
     }
 
+    public SightTestDto sightTest(UUID id) {
+        return sightTestRepository.findById(id)
+                .map(sightTestMapper::map)
+                .orElseThrow(NotFoundException::new);
+    }
+
     public List<SightTestDto> sightTests(Integer customerId) {
         if (customerId == 0) {
             throw new GraphqlErrorException.Builder()
-                .message("Provide a valid customerId").build();
+                    .message("Provide a valid customerId").build();
         }
 
         var sightTests = sightTestRepository.findByCustomerIdOrderByCreationDateDesc(customerId);
-        
+
         // Mock data used while task SC-287 not done
         sightTests.add(MockSightTest.makeMockSightTest1());
         sightTests.add(MockSightTest.makeMockSightTest2());
         sightTests.add(MockSightTest.makeMockSightTest3());
 
         return sightTests.stream()
-            .map(sightTestMapper::map)
-            .collect(Collectors.toList());
+                .map(sightTestMapper::map)
+                .collect(Collectors.toList());
     }
 }

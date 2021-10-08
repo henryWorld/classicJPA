@@ -19,4 +19,5 @@ public final class SightTestDto {
     private LocalDate creationDate;
     private PrescribedRxDto prescribedRx;
     private RefractedRxDto refractedRx;
+    private HistoryAndSymptomsDto historyAndSymptoms;
 }

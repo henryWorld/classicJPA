@@ -1,0 +1,38 @@
+mutation ($sightTestId: ID!, $reason: String!) {
+    updateHistoryAndSymptoms(
+        sightTestId: $sightTestId,
+        input: {
+            reasonForVisit: $reason
+            generalHealth: "general"
+            medication: "medication"
+            familyHistory: "family"
+            ocularHistory: "ocular"
+            lifestyle: {
+                driveHeavyGoods: true
+                drivePrivate: true
+                drivePublic: false
+                driveMotorcycle: false
+                vdu: true
+                vduHoursPerDay: 7
+                occupation: "test case"
+                hobbies: "executing test cases"
+            }
+        }
+    ) {
+        reasonForVisit
+        generalHealth
+        medication
+        familyHistory
+        ocularHistory
+        lifestyle {
+            driveHeavyGoods
+            drivePrivate
+            drivePublic
+            driveMotorcycle
+            vdu
+            vduHoursPerDay
+            occupation
+            hobbies
+        }
+    }
+}

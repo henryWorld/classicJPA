@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
+    <changeSet id="005-add_history_fields" author="jack.gough">
+        <addColumn tableName="sight_test">
+            <column name="reason_for_visit" type="varchar(1000)" />
+            <column name="general_health" type="varchar(1000)" />
+            <column name="medication" type="varchar(1000)" />
+            <column name="ocular_history" type="varchar(1000)" />
+            <column name="family_history" type="varchar(1000)" />
+            <column name="drive_heavy_goods" type="boolean" />
+            <column name="drive_private" type="boolean" />
+            <column name="drive_public" type="boolean" />
+            <column name="drive_motorcycle" type="boolean" />
+            <column name="vdu" type="boolean" />
+            <column name="vdu_hours_per_day" type="smallint" />
+            <column name="occupation" type="varchar(60)" />
+            <column name="hobbies" type="varchar(60)" />
+        </addColumn>
+    </changeSet>
+</databaseChangeLog>

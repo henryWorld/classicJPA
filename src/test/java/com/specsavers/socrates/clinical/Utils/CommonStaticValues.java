@@ -11,6 +11,8 @@ public class CommonStaticValues {
     public static final String GET_PRESCRIBEDRX_BY_ID = "graphql/query/get_prescribedRX_by_ID.graphql";
     public static final String CREATE_HABITUAL_RX = "graphql/mutation/create_habitual_rx.graphql";
     public static final String UPDATE_HABITUAL_RX = "graphql/mutation/update_habitual_rx.graphql";
+    public static final String UPDATE_HISTORY_SYMPTOMS = "graphql/mutation/update_history_symptoms.graphql";
+    public static final String GET_SIGHT_TEST = "graphql/query/get_sight_test.graphql";
     public static final String UNKNOWN_REQUEST = "graphql/query/unknown_request.graphql";
 
     public static final String VALID_STORE_ID = "8306";

@@ -1,13 +1,5 @@
 package com.specsavers.socrates.clinical.mapper;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static com.specsavers.socrates.clinical.Utils.CommonStaticValues.VALID_CUSTOMER_ID;
-import static com.specsavers.socrates.clinical.Utils.CommonStaticValues.VALID_TR_NUMBER_ID;
-
-import java.time.LocalDate;
-import java.util.UUID;
-
 import com.specsavers.socrates.clinical.model.entity.CurrentSpecsVA;
 import com.specsavers.socrates.clinical.model.entity.PrescribedRx;
 import com.specsavers.socrates.clinical.model.entity.RefractedRx;
@@ -16,27 +8,68 @@ import com.specsavers.socrates.clinical.model.entity.RxEye;
 import com.specsavers.socrates.clinical.model.entity.SightTest;
 import com.specsavers.socrates.clinical.model.entity.SightTestType;
 import com.specsavers.socrates.clinical.model.entity.SpecificAddition;
-
+import com.specsavers.socrates.clinical.model.type.HistoryAndSymptomsDto;
+import com.specsavers.socrates.clinical.model.type.LifestyleDto;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
+
+import java.time.LocalDate;
+import java.util.UUID;
+
+import static com.specsavers.socrates.clinical.Utils.CommonStaticValues.VALID_TR_NUMBER_ID;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class SightTestMapperTest {
     private SightTestMapper sightTestMapper = Mappers.getMapper(SightTestMapper.class);
 
     @Test
-    void testMapSightTest(){
+    void testMapSightTest() {
         var entity = new SightTest();
-        entity.setCreationDate(LocalDate.now());
-        entity.setCustomerId(VALID_CUSTOMER_ID);
-        entity.setId(UUID.randomUUID());
+        var date = LocalDate.now();
+        var id = UUID.randomUUID();
+        entity.setCreationDate(date);
+        entity.setId(id);
         entity.setTrNumber(VALID_TR_NUMBER_ID);
         entity.setType(SightTestType.MY_SIGHT_TEST);
-        
+        entity.setFamilyHistory("family");
+        entity.setOccupation("occupation");
+
+        var actual = sightTestMapper.map(entity);
+
+        assertEquals(date, actual.getCreationDate());
+        assertEquals(id, actual.getId());
+        assertEquals(VALID_TR_NUMBER_ID, actual.getTrNumber());
+        assertEquals(SightTestType.MY_SIGHT_TEST, actual.getType());
+        assertEquals("family", actual.getHistoryAndSymptoms().getFamilyHistory());
+        assertEquals("occupation", actual.getHistoryAndSymptoms().getLifestyle().getOccupation());
+    }
+
+    @Test
+    void defaultsHistoryAndSymptomsWhenNull() {
+        var entity = new SightTest();
+
         var dto = sightTestMapper.map(entity);
 
-        assertThat(dto)
-            .usingRecursiveComparison()
-            .isEqualTo(entity);
+        var actual = dto.getHistoryAndSymptoms();
+        assertNotNull(actual);
+        assertNotNull(actual.getLifestyle());
+    }
+
+    @Test
+    void updatesHistoryAndSymptoms() {
+        var entity = new SightTest();
+        var history = new HistoryAndSymptomsDto();
+        history.setReasonForVisit("reason");
+        var lifestyle = new LifestyleDto();
+        lifestyle.setHobbies("hobbies");
+        history.setLifestyle(lifestyle);
+
+        sightTestMapper.update(entity, history);
+
+        assertEquals("reason", entity.getReasonForVisit());
+        assertEquals("hobbies", entity.getHobbies());
     }
 
     @Test

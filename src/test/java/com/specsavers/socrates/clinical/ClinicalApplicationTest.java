@@ -5,6 +5,7 @@ import com.graphql.spring.boot.test.GraphQLResponse;
 import com.graphql.spring.boot.test.GraphQLTestTemplate;
 import com.specsavers.socrates.clinical.legacy.model.rx.EyeRX;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,17 +17,20 @@ import static com.specsavers.socrates.clinical.Utils.CommonStaticValues.CREATE_H
 import static com.specsavers.socrates.clinical.Utils.CommonStaticValues.CREATE_SIGHT_TEST;
 import static com.specsavers.socrates.clinical.Utils.CommonStaticValues.GET_PRESCRIBEDRX_BY_ID;
 import static com.specsavers.socrates.clinical.Utils.CommonStaticValues.GET_PRESCRIBEDRX_BY_TRNUMBER;
+import static com.specsavers.socrates.clinical.Utils.CommonStaticValues.GET_SIGHT_TEST;
 import static com.specsavers.socrates.clinical.Utils.CommonStaticValues.LEFT_EYE;
 import static com.specsavers.socrates.clinical.Utils.CommonStaticValues.NOT_FOUND_ID;
 import static com.specsavers.socrates.clinical.Utils.CommonStaticValues.RIGHT_EYE;
 import static com.specsavers.socrates.clinical.Utils.CommonStaticValues.SIGHT_TEST;
 import static com.specsavers.socrates.clinical.Utils.CommonStaticValues.STORE_ID_HTTP_HEADER_NAME;
 import static com.specsavers.socrates.clinical.Utils.CommonStaticValues.UPDATE_HABITUAL_RX;
+import static com.specsavers.socrates.clinical.Utils.CommonStaticValues.UPDATE_HISTORY_SYMPTOMS;
 import static com.specsavers.socrates.clinical.Utils.CommonStaticValues.VALID_HABITUAL_RX_ID;
 import static com.specsavers.socrates.clinical.Utils.CommonStaticValues.VALID_PRESCRIBEDRX_ID;
 import static com.specsavers.socrates.clinical.Utils.CommonStaticValues.VALID_SIGHT_TEST_ID;
 import static com.specsavers.socrates.clinical.Utils.CommonStaticValues.VALID_STORE_ID;
 import static com.specsavers.socrates.clinical.Utils.CommonStaticValues.VALID_TR_NUMBER_ID;
+import static java.util.Collections.nCopies;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ClinicalApplicationTest {
@@ -42,93 +46,180 @@ class ClinicalApplicationTest {
                 .withAdditionalHeader(STORE_ID_HTTP_HEADER_NAME, VALID_STORE_ID);
     }
 
-    @Test
-    void testGetPrescriptionWithValidTrNumber() throws IOException {
-        var variables = new ObjectMapper().createObjectNode();
-        variables.put("trNumber", VALID_TR_NUMBER_ID);
+    @Nested
+    class GetPrescribedRxTest {
+        @Test
+        void testGetPrescriptionWithValidTrNumber() throws IOException {
+            var variables = new ObjectMapper().createObjectNode();
+            variables.put("trNumber", VALID_TR_NUMBER_ID);
 
-        var graphqlResponse = graphQLTestTemplate.perform(GET_PRESCRIBEDRX_BY_TRNUMBER, variables);
+            var graphqlResponse = graphQLTestTemplate.perform(GET_PRESCRIBEDRX_BY_TRNUMBER, variables);
 
-        validateFullResponse(graphqlResponse);
+            validateFullResponse(graphqlResponse);
+        }
+
+        @Test
+        void testGetPrescriptionWithValidID() throws IOException {
+            var variables = new ObjectMapper().createObjectNode();
+            variables.put("id", VALID_PRESCRIBEDRX_ID);
+
+            var graphqlResponse = graphQLTestTemplate.perform(GET_PRESCRIBEDRX_BY_ID, variables);
+
+            validateFullResponse(graphqlResponse);
+        }
+
+        @Test
+        void testGetPrescriptionWithNotFoundTrNumber() throws IOException {
+            var variables = new ObjectMapper().createObjectNode();
+            variables.put("trNumber", NOT_FOUND_ID);
+
+            var graphqlResponse = graphQLTestTemplate.perform(GET_PRESCRIBEDRX_BY_TRNUMBER, variables);
+
+            graphqlResponse
+                    .assertThatNumberOfErrors().isEqualTo(1)
+                    .and()
+                    .assertThatField("$.errors[0].extensions.classification").asString()
+                    .isEqualTo("DataFetchingException");
+        }
     }
 
-    @Test
-    void testGetPrescriptionWithValidID() throws IOException {
-        var variables = new ObjectMapper().createObjectNode();
-        variables.put("id", VALID_PRESCRIBEDRX_ID);
+    @Nested
+    class CreateSightTestTest {
+        @Test
+        void testCreateSightTest() throws IOException {
+            var variables = new ObjectMapper().createObjectNode();
+            variables.put("trNumber", VALID_TR_NUMBER_ID);
+            variables.put("type", SIGHT_TEST);
 
-        var graphqlResponse = graphQLTestTemplate.perform(GET_PRESCRIBEDRX_BY_ID, variables);
+            var graphqlResponse = graphQLTestTemplate.perform(CREATE_SIGHT_TEST, variables);
 
-        validateFullResponse(graphqlResponse);
+            graphqlResponse
+                    .assertThatNoErrorsArePresent()
+                    .assertThatField("$.data.createSightTest.id").as(UUID.class)
+                    .and()
+                    .assertThatField("$.data.createSightTest.trNumber").asInteger()
+                    .isEqualTo(VALID_TR_NUMBER_ID)
+                    .and()
+                    .assertThatField("$.data.createSightTest.type").asString()
+                    .isEqualTo(SIGHT_TEST);
+        }
     }
 
-    @Test
-    void testGetPrescriptionWithNotFoundTrNumber() throws IOException {
-        var variables = new ObjectMapper().createObjectNode();
-        variables.put("trNumber", NOT_FOUND_ID);
+    @Nested
+    class CreateHabitualRxTest {
+        @Test
+        void testCreateHabitualRx() throws IOException {
+            var variables = new ObjectMapper().createObjectNode()
+                    .put("sightTestId", VALID_SIGHT_TEST_ID.toString())
+                    .put("pairNumber", 4)
+                    .put("name", "a name")
+                    .put("leftCylinder", "+2.50");
 
-        var graphqlResponse = graphQLTestTemplate.perform(GET_PRESCRIBEDRX_BY_TRNUMBER, variables);
+            var response = graphQLTestTemplate.perform(CREATE_HABITUAL_RX, variables);
 
-        graphqlResponse
-                .assertThatNumberOfErrors().isEqualTo(1)
-                .and()
-                .assertThatField("$.errors[0].extensions.classification").asString()
-                .isEqualTo("DataFetchingException");
+            response
+                    .assertThatNoErrorsArePresent()
+                    .assertThatField("$.data.createHabitualRx.id").as(UUID.class).isNotNull()
+                    .and()
+                    .assertThatField("$.data.createHabitualRx.pairNumber").asInteger().isEqualTo(4)
+                    .and()
+                    .assertThatField("$.data.createHabitualRx.clinicianName").asString().isEqualTo("a name")
+                    .and()
+                    .assertThatField("$.data.createHabitualRx.leftEye.cylinder").asString().isEqualTo("+2.50");
+        }
     }
 
-    @Test
-    void testCreateSightTest() throws IOException {
-        var variables = new ObjectMapper().createObjectNode();
-        variables.put("trNumber", VALID_TR_NUMBER_ID);
-        variables.put("type", SIGHT_TEST);
+    @Nested
+    class UpdatedHabitualRxTest {
+        @Test
+        void testUpdateHabitualRx() throws IOException {
+            var variables = new ObjectMapper().createObjectNode()
+                    .put("id", VALID_HABITUAL_RX_ID.toString())
+                    .put("clinicianName", "new name");
 
-        var graphqlResponse = graphQLTestTemplate.perform(CREATE_SIGHT_TEST, variables);
+            var response = graphQLTestTemplate.perform(UPDATE_HABITUAL_RX, variables);
 
-        graphqlResponse
-                .assertThatNoErrorsArePresent()
-                .assertThatField("$.data.createSightTest.id").as(UUID.class)
-                .and()
-                .assertThatField("$.data.createSightTest.trNumber").asInteger()
-                .isEqualTo(VALID_TR_NUMBER_ID)
-                .and()
-                .assertThatField("$.data.createSightTest.type").asString()
-                .isEqualTo(SIGHT_TEST);
+            response
+                    .assertThatNoErrorsArePresent()
+                    .assertThatField("$.data.updateHabitualRx.id").as(UUID.class).isEqualTo(VALID_HABITUAL_RX_ID)
+                    .and()
+                    .assertThatField("$.data.updateHabitualRx.clinicianName").asString().isEqualTo("new name");
+        }
     }
 
-    @Test
-    void testCreateHabitualRx() throws IOException {
-        var variables = new ObjectMapper().createObjectNode()
-                .put("sightTestId", VALID_SIGHT_TEST_ID.toString())
-                .put("pairNumber", 4)
-                .put("name", "a name")
-                .put("leftCylinder", "+2.50");
+    @Nested
+    class UpdateHistoryAndSymptomsTest {
+        @Test
+        void testUpdateHistoryAndSymptoms() throws IOException {
+            var variables = new ObjectMapper().createObjectNode()
+                    .put("sightTestId", VALID_SIGHT_TEST_ID.toString())
+                    .put("reason", "blurry vision");
 
-        var response = graphQLTestTemplate.perform(CREATE_HABITUAL_RX, variables);
+            var response = graphQLTestTemplate.perform(UPDATE_HISTORY_SYMPTOMS, variables);
 
-        response
-                .assertThatNoErrorsArePresent()
-                .assertThatField("$.data.createHabitualRx.id").as(UUID.class).isNotNull()
-                .and()
-                .assertThatField("$.data.createHabitualRx.pairNumber").asInteger().isEqualTo(4)
-                .and()
-                .assertThatField("$.data.createHabitualRx.clinicianName").asString().isEqualTo("a name")
-                .and()
-                .assertThatField("$.data.createHabitualRx.leftEye.cylinder").asString().isEqualTo("+2.50");
+            var data = "$.data.updateHistoryAndSymptoms.";
+            var lifestyle = data + "lifestyle.";
+            response
+                    .assertThatNoErrorsArePresent()
+                    .assertThatField(data + "reasonForVisit").asString().isEqualTo("blurry vision")
+                    .and().assertThatField(data + "generalHealth").asString().isEqualTo("general")
+                    .and().assertThatField(data + "medication").asString().isEqualTo("medication")
+                    .and().assertThatField(data + "familyHistory").asString().isEqualTo("family")
+                    .and().assertThatField(data + "ocularHistory").asString().isEqualTo("ocular")
+                    .and().assertThatField(lifestyle + "driveHeavyGoods").asBoolean().isEqualTo(true)
+                    .and().assertThatField(lifestyle + "drivePrivate").asBoolean().isEqualTo(true)
+                    .and().assertThatField(lifestyle + "drivePublic").asBoolean().isEqualTo(false)
+                    .and().assertThatField(lifestyle + "driveMotorcycle").asBoolean().isEqualTo(false)
+                    .and().assertThatField(lifestyle + "vdu").asBoolean().isEqualTo(true)
+                    .and().assertThatField(lifestyle + "vduHoursPerDay").asInteger().isEqualTo(7)
+                    .and().assertThatField(lifestyle + "occupation").asString().isEqualTo("test case")
+                    .and().assertThatField(lifestyle + "hobbies").asString().isEqualTo("executing test cases");
+        }
+
+        @Test
+        void testUpdateHistoryAndSymptomsTriggersValidation() throws IOException {
+            var variables = new ObjectMapper().createObjectNode()
+                    .put("sightTestId", VALID_SIGHT_TEST_ID.toString())
+                    .put("reason", String.join("", nCopies(1001, "x")));
+
+            var response = graphQLTestTemplate.perform(UPDATE_HISTORY_SYMPTOMS, variables);
+
+            response
+                    .assertThatField("$.errors[*].message")
+                    .asListOf(String.class)
+                    .contains("reasonForVisit must not be longer than 1000 characters");
+        }
     }
 
-    @Test
-    void testUpdateHabitualRx() throws IOException {
-        var variables = new ObjectMapper().createObjectNode()
-                .put("id", VALID_HABITUAL_RX_ID.toString())
-                .put("clinicianName", "new name");
+    @Nested
+    class GetSightTestTest {
+        @Test
+        void testGetSightTestById() throws IOException {
+            var id = VALID_SIGHT_TEST_ID.toString();
+            var variables = new ObjectMapper().createObjectNode()
+                    .put("id", id);
 
-        var response = graphQLTestTemplate.perform(UPDATE_HABITUAL_RX, variables);
+            var response = graphQLTestTemplate.perform(GET_SIGHT_TEST, variables);
 
-        response
-                .assertThatNoErrorsArePresent()
-                .assertThatField("$.data.updateHabitualRx.id").as(UUID.class).isEqualTo(VALID_HABITUAL_RX_ID)
-                .and()
-                .assertThatField("$.data.updateHabitualRx.clinicianName").asString().isEqualTo("new name");
+            var sightTest = "$.data.sightTest.";
+            response
+                    .assertThatNoErrorsArePresent()
+                    .assertThatField(sightTest + "id").asString().isEqualTo(id)
+                    .and().assertThatField(sightTest + "type").asString().isEqualTo("SIGHT_TEST");
+        }
+
+        @Test
+        void testGetSightTestWhenNotFound() throws IOException {
+            var variables = new ObjectMapper().createObjectNode()
+                    .put("id", UUID.randomUUID().toString());
+
+            var response = graphQLTestTemplate.perform(GET_SIGHT_TEST, variables);
+
+            response
+                    .assertThatField("$.errors[*].message")
+                    .asListOf(String.class)
+                    .contains("Exception while fetching data (/sightTest) : Object not found");
+        }
     }
 
     private void validateFullResponse(GraphQLResponse graphQLResponse) {

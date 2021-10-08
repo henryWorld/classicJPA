@@ -8,18 +8,23 @@ import com.specsavers.socrates.clinical.model.entity.SightTest;
 import com.specsavers.socrates.clinical.model.entity.SpecificAddition;
 import com.specsavers.socrates.clinical.model.type.CurrentSpecsVaDto;
 import com.specsavers.socrates.clinical.model.type.EyeRxDto;
+import com.specsavers.socrates.clinical.model.type.HistoryAndSymptomsDto;
 import com.specsavers.socrates.clinical.model.type.PrescribedRxDto;
 import com.specsavers.socrates.clinical.model.type.RefractedRxDto;
 import com.specsavers.socrates.clinical.model.type.SightTestDto;
 import com.specsavers.socrates.clinical.model.type.SpecificAdditionDto;
-
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface SightTestMapper {
 
+    @Mapping(target = "historyAndSymptoms", source = "entity")
     SightTestDto map(SightTest entity);
+
+    @Mapping(target = ".", source = "historyAndSymptoms.lifestyle")
+    void update(@MappingTarget SightTest entity, HistoryAndSymptomsDto historyAndSymptoms);
 
     @Mapping(target = "distanceBinVisualAcuity", source = "rx.distanceBinVA")
     @Mapping(target = "bvd", source = "rx.bvd")
@@ -46,4 +51,7 @@ public interface SightTestMapper {
     @Mapping(target = "distanceVisualAcuity", source = "distanceVA")
     @Mapping(target = "nearVisualAcuity", source = "nearVA")
     EyeRxDto map(RxEye value);
+
+    @Mapping(target = "lifestyle", source = "entity")
+    HistoryAndSymptomsDto mapHistoryAndSymptoms(SightTest entity);
 }

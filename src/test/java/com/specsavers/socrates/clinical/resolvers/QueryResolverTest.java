@@ -5,6 +5,8 @@ import static com.specsavers.socrates.clinical.Utils.CommonStaticValues.VALID_PR
 import static com.specsavers.socrates.clinical.Utils.CommonStaticValues.VALID_TR_NUMBER_ID;
 import static com.specsavers.socrates.clinical.Utils.CommonStaticValues.VALID_CUSTOMER_ID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -26,6 +28,7 @@ import com.specsavers.socrates.clinical.mapper.PrescribedRxMapper;
 import com.specsavers.socrates.clinical.mapper.SightTestMapper;
 import com.specsavers.socrates.clinical.model.entity.SightTest;
 import com.specsavers.socrates.clinical.model.type.PrescribedRxDto;
+import com.specsavers.socrates.clinical.model.type.SightTestDto;
 import com.specsavers.socrates.clinical.repository.SightTestRepository;
 
 import org.junit.jupiter.api.Nested;
@@ -40,14 +43,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import graphql.GraphqlErrorException;
 
 @ExtendWith(MockitoExtension.class)
-class QueryTest {
+class QueryResolverTest {
 
     @Mock
     private PrescribedRxRepository prescribedRxRepository;
 
     @Mock
     private SightTestRepository sightTestRepository;
-    
+
     @Spy
     private SightTestMapper sightTestMapper = Mappers.getMapper(SightTestMapper.class);
 
@@ -55,7 +58,7 @@ class QueryTest {
     private PrescribedRxMapper mockMapper;
 
     @InjectMocks
-    private Query queryResolver;
+    private QueryResolver queryResolver;
 
     @Nested
     class GetLegacyPrescribedRx {
@@ -133,6 +136,7 @@ class QueryTest {
             assertEquals(dto, result);
         }
     }
+
     @Nested
     class GetSightTests {
         @Test
@@ -158,6 +162,40 @@ class QueryTest {
             );
     
             assertEquals("Provide a valid customerId", error.getMessage());
+        }
+    }
+
+    @Nested
+    class GetSightTest {
+        @Test
+        void returnsSightTestWhenSightTestExists() {
+            // given
+            var id = UUID.randomUUID();
+            var mockEntity = mock(SightTest.class);
+            when(sightTestRepository.findById(any())).thenReturn(Optional.of(mockEntity));
+            var mockDto = mock(SightTestDto.class);
+            when(sightTestMapper.map(any(SightTest.class))).thenReturn(mockDto);
+
+            // when
+            var actual = queryResolver.sightTest(id);
+
+            // then
+            verify(sightTestRepository).findById(eq(id));
+            verify(sightTestMapper).map(same(mockEntity));
+            assertSame(mockDto, actual);
+        }
+
+        @Test
+        void throwsNotFoundExceptionWhenNoSightTestFound() {
+            // given
+            var id = UUID.randomUUID();
+            when(sightTestRepository.findById(any())).thenReturn(Optional.empty());
+
+            // when
+            var actual = assertThrows(NotFoundException.class, () -> queryResolver.sightTest(id));
+
+            // then
+            assertNotNull(actual);
         }
     }
 }

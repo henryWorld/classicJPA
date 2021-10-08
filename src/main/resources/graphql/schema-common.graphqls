@@ -158,7 +158,48 @@ type SightTest {
   type: SightTestType
   creationDate: Date
   prescribedRx: PrescribedRx
-  refractedRx: RefractedRx 
+  refractedRx: RefractedRx
+  historyAndSymptoms: HistoryAndSymptoms!
+}
+
+type HistoryAndSymptoms {
+  reasonForVisit: String
+  generalHealth: String
+  medication: String
+  ocularHistory: String
+  familyHistory: String
+  lifestyle: Lifestyle!
+}
+
+input HistoryAndSymptomsInput {
+  reasonForVisit: String
+  generalHealth: String
+  medication: String
+  ocularHistory: String
+  familyHistory: String
+  lifestyle: LifestyleInput!
+}
+
+type Lifestyle {
+  driveHeavyGoods: Boolean
+  drivePrivate: Boolean
+  drivePublic: Boolean
+  driveMotorcycle: Boolean
+  vdu: Boolean
+  vduHoursPerDay: Int
+  occupation: String
+  hobbies: String
+}
+
+input LifestyleInput {
+  driveHeavyGoods: Boolean
+  drivePrivate: Boolean
+  drivePublic: Boolean
+  driveMotorcycle: Boolean
+  vdu: Boolean
+  vduHoursPerDay: Int
+  occupation: String
+  hobbies: String
 }
 
 input HabitualRxInput {
@@ -233,6 +274,10 @@ input EyeRxInput {
 type Query {
   "Returns a prescribedRX from legacy DB, searching by id OR testRoomNumber"
   prescribedRX(id: ID, testRoomNumber: Int): PrescribedRx
+
+  "Returns a sight test by ID"
+  sightTest(id: ID!): SightTest!
+
   sightTests(customerID: ID!): [SightTest]
 }
 
@@ -251,4 +296,9 @@ type Mutation {
   Updates and returns an existing habitual rx pair
   """
   updateHabitualRx(id: ID!, pair: HabitualRxInput!): HabitualRx!
+
+  """
+  Updates the history and symptoms on a sight test
+  """
+  updateHistoryAndSymptoms(sightTestId: ID!, input: HistoryAndSymptomsInput!): HistoryAndSymptoms!
 }

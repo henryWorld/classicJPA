@@ -5,10 +5,12 @@ import com.specsavers.socrates.clinical.mapper.HabitualRxMapper;
 import com.specsavers.socrates.clinical.mapper.SightTestMapper;
 import com.specsavers.socrates.clinical.model.entity.HabitualRx;
 import com.specsavers.socrates.clinical.model.type.HabitualRxDto;
+import com.specsavers.socrates.clinical.model.type.HistoryAndSymptomsDto;
 import com.specsavers.socrates.clinical.model.type.SightTestDto;
 import com.specsavers.socrates.clinical.repository.HabitualRxRepository;
 import com.specsavers.socrates.clinical.repository.SightTestRepository;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,6 +21,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static com.specsavers.socrates.clinical.Utils.CommonStaticValues.VALID_SIGHT_TEST_ID;
 import static com.specsavers.socrates.clinical.Utils.CommonStaticValues.VALID_TR_NUMBER_ID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -71,6 +74,51 @@ class MutationResolverTest {
             assertEquals(sightTestDto, result);
             verify(sightTestRepository).save(sightTest);
             verify(sightTestMapper).map(sightTest);
+        }
+    }
+
+    @Nested
+    class UpdateHistoryAndSymptoms {
+        private HistoryAndSymptomsDto historyAndSymptoms;
+        private SightTest sightTest;
+
+        @BeforeEach
+        void beforeEach() {
+            historyAndSymptoms = new HistoryAndSymptomsDto();
+            sightTest = new SightTest();
+        }
+
+        @Test
+        void throwsNotFoundWhenNoSightTest() {
+            // given
+            var id = UUID.randomUUID();
+            when(sightTestRepository.findById(any())).thenReturn(Optional.empty());
+
+            // when
+            var actual = assertThrows(NotFoundException.class, () -> mutationResolver.updateHistoryAndSymptoms(id, historyAndSymptoms));
+
+            // then
+            verify(sightTestRepository).findById(eq(id));
+            assertNotNull(actual);
+        }
+
+        @Test
+        void updatesHistoryAndSymptomsWhenSightTestExists() {
+            // given
+            var id = UUID.randomUUID();
+            when(sightTestRepository.findById(any())).thenReturn(Optional.of(sightTest));
+            when(sightTestRepository.save(any())).thenReturn(sightTest);
+            var dto = new SightTestDto();
+            dto.setHistoryAndSymptoms(new HistoryAndSymptomsDto());
+            when(sightTestMapper.map(any(SightTest.class))).thenReturn(dto);
+
+            // when
+            var actual = mutationResolver.updateHistoryAndSymptoms(id, historyAndSymptoms);
+
+            // then
+            verify(sightTestMapper).update(same(sightTest), same(historyAndSymptoms));
+            verify(sightTestRepository).save(same(sightTest));
+            assertSame(dto.getHistoryAndSymptoms(), actual);
         }
     }
 

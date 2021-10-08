@@ -1,24 +1,22 @@
 package com.specsavers.socrates.clinical.model.entity;
 
-import java.time.LocalDate;
-import java.util.List;
-import java.util.UUID;
-
+import lombok.Data;
 import org.hibernate.annotations.Type;
 
-import lombok.Data;
-
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Data
@@ -35,13 +33,52 @@ public class SightTest {
     private Integer customerId;
     private Integer trNumber;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     private PrescribedRx prescribedRx;
     
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     private RefractedRx refractedRx;
     
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "sight_test_id")
     private List<HabitualRx> habitualRx;
+
+    @Column(name = "reason_for_visit")
+    private String reasonForVisit;
+
+    @Column(name = "general_health")
+    private String generalHealth;
+
+    @Column(name = "medication")
+    private String medication;
+
+    @Column(name = "ocular_history")
+    private String ocularHistory;
+
+    @Column(name = "family_history")
+    private String familyHistory;
+
+    @Column(name = "drive_heavy_goods")
+    private Boolean driveHeavyGoods;
+
+    @Column(name = "drive_private")
+    private Boolean drivePrivate;
+
+    @Column(name = "drive_public")
+    private Boolean drivePublic;
+
+    @Column(name = "drive_motorcycle")
+    private Boolean driveMotorcycle;
+
+    @Column(name = "vdu")
+    private Boolean vdu;
+
+    @Column(name = "vdu_hours_per_day")
+    private Integer vduHoursPerDay;
+
+    @Column(name = "occupation")
+    private String occupation;
+
+    @Column(name = "hobbies")
+    private String hobbies;
 }
