@@ -5,6 +5,7 @@ import com.graphql.spring.boot.test.GraphQLResponse;
 import com.graphql.spring.boot.test.GraphQLTestTemplate;
 import com.specsavers.socrates.clinical.legacy.model.rx.EyeRX;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -126,6 +127,26 @@ class ClinicalApplicationTest {
                     .assertThatField("$.data.createHabitualRx.clinicianName").asString().isEqualTo("a name")
                     .and()
                     .assertThatField("$.data.createHabitualRx.leftEye.cylinder").asString().isEqualTo("+2.50");
+        }
+
+        @Test
+        @DisplayName("Test createHabitualRx with an invalid rx")
+        void testCreateHabitualRxTriggersValidation() throws IOException {
+            var variables = new ObjectMapper().createObjectNode()
+                    .put("sightTestId", VALID_SIGHT_TEST_ID.toString())
+                    .put("pairNumber", 4)
+                    .put("name", "a name")
+                    .put("leftCylinder", "+30.25");
+
+            var graphQLResponse = graphQLTestTemplate.perform(CREATE_HABITUAL_RX, variables);
+
+            graphQLResponse
+                    .assertThatField("$.errors[*].message")
+                    .asListOf(String.class)
+                    .contains("Left cylinder must be between -20.0 and 20.0")
+                    .and()
+                    .assertThatDataField()
+                    .isNull();
         }
     }
 

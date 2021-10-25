@@ -1,5 +1,6 @@
 package com.specsavers.socrates.clinical.model.type;
 
+import com.specsavers.socrates.clinical.model.validator.HabitualRxValidation;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,6 +10,7 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@HabitualRxValidation
 public final class HabitualRxDto {
     private UUID id;
     private UUID sightTestId;

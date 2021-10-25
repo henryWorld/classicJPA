@@ -60,7 +60,7 @@ public class MutationResolver implements GraphQLMutationResolver {
                 .orElseThrow(NotFoundException::new);
     }
 
-    public HabitualRxDto createHabitualRx(UUID sightTestId, Integer pairNumber, HabitualRxDto input) {
+    public HabitualRxDto createHabitualRx(UUID sightTestId, Integer pairNumber, @Valid HabitualRxDto input) {
         if (!sightTestRepository.existsById(sightTestId)) {
             throw new NotFoundException();
         }
@@ -71,7 +71,7 @@ public class MutationResolver implements GraphQLMutationResolver {
         return habitualRxMapper.fromEntity(entity);
     }
 
-    public HabitualRxDto updateHabitualRx(UUID id, HabitualRxDto input) {
+    public HabitualRxDto updateHabitualRx(UUID id, @Valid HabitualRxDto input) {
         var entity = habitualRxRepository.findById(id)
                 .orElseThrow(NotFoundException::new);
 
