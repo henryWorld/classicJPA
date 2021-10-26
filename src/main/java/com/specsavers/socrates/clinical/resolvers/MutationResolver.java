@@ -3,11 +3,15 @@ package com.specsavers.socrates.clinical.resolvers;
 
 import com.specsavers.socrates.clinical.exception.NotFoundException;
 import com.specsavers.socrates.clinical.mapper.HabitualRxMapper;
+import com.specsavers.socrates.clinical.model.entity.RefractedRx;
+import com.specsavers.socrates.clinical.model.entity.RxNotes;
 import com.specsavers.socrates.clinical.model.entity.SightTest;
 import com.specsavers.socrates.clinical.model.entity.SightTestType;
 import com.specsavers.socrates.clinical.mapper.SightTestMapper;
 import com.specsavers.socrates.clinical.model.type.HabitualRxDto;
 import com.specsavers.socrates.clinical.model.type.HistoryAndSymptomsDto;
+import com.specsavers.socrates.clinical.model.type.RefractedRxDto;
+import com.specsavers.socrates.clinical.model.type.RxNotesDto;
 import com.specsavers.socrates.clinical.model.type.SightTestDto;
 import com.specsavers.socrates.clinical.repository.HabitualRxRepository;
 import com.specsavers.socrates.clinical.repository.SightTestRepository;
@@ -79,5 +83,43 @@ public class MutationResolver implements GraphQLMutationResolver {
         habitualRxRepository.save(entity);
 
         return habitualRxMapper.fromEntity(entity);
+    }
+
+    public RefractedRxDto updateRefractedRx(UUID sightTestId, @Valid RefractedRxDto input) {
+        log.info("Called updateRefractedRx: sightTestId={}", sightTestId);
+        var sightTest = sightTestRepository.findById(sightTestId)
+            .orElseThrow(NotFoundException::new); 
+
+        if (sightTest.getRefractedRx() == null){
+            sightTest.setRefractedRx(new RefractedRx());
+        }
+
+        sightTestMapper.update(input, sightTest.getRefractedRx());
+
+        return sightTestMapper
+            .map(sightTestRepository.save(sightTest))
+            .getRefractedRx();
+    }
+
+    public RxNotesDto updateRefractedRxNote(UUID sightTestId, String text) {
+        log.info("Called updateRefractedRxNote: sightTestId={}", sightTestId);
+        var sightTest = sightTestRepository.findById(sightTestId)
+            .orElseThrow(NotFoundException::new); 
+
+        var refractedRx = sightTest.getRefractedRx();
+        if (refractedRx == null){
+            refractedRx = new RefractedRx();
+            sightTest.setRefractedRx(refractedRx);
+        }
+
+        if (text == null) {
+            refractedRx.setNotes(null);
+        } else {
+            //OptomName is hardcoded while user service is not integrated
+            refractedRx.setNotes(new RxNotes(text, "Will Smith", LocalDate.now()));
+        }
+
+        var sightTestDto = sightTestMapper.map(sightTestRepository.save(sightTest));
+        return sightTestDto.getRefractedRx().getNotes();
     }
 }

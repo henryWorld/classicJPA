@@ -1,29 +1,35 @@
 package com.specsavers.socrates.clinical.model.entity;
 
-import java.util.UUID;
-
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.AttributeOverride;
+import javax.persistence.CascadeType;
+import javax.persistence.Embeddable;
+import javax.persistence.Embedded;
+import javax.persistence.Column;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 
-import org.hibernate.annotations.Type;
-
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 
 @Data
-@Entity
+@Embeddable
+@NoArgsConstructor
 public class RefractedRx {
-    @Id
-    @GeneratedValue
-    @Type(type = "uuid-char")
-    private UUID id;
-
+    @Embedded
     private SpecificAddition specificAddition;
 
+    @Embedded
     private CurrentSpecsVA currentSpecsVA;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "ref_rx_id")
     private Rx rx;
+
+    @Embedded
+    @AttributeOverride(name = "text", column = @Column(name = "ref_rx_notes_text"))
+    @AttributeOverride(name = "optomName", column = @Column(name = "ref_rx_notes_optom_name"))
+    @AttributeOverride(name = "date", column = @Column(name = "ref_rx_notes_date"))
+    private RxNotes notes;
 }

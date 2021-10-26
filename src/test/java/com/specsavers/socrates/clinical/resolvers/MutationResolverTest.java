@@ -4,8 +4,11 @@ import com.specsavers.socrates.clinical.exception.NotFoundException;
 import com.specsavers.socrates.clinical.mapper.HabitualRxMapper;
 import com.specsavers.socrates.clinical.mapper.SightTestMapper;
 import com.specsavers.socrates.clinical.model.entity.HabitualRx;
+import com.specsavers.socrates.clinical.model.entity.RefractedRx;
+import com.specsavers.socrates.clinical.model.entity.RxNotes;
 import com.specsavers.socrates.clinical.model.type.HabitualRxDto;
 import com.specsavers.socrates.clinical.model.type.HistoryAndSymptomsDto;
+import com.specsavers.socrates.clinical.model.type.RefractedRxDto;
 import com.specsavers.socrates.clinical.model.type.SightTestDto;
 import com.specsavers.socrates.clinical.repository.HabitualRxRepository;
 import com.specsavers.socrates.clinical.repository.SightTestRepository;
@@ -14,20 +17,24 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static com.specsavers.socrates.clinical.Utils.CommonStaticValues.VALID_SIGHT_TEST_ID;
 import static com.specsavers.socrates.clinical.Utils.CommonStaticValues.VALID_TR_NUMBER_ID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.same;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -49,29 +56,35 @@ class MutationResolverTest {
     @Mock
     private HabitualRxMapper mockMapper;
 
-    @Mock
-    private SightTestMapper sightTestMapper;
+    @Spy
+    private SightTestMapper sightTestMapper = Mappers.getMapper(SightTestMapper.class);
 
     @InjectMocks
     private MutationResolver mutationResolver;
 
+    @BeforeEach
+    public void setup() {
+        // Make sure the repos return the same item on save, to avoid null pointers
+        // when referenced in the class
+        lenient().when(sightTestRepository.save(any()))
+            .thenAnswer((i)-> i.getArgument(0));
+    }
     @Nested
     class CreatesSightTestTest {
         //No need to test invalid values since GraphQL does the validation
         @Test
         void testCreateSightTestWithValidValues(){
             var type = SightTestType.MY_SIGHT_TEST;
-            var sightTestDto = new SightTestDto();
             var sightTest = new SightTest();
 
             sightTest.setTrNumber(VALID_TR_NUMBER_ID);
             sightTest.setType(type);
             sightTest.setCreationDate(LocalDate.now());
-            when(sightTestMapper.map(sightTest)).thenReturn(sightTestDto);
 
             var result = mutationResolver.createSightTest(VALID_TR_NUMBER_ID, type);
 
-            assertEquals(sightTestDto, result);
+            assertEquals(type, result.getType());
+            assertEquals(VALID_TR_NUMBER_ID, result.getTrNumber());
             verify(sightTestRepository).save(sightTest);
             verify(sightTestMapper).map(sightTest);
         }
@@ -178,6 +191,75 @@ class MutationResolverTest {
             verify(mockHabitualRxRepository).save(same(entity));
             verify(mockMapper).fromEntity(same(entity));
             assertEquals(dto, actual);
+        }
+    }
+
+    @Nested
+    class UpdateRefractedRxTest {
+        @Test
+        void testWithInvalidId() {
+            var id = UUID.randomUUID();
+            when(sightTestRepository.findById(eq(id))).thenReturn(Optional.empty());
+
+            assertThrows(NotFoundException.class, () -> mutationResolver.updateRefractedRx(id, null));
+        }
+
+        @Test
+        void testValidInput() {
+            var id = UUID.randomUUID();
+            var sightTest = new SightTest();
+            var input = new RefractedRxDto();
+            // Sample field, other fields are tested on mapper tests
+            input.setBvd(5f);
+            when(sightTestRepository.findById(eq(id))).thenReturn(Optional.of(sightTest));
+
+            var actual = mutationResolver.updateRefractedRx(id, input);
+
+            verify(sightTestMapper).update(same(input), same(sightTest.getRefractedRx()));
+            verify(sightTestRepository).save(same(sightTest));
+            assertEquals(input.getBvd(), actual.getBvd());
+        }
+    }
+
+    @Nested
+    class UpdateRefractedRxNoteTest {
+        @Test
+        void testWithInvalidId() {
+            var id = UUID.randomUUID();
+            when(sightTestRepository.findById(eq(id))).thenReturn(Optional.empty());
+
+            assertThrows(NotFoundException.class, () -> mutationResolver.updateRefractedRxNote(id, null));
+        }
+
+        @Test
+        void testNullNoteShouldDeleteNotes() {
+            var id = UUID.randomUUID();
+            var sightTest = new SightTest();
+            var refractedRx = new RefractedRx();
+
+            refractedRx.setNotes(new RxNotes());
+            sightTest.setRefractedRx(refractedRx);
+            when(sightTestRepository.findById(eq(id))).thenReturn(Optional.of(sightTest));
+            
+            var actual = mutationResolver.updateRefractedRxNote(id, null);
+
+            assertNull(actual);
+        }
+
+        @Test
+        void testValidNoteText() {
+            var RX_NOTE = "RefractedRx Note";
+            var id = UUID.randomUUID();
+            var sightTest = new SightTest();
+   
+            when(sightTestRepository.findById(eq(id))).thenReturn(Optional.of(sightTest));
+            
+            var actual = mutationResolver.updateRefractedRxNote(id, RX_NOTE);
+
+            assertEquals(RX_NOTE, actual.getText());
+            //OptomName is hardcoded while user service is not integrated
+            assertEquals("Will Smith", actual.getOptomName());
+            assertEquals(LocalDate.now(), actual.getDate());
         }
     }
 }

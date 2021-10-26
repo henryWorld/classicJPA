@@ -1,0 +1,128 @@
+input PrismInput {
+    "Prism diopters and direction for horizontal alignment. e.g 1.50 Out or 2.00 In"
+    horizontal: String
+
+    "Prism diopters and direction for vertical alignment. e.g 1.50 Down or 1.00 Up"
+    vertical: String
+}
+
+input EyeRxInput {
+    """
+    The lens power measured in diopters. e.g. +1.50
+    Use a `-` sign for short-sighted and `+` sign for long-sighted
+    """
+    sphere: String
+
+    "The amount of correction for astigmatism. Matches the same sign as sphere. e.g. +1.25"
+    cylinder: String
+
+    "The axis for astigmatism correction. An int between 0 and 180"
+    axis: Float
+
+    "The measure of the ability of the eye to distinguish shapes and the details of objects"
+    visualAcuity: String
+
+    "The measure of the ability of the eye to distinguish shapes and the details of objects for near vision"
+    nearVisualAcuity: String
+
+    "The measure of the ability of the eye to distinguish shapes and the details of objects for distance vision"
+    distanceVisualAcuity: String
+
+    "PD: The distance between the pupils"
+    pupillaryDistance: Float
+
+    "Addition for near vision"
+    nearAddition: Float
+
+    "Addition for intermediate vision"
+    interAddition: Float
+
+    "Generic Addition"
+    addition: Float
+
+    "Prismatic power prescribed to compensate for eye alignment on distance vision"
+    distancePrism: PrismInput
+
+    "Prismatic power prescribed to compensate for eye alignment on near vision"
+    nearPrism: PrismInput
+
+    "General prismatic power"
+    prism: PrismInput
+}
+
+input HabitualRxInput {
+    "Age of the pair in years"
+    age: Float
+
+    "The clinician who wrote the rx"
+    clinicianName: String
+
+    "Left Eye rx"
+    leftEye: EyeRxInput!
+
+    "Right Eye rx"
+    rightEye: EyeRxInput!
+
+    "Notes"
+    notes: String
+}
+
+input SpecificAdditionInput {
+    rightEye: Float
+    leftEye: Float
+    reason: String
+}
+
+"Current glasses(specs) visual acuity"
+input CurrentSpecsVaInput {
+    rightEye: String
+    leftEye: String
+}
+
+"Naked eye visual acuity"
+input UnaidedVaInput {
+    rightEye: String
+    leftEye: String
+    binocular: String
+}
+
+input RefractedRxInput  {
+    "BIN Vision: The binocular visual acuity of the patient. e.g. 20/20"
+    distanceBinVisualAcuity: String
+
+    "Naked eye visual acuity"
+    unaidedVisualAcuity: UnaidedVaInput
+
+    "Back Vertex Distance - What distance the lenses should sit from the eyes. e.g. 8.00"
+    bvd: Float
+
+    specificAddition: SpecificAdditionInput
+
+    currentSpecsVA: CurrentSpecsVaInput
+
+    "The RX for the right eye"
+    rightEye: EyeRxInput
+
+    "The RX for the left eye"
+    leftEye: EyeRxInput
+}
+
+input HistoryAndSymptomsInput {
+    reasonForVisit: String
+    generalHealth: String
+    medication: String
+    ocularHistory: String
+    familyHistory: String
+    lifestyle: LifestyleInput!
+}
+
+input LifestyleInput {
+    driveHeavyGoods: Boolean
+    drivePrivate: Boolean
+    drivePublic: Boolean
+    driveMotorcycle: Boolean
+    vdu: Boolean
+    vduHoursPerDay: Int
+    occupation: String
+    hobbies: String
+}

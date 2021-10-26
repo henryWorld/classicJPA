@@ -5,11 +5,14 @@ import com.specsavers.socrates.clinical.model.entity.PrescribedRx;
 import com.specsavers.socrates.clinical.model.entity.RefractedRx;
 import com.specsavers.socrates.clinical.model.entity.Rx;
 import com.specsavers.socrates.clinical.model.entity.RxEye;
+import com.specsavers.socrates.clinical.model.entity.RxNotes;
 import com.specsavers.socrates.clinical.model.entity.SightTest;
 import com.specsavers.socrates.clinical.model.entity.SightTestType;
 import com.specsavers.socrates.clinical.model.entity.SpecificAddition;
 import com.specsavers.socrates.clinical.model.type.HistoryAndSymptomsDto;
 import com.specsavers.socrates.clinical.model.type.LifestyleDto;
+import com.specsavers.socrates.clinical.model.type.RefractedRxDto;
+
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 
@@ -82,8 +85,8 @@ public class SightTestMapperTest {
             .build();
 
         var entity = new RefractedRx();
-        entity.setId(UUID.randomUUID());
         entity.setRx(rx);
+        entity.setNotes(new RxNotes("text", "optomName", LocalDate.now()));
         
         var dto = sightTestMapper.map(entity);
 
@@ -178,5 +181,30 @@ public class SightTestMapperTest {
             .ignoringFields("distanceVisualAcuity", "nearVisualAcuity")
             .isEqualTo(entity);
 
+    }
+
+    @Test
+    void testUpdateRefractedRx(){
+        var source = new RefractedRxDto();
+        var target = new RefractedRx();
+
+        //Those are sample values. Other fields are covered by "testMapRefractedRx
+        source.setBvd(5.25f);
+        source.setDistanceBinVisualAcuity("distanceBinVA");
+
+        // Null notes on source should not overwrite notes on target
+        source.setNotes(null);
+        target.setNotes(new RxNotes("text", "optomName", LocalDate.now()));
+
+        // Null UnaidedVisualAcuity on source should not delete RX on target
+        source.setUnaidedVisualAcuity(null);
+        target.setRx(new Rx());
+        
+        sightTestMapper.update(source, target);
+
+        assertEquals(source.getBvd(), target.getRx().getBvd());
+        assertEquals(source.getDistanceBinVisualAcuity(), target.getRx().getDistanceBinVA());
+        assertNotNull(target.getNotes());
+        assertNotNull(target.getRx());
     }
 }

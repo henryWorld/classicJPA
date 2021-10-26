@@ -17,14 +17,6 @@ type Prism {
     vertical: String
 }
 
-input PrismInput {
-    "Prism diopters and direction for horizontal alignment. e.g 1.50 Out or 2.00 In"
-    horizontal: String
-
-    "Prism diopters and direction for vertical alignment. e.g 1.50 Down or 1.00 Up"
-    vertical: String
-}
-
 "Naked eye visual acuity"
 type UnaidedVA {
     rightEye: String
@@ -145,6 +137,8 @@ type RefractedRx  {
 
   "The RX for the left eye"
   leftEye: EyeRX
+
+  notes: RxNotes
 }
 
 enum SightTestType {
@@ -171,15 +165,6 @@ type HistoryAndSymptoms {
   lifestyle: Lifestyle!
 }
 
-input HistoryAndSymptomsInput {
-  reasonForVisit: String
-  generalHealth: String
-  medication: String
-  ocularHistory: String
-  familyHistory: String
-  lifestyle: LifestyleInput!
-}
-
 type Lifestyle {
   driveHeavyGoods: Boolean
   drivePrivate: Boolean
@@ -189,34 +174,6 @@ type Lifestyle {
   vduHoursPerDay: Int
   occupation: String
   hobbies: String
-}
-
-input LifestyleInput {
-  driveHeavyGoods: Boolean
-  drivePrivate: Boolean
-  drivePublic: Boolean
-  driveMotorcycle: Boolean
-  vdu: Boolean
-  vduHoursPerDay: Int
-  occupation: String
-  hobbies: String
-}
-
-input HabitualRxInput {
-  "Age of the pair in years"
-  age: Float
-
-  "The clinician who wrote the rx"
-  clinicianName: String
-
-  "Left Eye rx"
-  leftEye: EyeRxInput!
-
-  "Right Eye rx"
-  rightEye: EyeRxInput!
-
-  "Notes"
-  notes: String
 }
 
 type HabitualRx {
@@ -245,30 +202,11 @@ type HabitualRx {
   notes: String
 }
 
-input EyeRxInput {
-  """
-  The lens power measured in diopters. e.g. +1.50
-  Use a `-` sign for short-sighted and `+` sign for long-sighted
-  """
-  sphere: String
-
-  "The amount of correction for astigmatism. Matches the same sign as sphere. e.g. +1.25"
-  cylinder: String
-
-  "The axis for astigmatism correction. An int between 0 and 180"
-  axis: Float
-
-  "The measure of the ability of the eye to distinguish shapes and the details of objects"
-  visualAcuity: String
-
-  "PD: The distance between the pupils"
-  pupillaryDistance: Float
-
-  "ADD Addition"
-  addition: Float
-
-  "General prismatic power"
-  prism: PrismInput
+"RxNotes will be used on RefrectedRx and PrescribedRx"
+type RxNotes {
+  text: String
+  optomName: String
+  date:Date
 }
 
 type Query {
@@ -301,4 +239,14 @@ type Mutation {
   Updates the history and symptoms on a sight test
   """
   updateHistoryAndSymptoms(sightTestId: ID!, input: HistoryAndSymptomsInput!): HistoryAndSymptoms!
+
+  """
+  Updates the refractedRx fields on a sight test
+  """
+  updateRefractedRx(sightTestId: ID!, input: RefractedRxInput!): RefractedRx!
+
+  """
+  Updates the refractedRx fields on a sight test
+  """
+  updateRefractedRxNote(sightTestId: ID!, text: String): RxNotes
 }

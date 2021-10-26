@@ -9,4 +9,6 @@
     <include file="/db/changelog/003-add_habitual_tables.xml"/>
     <include file="/db/changelog/004-add_columns_to_sight_test.xml"/>
     <include file="/db/changelog/005-add_history_fields.xml"/>
+    <include file="/db/changelog/006-add_refracted_rx_fields.xml"/>
+    <include file="/db/changelog/007-add_refracted_eye_rx_fields.xml"/>
 </databaseChangeLog>

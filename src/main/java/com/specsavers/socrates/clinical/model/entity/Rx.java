@@ -7,13 +7,13 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 import java.util.UUID;
 
@@ -39,10 +39,10 @@ public class Rx {
 
     private String notes;
 
-    @Transient
+    @Column(name = "distance_bin_va")
     private String distanceBinVA;
-    @Transient
+
+    @Column(name = "unaided_bin_va")
     private String unaidedBinVA;
-    @Transient
     private Float bvd;
 }

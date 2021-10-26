@@ -4,6 +4,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.graphql.spring.boot.test.GraphQLResponse;
 import com.graphql.spring.boot.test.GraphQLTestTemplate;
 import com.specsavers.socrates.clinical.legacy.model.rx.EyeRX;
+import com.specsavers.socrates.clinical.model.type.CurrentSpecsVaDto;
+import com.specsavers.socrates.clinical.model.type.EyeRxDto;
+import com.specsavers.socrates.clinical.model.type.PrismDto;
+import com.specsavers.socrates.clinical.model.type.RefractedRxDto;
+import com.specsavers.socrates.clinical.model.type.RxNotesDto;
+import com.specsavers.socrates.clinical.model.type.SpecificAdditionDto;
+import com.specsavers.socrates.clinical.model.type.UnaidedVisualAcuityDto;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -12,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.UUID;
 
 import static com.specsavers.socrates.clinical.Utils.CommonStaticValues.CREATE_HABITUAL_RX;
@@ -25,6 +34,8 @@ import static com.specsavers.socrates.clinical.Utils.CommonStaticValues.RIGHT_EY
 import static com.specsavers.socrates.clinical.Utils.CommonStaticValues.SIGHT_TEST;
 import static com.specsavers.socrates.clinical.Utils.CommonStaticValues.STORE_ID_HTTP_HEADER_NAME;
 import static com.specsavers.socrates.clinical.Utils.CommonStaticValues.UPDATE_HABITUAL_RX;
+import static com.specsavers.socrates.clinical.Utils.CommonStaticValues.UPDATE_REFRACTED_RX;
+import static com.specsavers.socrates.clinical.Utils.CommonStaticValues.UPDATE_REFRACTED_RX_NOTE;
 import static com.specsavers.socrates.clinical.Utils.CommonStaticValues.UPDATE_HISTORY_SYMPTOMS;
 import static com.specsavers.socrates.clinical.Utils.CommonStaticValues.VALID_HABITUAL_RX_ID;
 import static com.specsavers.socrates.clinical.Utils.CommonStaticValues.VALID_PRESCRIBEDRX_ID;
@@ -243,6 +254,83 @@ class ClinicalApplicationTest {
         }
     }
 
+    @Nested
+    class UpdateRefractedRxTest {
+        @Test
+        void testUpdateRefractedRxNote() throws IOException {
+            var variables = new ObjectMapper().createObjectNode()
+                    .put("sightTestId", VALID_SIGHT_TEST_ID.toString());
+            var note = new RxNotesDto();
+            note.setDate(LocalDate.now());
+            note.setOptomName("Will Smith");
+            note.setText("RefractedRx Notes");
+
+            var response = graphQLTestTemplate.perform(UPDATE_REFRACTED_RX_NOTE, variables);
+
+            response
+                .assertThatNoErrorsArePresent()
+                .assertThatField("$.data.updateRefractedRxNote").as(RxNotesDto.class).isEqualTo(note);
+        }
+
+        @Test
+        void testUpdateRefractedRx() throws IOException {
+            var variables = new ObjectMapper().createObjectNode()
+                    .put("sightTestId", VALID_SIGHT_TEST_ID.toString());
+            
+            //Add some notes so we can validate it returns when updating RefractedRx
+            graphQLTestTemplate.perform(UPDATE_REFRACTED_RX_NOTE, variables);
+            var response = graphQLTestTemplate.perform(UPDATE_REFRACTED_RX, variables);
+
+            response
+                .assertThatNoErrorsArePresent()
+                .assertThatField("$.data.updateRefractedRx").as(RefractedRxDto.class).isEqualTo(getRefractedRxValidResponse());
+        }
+
+        private RefractedRxDto getRefractedRxValidResponse(){
+            var notes = new RxNotesDto();
+            notes.setDate(LocalDate.now());
+            notes.setOptomName("Will Smith");
+            notes.setText("RefractedRx Notes");
+
+            var currentSpecsVa = new CurrentSpecsVaDto();
+            currentSpecsVa.setRightEye("10/9");
+
+            var unaidedVisualAcuity = new UnaidedVisualAcuityDto("4/4", null, "24/24");
+
+            var specificAddition = new SpecificAdditionDto();
+            specificAddition.setRightEye(5.5f);
+            specificAddition.setReason("Main Reason");
+            
+            var rightEyePrism = new PrismDto();
+            rightEyePrism.setHorizontal("2.25 In");
+            rightEyePrism.setVertical("5.5 Up");
+
+            var rightEye = new EyeRxDto();
+            rightEye.setSphere("30.25");
+            rightEye.setCylinder("1.0");
+            rightEye.setAxis(0f);
+            rightEye.setDistancePrism(rightEyePrism);
+
+            var leftEyePrism = new PrismDto();
+            leftEyePrism.setHorizontal("3.50 In");
+            leftEyePrism.setVertical("20 Down");
+
+            var leftEye = new EyeRxDto();
+            leftEye.setDistancePrism(leftEyePrism);
+
+            var refractedRx = new RefractedRxDto();
+            refractedRx.setBvd(5.5f);
+            refractedRx.setDistanceBinVisualAcuity("7/6");
+            refractedRx.setCurrentSpecsVA(currentSpecsVa);
+            refractedRx.setUnaidedVisualAcuity(unaidedVisualAcuity);
+            refractedRx.setSpecificAddition(specificAddition);
+            refractedRx.setRightEye(rightEye);
+            refractedRx.setLeftEye(leftEye);
+            refractedRx.setNotes(notes);
+
+            return refractedRx;
+        }
+    }
     private void validateFullResponse(GraphQLResponse graphQLResponse) {
         graphQLResponse
                 .assertThatNoErrorsArePresent()

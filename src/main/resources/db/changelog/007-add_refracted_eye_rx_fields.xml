@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
+    <changeSet id="007-add_refracted_eye_rx_fields" author="paulo.giron">
+        <addColumn tableName="rx_eye">
+            <column name="unaided_va" type="varchar(5)" />
+            <column name="dist_prism_horizontal" type="varchar(10)" />
+            <column name="dist_prism_vertical" type="varchar(10)" />
+            <column name="dist_va" type="varchar(5)" />
+            <column name="near_prism_horizontal" type="varchar(10)" />
+            <column name="near_prism_vertical" type="varchar(10)" />
+            <column name="near_va" type="varchar(5)" />
+            <column name="near_addition" type="decimal(4,2)" />
+            <column name="inter_addition" type="decimal(4,2)" />
+        </addColumn>
+    </changeSet>
+</databaseChangeLog>

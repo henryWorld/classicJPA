@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
+    <changeSet id="006-add_refracted_rx_fields" author="paulo.giron">
+        <addColumn tableName="sight_test">
+            <column name="ref_rx_specific_add_right" type="float(2)" />
+            <column name="ref_rx_specific_add_left" type="float(2)" />
+            <column name="ref_rx_specific_add_reason" type="varchar(1000)" />
+            <column name="ref_rx_current_specs_va_right" type="varchar(5)" />
+            <column name="ref_rx_current_specs_va_left" type="varchar(5)" />
+            <column name="ref_rx_id" type="uuid" />
+            <column name="ref_rx_notes_text" type="varchar(1000)" />
+            <column name="ref_rx_notes_optom_name" type="varchar(50)" />
+            <column name="ref_rx_notes_date" type="date" />
+        </addColumn>
+        <addColumn tableName="rx">
+            <column name="distance_bin_va" type="varchar(5)" />
+            <column name="unaided_bin_va" type="varchar(5)" />
+            <column name="bvd" type="float(2)" />
+        </addColumn>
+        <dropColumn tableName="sight_test" columnName="refracted_rx_id" />
+    </changeSet>
+</databaseChangeLog>

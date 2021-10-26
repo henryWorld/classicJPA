@@ -1,0 +1,60 @@
+mutation ($sightTestId: ID!){
+  updateRefractedRx(
+    sightTestId: $sightTestId
+    input: {
+      distanceBinVisualAcuity: "7/6"
+      bvd: 5.50
+      currentSpecsVA: { rightEye: "10/9" }
+      unaidedVisualAcuity: { rightEye: "4/4", binocular: "24/24" }
+      specificAddition: { reason: "Main Reason", rightEye: 5.5 }
+      rightEye: {
+        sphere: "30.25"
+        cylinder: "1.0"
+        axis: 0
+        distancePrism: { horizontal: "2.25 In", vertical: "5.5 Up" }
+      }
+      leftEye: { 
+        distancePrism: { horizontal: "3.50 In", vertical: "20 Down" } 
+      }
+    }
+  ) {
+    distanceBinVisualAcuity
+    bvd
+    currentSpecsVA {
+      rightEye
+      leftEye
+    }
+    unaidedVisualAcuity {
+      rightEye
+      binocular
+    }
+    specificAddition {
+      rightEye
+      leftEye
+      reason
+    }
+    rightEye {
+      sphere
+      cylinder
+      axis
+      distancePrism {
+        horizontal
+        vertical
+      }
+    }
+    leftEye {
+      sphere
+      cylinder
+      axis
+      distancePrism {
+        horizontal
+        vertical
+      }
+    }
+    notes {
+      text
+      optomName
+      date
+    }
+  }
+}

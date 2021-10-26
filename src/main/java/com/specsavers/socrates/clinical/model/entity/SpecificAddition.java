@@ -8,12 +8,12 @@ import lombok.Data;
 @Data
 @Embeddable
 public class SpecificAddition {
-    @Column(name = "specific_add_right")
+    @Column(name = "ref_rx_specific_add_right")
     private Float rightEye;
 
-    @Column(name = "specific_add_left")
+    @Column(name = "ref_rx_specific_add_left")
     private Float leftEye;
     
-    @Column(name = "specific_add_reason")
+    @Column(name = "ref_rx_specific_add_reason")
     private String reason;
 }

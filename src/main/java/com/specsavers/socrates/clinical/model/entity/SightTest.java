@@ -5,6 +5,7 @@ import org.hibernate.annotations.Type;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -36,8 +37,8 @@ public class SightTest {
     @OneToOne(fetch = FetchType.LAZY)
     private PrescribedRx prescribedRx;
     
-    @OneToOne(fetch = FetchType.LAZY)
-    private RefractedRx refractedRx;
+    @Embedded    
+    private RefractedRx refractedRx; 
     
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "sight_test_id")
