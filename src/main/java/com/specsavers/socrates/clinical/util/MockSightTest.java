@@ -1,6 +1,4 @@
 package com.specsavers.socrates.clinical.util;
- 
-import java.time.LocalDate;
 
 import com.specsavers.socrates.clinical.model.entity.CurrentSpecsVA;
 import com.specsavers.socrates.clinical.model.entity.PrescribedRx;
@@ -11,22 +9,24 @@ import com.specsavers.socrates.clinical.model.entity.RxEye;
 import com.specsavers.socrates.clinical.model.entity.SightTest;
 import com.specsavers.socrates.clinical.model.entity.SpecificAddition;
 
+import java.time.LocalDate;
+
 // Mock data used while task SC-287 not done
 public class MockSightTest {
     //Makes Sonar happy
     private static final String DEFAULT_VA = "6/7.5";
 
     private MockSightTest() {
-        throw new IllegalStateException("Utility class");
+        throw new UnsupportedOperationException("Utility class");
     }
 
-    public static SightTest makeMockSightTest1(){
+    public static SightTest makeMockSightTest1() {
         var st = new SightTest();
         var specificAddition = new SpecificAddition();
         var currentSpecsVA = new CurrentSpecsVA();
         var refractedRx = new RefractedRx();
         var prescribedRx = new PrescribedRx();
-        
+
         var prismR = new Prism();
         prismR.setHorizontal("3.25 Out");
         prismR.setVertical("3.25 Up");
@@ -36,34 +36,34 @@ public class MockSightTest {
         prismL.setVertical("1.00 Down");
 
         var eyeRxBuilder = RxEye.builder()
-            .sphere("-2.0")
-            .cylinder("+2.25")
-            .axis(3f)
-            .unaidedVA("6/6.66")
-            .nearVA(DEFAULT_VA)
-            .distanceVA("6/5")
-            .pupillaryDistance(20f)
-            .addition(3.25f)
-            .nearAddition(1.25f)
-            .interAddition(0.50f);
-           
+                .sphere("-2.0")
+                .cylinder("+2.25")
+                .axis(3f)
+                .unaidedVA("6/6.66")
+                .nearVA(DEFAULT_VA)
+                .distanceVA("6/5")
+                .pupillaryDistance(20f)
+                .addition(3.25f)
+                .nearAddition(1.25f)
+                .interAddition(0.50f);
+
         var eyeRxR = eyeRxBuilder
-            .nearPrism(prismR)
-            .distancePrism(prismR)
-            .build();
+                .nearPrism(prismR)
+                .distancePrism(prismR)
+                .build();
 
         var eyeRxL = eyeRxBuilder
-            .nearPrism(prismL)
-            .distancePrism(prismL)
-            .build();
+                .nearPrism(prismL)
+                .distancePrism(prismL)
+                .build();
 
         var rx = Rx.builder()
-            .bvd(5f)
-            .distanceBinVA("6/6")
-            .unaidedBinVA("6/10")
-            .leftEye(eyeRxL)
-            .rightEye(eyeRxR)
-            .build();
+                .bvd(5f)
+                .distanceBinVA("6/6")
+                .unaidedBinVA("6/10")
+                .leftEye(eyeRxL)
+                .rightEye(eyeRxR)
+                .build();
 
 
         specificAddition.setLeftEye(6f);
@@ -87,13 +87,13 @@ public class MockSightTest {
         return st;
     }
 
-    public static SightTest makeMockSightTest2(){
+    public static SightTest makeMockSightTest2() {
         var st = new SightTest();
         var specificAddition = new SpecificAddition();
         var currentSpecsVA = new CurrentSpecsVA();
         var refractedRx = new RefractedRx();
         var prescribedRx = new PrescribedRx();
-        
+
         var prismR = new Prism();
         prismR.setHorizontal("30.50 In");
         prismR.setVertical("10.00 Down");
@@ -103,34 +103,34 @@ public class MockSightTest {
         prismL.setVertical("10.00 Up");
 
         var eyeRxBuilder = RxEye.builder()
-            .sphere("+4.00")
-            .cylinder("-0.25")
-            .axis(60f)
-            .unaidedVA("6/10")
-            .nearVA(DEFAULT_VA)
-            .distanceVA(DEFAULT_VA)
-            .pupillaryDistance(25f)
-            .addition(3.25f)
-            .nearAddition(6f)
-            .interAddition(6f);
+                .sphere("+4.00")
+                .cylinder("-0.25")
+                .axis(60f)
+                .unaidedVA("6/10")
+                .nearVA(DEFAULT_VA)
+                .distanceVA(DEFAULT_VA)
+                .pupillaryDistance(25f)
+                .addition(3.25f)
+                .nearAddition(6f)
+                .interAddition(6f);
 
         var eyeRxR = eyeRxBuilder
-            .nearPrism(prismR)
-            .distancePrism(prismR)
-            .build();
+                .nearPrism(prismR)
+                .distancePrism(prismR)
+                .build();
 
         var eyeRxL = eyeRxBuilder
-            .nearPrism(prismL)
-            .distancePrism(prismL)
-            .build();
+                .nearPrism(prismL)
+                .distancePrism(prismL)
+                .build();
 
         var rx = Rx.builder()
-            .bvd(7.5f)
-            .distanceBinVA("6/6")
-            .unaidedBinVA(DEFAULT_VA)
-            .leftEye(eyeRxL)
-            .rightEye(eyeRxR)
-            .build();
+                .bvd(7.5f)
+                .distanceBinVA("6/6")
+                .unaidedBinVA(DEFAULT_VA)
+                .leftEye(eyeRxL)
+                .rightEye(eyeRxR)
+                .build();
 
 
         specificAddition.setLeftEye(6.25f);
@@ -154,13 +154,13 @@ public class MockSightTest {
         return st;
     }
 
-    public static SightTest makeMockSightTest3(){
+    public static SightTest makeMockSightTest3() {
         var st = new SightTest();
         var specificAddition = new SpecificAddition();
         var currentSpecsVA = new CurrentSpecsVA();
         var refractedRx = new RefractedRx();
         var prescribedRx = new PrescribedRx();
-        
+
         var prismR = new Prism();
         prismR.setHorizontal("1.5 In");
         prismR.setVertical("2.25 Down");
@@ -170,34 +170,34 @@ public class MockSightTest {
         prismL.setVertical("2.25 Up");
 
         var eyeRxBuilder = RxEye.builder()
-            .sphere("-3.50")
-            .cylinder("+10")
-            .axis(120.5f)
-            .unaidedVA("6/24")
-            .nearVA("6/12")
-            .distanceVA("6/4.8")
-            .pupillaryDistance(25.5f)
-            .addition(3.25f)
-            .nearAddition(6.75f)
-            .interAddition(6.75f);
+                .sphere("-3.50")
+                .cylinder("+10")
+                .axis(120.5f)
+                .unaidedVA("6/24")
+                .nearVA("6/12")
+                .distanceVA("6/4.8")
+                .pupillaryDistance(25.5f)
+                .addition(3.25f)
+                .nearAddition(6.75f)
+                .interAddition(6.75f);
 
         var eyeRxR = eyeRxBuilder
-            .nearPrism(prismR)
-            .distancePrism(prismR)
-            .build();
+                .nearPrism(prismR)
+                .distancePrism(prismR)
+                .build();
 
         var eyeRxL = eyeRxBuilder
-            .nearPrism(prismL)
-            .distancePrism(prismL)
-            .build();
+                .nearPrism(prismL)
+                .distancePrism(prismL)
+                .build();
 
         var rx = Rx.builder()
-            .bvd(10f)
-            .distanceBinVA("6/6.66")
-            .unaidedBinVA("6/20")
-            .leftEye(eyeRxL)
-            .rightEye(eyeRxR)
-            .build();
+                .bvd(10f)
+                .distanceBinVA("6/6.66")
+                .unaidedBinVA("6/20")
+                .leftEye(eyeRxL)
+                .rightEye(eyeRxR)
+                .build();
 
 
         specificAddition.setLeftEye(6.25f);

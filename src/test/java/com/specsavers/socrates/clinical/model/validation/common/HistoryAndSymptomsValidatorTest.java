@@ -9,7 +9,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import static com.specsavers.socrates.clinical.Utils.StaticHelpers.StringOfLength;
+import static com.specsavers.socrates.clinical.util.StaticHelpers.StringOfLength;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -290,8 +290,8 @@ class HistoryAndSymptomsValidatorTest {
 
     @ParameterizedTest(name = "invalidWhenVduHoursPerDay={0}")
     @CsvSource({
-        "0,lifestyle.vduHoursPerDay must be between 1.0 and 24.0",
-        "25,lifestyle.vduHoursPerDay must be between 1.0 and 24.0"
+            "0,lifestyle.vduHoursPerDay must be between 1.0 and 24.0",
+            "25,lifestyle.vduHoursPerDay must be between 1.0 and 24.0"
     })
     void invalidWhenVduHoursPerDayX(int value, String message) {
         // given

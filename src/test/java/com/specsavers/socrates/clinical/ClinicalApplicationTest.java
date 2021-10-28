@@ -11,7 +11,6 @@ import com.specsavers.socrates.clinical.model.type.RefractedRxDto;
 import com.specsavers.socrates.clinical.model.type.RxNotesDto;
 import com.specsavers.socrates.clinical.model.type.SpecificAdditionDto;
 import com.specsavers.socrates.clinical.model.type.UnaidedVisualAcuityDto;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -23,25 +22,25 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.UUID;
 
-import static com.specsavers.socrates.clinical.Utils.CommonStaticValues.CREATE_HABITUAL_RX;
-import static com.specsavers.socrates.clinical.Utils.CommonStaticValues.CREATE_SIGHT_TEST;
-import static com.specsavers.socrates.clinical.Utils.CommonStaticValues.GET_PRESCRIBEDRX_BY_ID;
-import static com.specsavers.socrates.clinical.Utils.CommonStaticValues.GET_PRESCRIBEDRX_BY_TRNUMBER;
-import static com.specsavers.socrates.clinical.Utils.CommonStaticValues.GET_SIGHT_TEST;
-import static com.specsavers.socrates.clinical.Utils.CommonStaticValues.LEFT_EYE;
-import static com.specsavers.socrates.clinical.Utils.CommonStaticValues.NOT_FOUND_ID;
-import static com.specsavers.socrates.clinical.Utils.CommonStaticValues.RIGHT_EYE;
-import static com.specsavers.socrates.clinical.Utils.CommonStaticValues.SIGHT_TEST;
-import static com.specsavers.socrates.clinical.Utils.CommonStaticValues.STORE_ID_HTTP_HEADER_NAME;
-import static com.specsavers.socrates.clinical.Utils.CommonStaticValues.UPDATE_HABITUAL_RX;
-import static com.specsavers.socrates.clinical.Utils.CommonStaticValues.UPDATE_REFRACTED_RX;
-import static com.specsavers.socrates.clinical.Utils.CommonStaticValues.UPDATE_REFRACTED_RX_NOTE;
-import static com.specsavers.socrates.clinical.Utils.CommonStaticValues.UPDATE_HISTORY_SYMPTOMS;
-import static com.specsavers.socrates.clinical.Utils.CommonStaticValues.VALID_HABITUAL_RX_ID;
-import static com.specsavers.socrates.clinical.Utils.CommonStaticValues.VALID_PRESCRIBEDRX_ID;
-import static com.specsavers.socrates.clinical.Utils.CommonStaticValues.VALID_SIGHT_TEST_ID;
-import static com.specsavers.socrates.clinical.Utils.CommonStaticValues.VALID_STORE_ID;
-import static com.specsavers.socrates.clinical.Utils.CommonStaticValues.VALID_TR_NUMBER_ID;
+import static com.specsavers.socrates.clinical.util.CommonStaticValues.CREATE_HABITUAL_RX;
+import static com.specsavers.socrates.clinical.util.CommonStaticValues.CREATE_SIGHT_TEST;
+import static com.specsavers.socrates.clinical.util.CommonStaticValues.GET_PRESCRIBEDRX_BY_ID;
+import static com.specsavers.socrates.clinical.util.CommonStaticValues.GET_PRESCRIBEDRX_BY_TRNUMBER;
+import static com.specsavers.socrates.clinical.util.CommonStaticValues.GET_SIGHT_TEST;
+import static com.specsavers.socrates.clinical.util.CommonStaticValues.LEFT_EYE;
+import static com.specsavers.socrates.clinical.util.CommonStaticValues.NOT_FOUND_ID;
+import static com.specsavers.socrates.clinical.util.CommonStaticValues.RIGHT_EYE;
+import static com.specsavers.socrates.clinical.util.CommonStaticValues.SIGHT_TEST;
+import static com.specsavers.socrates.clinical.util.CommonStaticValues.STORE_ID_HTTP_HEADER_NAME;
+import static com.specsavers.socrates.clinical.util.CommonStaticValues.UPDATE_HABITUAL_RX;
+import static com.specsavers.socrates.clinical.util.CommonStaticValues.UPDATE_HISTORY_SYMPTOMS;
+import static com.specsavers.socrates.clinical.util.CommonStaticValues.UPDATE_REFRACTED_RX;
+import static com.specsavers.socrates.clinical.util.CommonStaticValues.UPDATE_REFRACTED_RX_NOTE;
+import static com.specsavers.socrates.clinical.util.CommonStaticValues.VALID_HABITUAL_RX_ID;
+import static com.specsavers.socrates.clinical.util.CommonStaticValues.VALID_PRESCRIBED_RX_ID;
+import static com.specsavers.socrates.clinical.util.CommonStaticValues.VALID_SIGHT_TEST_ID;
+import static com.specsavers.socrates.clinical.util.CommonStaticValues.VALID_STORE_ID;
+import static com.specsavers.socrates.clinical.util.CommonStaticValues.VALID_TR_NUMBER_ID;
 import static java.util.Collections.nCopies;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -73,7 +72,7 @@ class ClinicalApplicationTest {
         @Test
         void testGetPrescriptionWithValidID() throws IOException {
             var variables = new ObjectMapper().createObjectNode();
-            variables.put("id", VALID_PRESCRIBEDRX_ID);
+            variables.put("id", VALID_PRESCRIBED_RX_ID);
 
             var graphqlResponse = graphQLTestTemplate.perform(GET_PRESCRIBEDRX_BY_ID, variables);
 
@@ -189,15 +188,15 @@ class ClinicalApplicationTest {
 
             var response = graphQLTestTemplate.perform(UPDATE_HISTORY_SYMPTOMS, variables);
 
-            var data = "$.data.updateHistoryAndSymptoms.";
-            var lifestyle = data + "lifestyle.";
+            final var prefix = "$.data.updateHistoryAndSymptoms.";
+            final var lifestyle = prefix + "lifestyle.";
             response
                     .assertThatNoErrorsArePresent()
-                    .assertThatField(data + "reasonForVisit").asString().isEqualTo("blurry vision")
-                    .and().assertThatField(data + "generalHealth").asString().isEqualTo("general")
-                    .and().assertThatField(data + "medication").asString().isEqualTo("medication")
-                    .and().assertThatField(data + "familyHistory").asString().isEqualTo("family")
-                    .and().assertThatField(data + "ocularHistory").asString().isEqualTo("ocular")
+                    .assertThatField(prefix + "reasonForVisit").asString().isEqualTo("blurry vision")
+                    .and().assertThatField(prefix + "generalHealth").asString().isEqualTo("general")
+                    .and().assertThatField(prefix + "medication").asString().isEqualTo("medication")
+                    .and().assertThatField(prefix + "familyHistory").asString().isEqualTo("family")
+                    .and().assertThatField(prefix + "ocularHistory").asString().isEqualTo("ocular")
                     .and().assertThatField(lifestyle + "driveHeavyGoods").asBoolean().isEqualTo(true)
                     .and().assertThatField(lifestyle + "drivePrivate").asBoolean().isEqualTo(true)
                     .and().assertThatField(lifestyle + "drivePublic").asBoolean().isEqualTo(false)
@@ -233,7 +232,7 @@ class ClinicalApplicationTest {
 
             var response = graphQLTestTemplate.perform(GET_SIGHT_TEST, variables);
 
-            var sightTest = "$.data.sightTest.";
+            final var sightTest = "$.data.sightTest.";
             response
                     .assertThatNoErrorsArePresent()
                     .assertThatField(sightTest + "id").asString().isEqualTo(id)
@@ -242,15 +241,16 @@ class ClinicalApplicationTest {
 
         @Test
         void testGetSightTestWhenNotFound() throws IOException {
+            String id = UUID.randomUUID().toString();
             var variables = new ObjectMapper().createObjectNode()
-                    .put("id", UUID.randomUUID().toString());
+                    .put("id", id);
 
             var response = graphQLTestTemplate.perform(GET_SIGHT_TEST, variables);
 
             response
                     .assertThatField("$.errors[*].message")
                     .asListOf(String.class)
-                    .contains("Exception while fetching data (/sightTest) : Object not found");
+                    .contains("Exception while fetching data (/sightTest) : Object " + id + " not found");
         }
     }
 
@@ -268,25 +268,25 @@ class ClinicalApplicationTest {
             var response = graphQLTestTemplate.perform(UPDATE_REFRACTED_RX_NOTE, variables);
 
             response
-                .assertThatNoErrorsArePresent()
-                .assertThatField("$.data.updateRefractedRxNote").as(RxNotesDto.class).isEqualTo(note);
+                    .assertThatNoErrorsArePresent()
+                    .assertThatField("$.data.updateRefractedRxNote").as(RxNotesDto.class).isEqualTo(note);
         }
 
         @Test
         void testUpdateRefractedRx() throws IOException {
             var variables = new ObjectMapper().createObjectNode()
                     .put("sightTestId", VALID_SIGHT_TEST_ID.toString());
-            
+
             //Add some notes so we can validate it returns when updating RefractedRx
             graphQLTestTemplate.perform(UPDATE_REFRACTED_RX_NOTE, variables);
             var response = graphQLTestTemplate.perform(UPDATE_REFRACTED_RX, variables);
 
             response
-                .assertThatNoErrorsArePresent()
-                .assertThatField("$.data.updateRefractedRx").as(RefractedRxDto.class).isEqualTo(getRefractedRxValidResponse());
+                    .assertThatNoErrorsArePresent()
+                    .assertThatField("$.data.updateRefractedRx").as(RefractedRxDto.class).isEqualTo(getRefractedRxValidResponse());
         }
 
-        private RefractedRxDto getRefractedRxValidResponse(){
+        private RefractedRxDto getRefractedRxValidResponse() {
             var notes = new RxNotesDto();
             notes.setDate(LocalDate.now());
             notes.setOptomName("Will Smith");
@@ -300,7 +300,7 @@ class ClinicalApplicationTest {
             var specificAddition = new SpecificAdditionDto();
             specificAddition.setRightEye(5.5f);
             specificAddition.setReason("Main Reason");
-            
+
             var rightEyePrism = new PrismDto();
             rightEyePrism.setHorizontal("2.25 In");
             rightEyePrism.setVertical("5.5 Up");
@@ -331,6 +331,7 @@ class ClinicalApplicationTest {
             return refractedRx;
         }
     }
+
     private void validateFullResponse(GraphQLResponse graphQLResponse) {
         graphQLResponse
                 .assertThatNoErrorsArePresent()

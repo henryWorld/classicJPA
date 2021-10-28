@@ -13,6 +13,7 @@ spring:
         - "commonTest"
         - "commonNoEnactor"
         - "service"
+        - "serviceTest"
 
 logging:
   level:

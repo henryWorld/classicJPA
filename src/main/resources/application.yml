@@ -17,6 +17,7 @@ spring:
         - "commonDbLegacyDev"
         - "commonDev"
         - "service"
+        - "serviceDev"
   datasource:
     url: jdbc:sqlserver://${DATABASE_SERVER};databaseName=clinical_microservice
 

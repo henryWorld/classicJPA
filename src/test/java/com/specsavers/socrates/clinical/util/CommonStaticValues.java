@@ -1,4 +1,4 @@
-package com.specsavers.socrates.clinical.Utils;
+package com.specsavers.socrates.clinical.util;
 
 import com.specsavers.socrates.clinical.legacy.model.rx.EyeRX;
 import com.specsavers.socrates.clinical.legacy.model.rx.Prism;
@@ -19,7 +19,7 @@ public class CommonStaticValues {
 
     public static final String VALID_STORE_ID = "8306";
     public static final String STORE_ID_HTTP_HEADER_NAME = "SOCRATES_STORE_ID";
-    public static final int VALID_PRESCRIBEDRX_ID = 30;
+    public static final int VALID_PRESCRIBED_RX_ID = 30;
     public static final int VALID_TR_NUMBER_ID = 123;
     public static final int VALID_CUSTOMER_ID = 5001;
     public static final int NOT_FOUND_ID = 999;

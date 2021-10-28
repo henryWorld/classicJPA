@@ -1,67 +1,66 @@
 package com.specsavers.socrates.clinical.resolvers;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
-import com.specsavers.socrates.clinical.exception.NotFoundException;
 import com.specsavers.socrates.clinical.legacy.repository.PrescribedRxRepository;
-
 import com.specsavers.socrates.clinical.mapper.PrescribedRxMapper;
 import com.specsavers.socrates.clinical.mapper.SightTestMapper;
 import com.specsavers.socrates.clinical.model.type.PrescribedRxDto;
 import com.specsavers.socrates.clinical.model.type.SightTestDto;
 import com.specsavers.socrates.clinical.repository.SightTestRepository;
 import com.specsavers.socrates.clinical.util.MockSightTest;
-
-import graphql.GraphqlErrorException;
+import com.specsavers.socrates.common.exception.NotFoundException;
+import com.specsavers.socrates.common.exception.UnexpectedSocratesException;
 import graphql.kickstart.tools.GraphQLQueryResolver;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Component
 @AllArgsConstructor
 public class QueryResolver implements GraphQLQueryResolver {
-    
+
     private final PrescribedRxRepository prescribedRxRepository;
     private final SightTestRepository sightTestRepository;
     private final PrescribedRxMapper mapper;
     private final SightTestMapper sightTestMapper;
 
+    @Transactional(propagation = Propagation.MANDATORY)
     public PrescribedRxDto prescribedRX(int id, int testRoomNumber) {
         var hasId = id > 0;
         var hasTrNumber = testRoomNumber > 0;
 
         if (hasId && hasTrNumber) {
-            throw new GraphqlErrorException.Builder()
-                    .message("Cannot search by id and testRoomNumber at same time").build();
+            throw new UnexpectedSocratesException("Cannot search by id and testRoomNumber at same time");
         }
-       
+
         if (hasId) {
             return mapper.fromEntity(prescribedRxRepository.findById(id)
-                    .orElseThrow(NotFoundException::new));
+                    .orElseThrow(() -> new NotFoundException(Integer.toString(id))));
         }
 
         if (hasTrNumber) {
             return mapper.fromEntity(prescribedRxRepository.findByTestRoomNumber(testRoomNumber)
-                    .orElseThrow(NotFoundException::new));
+                    .orElseThrow(() -> new NotFoundException(Integer.toString(testRoomNumber))));
         }
 
-        throw new GraphqlErrorException.Builder()
-        .message("Provide a valid id OR testRoomNumber").build();
+        throw new UnexpectedSocratesException("Provide a valid id OR testRoomNumber");
     }
 
+    @Transactional(propagation = Propagation.MANDATORY)
     public SightTestDto sightTest(UUID id) {
         return sightTestRepository.findById(id)
                 .map(sightTestMapper::map)
-                .orElseThrow(NotFoundException::new);
+                .orElseThrow(() -> new NotFoundException(id.toString()));
     }
 
+    @Transactional(propagation = Propagation.MANDATORY)
     public List<SightTestDto> sightTests(Integer customerId) {
         if (customerId == 0) {
-            throw new GraphqlErrorException.Builder()
-                    .message("Provide a valid customerId").build();
+            throw new UnexpectedSocratesException("Provide a valid customerId");
         }
 
         var sightTests = sightTestRepository.findByCustomerIdOrderByCreationDateDesc(customerId);

@@ -1,13 +1,11 @@
 package com.specsavers.socrates.clinical.resolvers;
 
-
-import com.specsavers.socrates.clinical.exception.NotFoundException;
 import com.specsavers.socrates.clinical.mapper.HabitualRxMapper;
+import com.specsavers.socrates.clinical.mapper.SightTestMapper;
 import com.specsavers.socrates.clinical.model.entity.RefractedRx;
 import com.specsavers.socrates.clinical.model.entity.RxNotes;
 import com.specsavers.socrates.clinical.model.entity.SightTest;
 import com.specsavers.socrates.clinical.model.entity.SightTestType;
-import com.specsavers.socrates.clinical.mapper.SightTestMapper;
 import com.specsavers.socrates.clinical.model.type.HabitualRxDto;
 import com.specsavers.socrates.clinical.model.type.HistoryAndSymptomsDto;
 import com.specsavers.socrates.clinical.model.type.RefractedRxDto;
@@ -15,13 +13,14 @@ import com.specsavers.socrates.clinical.model.type.RxNotesDto;
 import com.specsavers.socrates.clinical.model.type.SightTestDto;
 import com.specsavers.socrates.clinical.repository.HabitualRxRepository;
 import com.specsavers.socrates.clinical.repository.SightTestRepository;
+import com.specsavers.socrates.common.exception.NotFoundException;
 import com.specsavers.socrates.common.validation.FieldChecks;
-
-import lombok.AllArgsConstructor;
-import org.springframework.stereotype.Component;
-
 import graphql.kickstart.tools.GraphQLMutationResolver;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.Valid;
@@ -39,35 +38,37 @@ public class MutationResolver implements GraphQLMutationResolver {
     private final HabitualRxMapper habitualRxMapper;
     private final SightTestMapper sightTestMapper;
 
+    @Transactional(propagation = Propagation.MANDATORY)
     public SightTestDto createSightTest(Integer trNumber, SightTestType type) {
-		log.info("Called createSightTest mutation with the following parameters: trNumber={}, type={}", trNumber, type);
-        
-        var sightTest = new SightTest();
+        log.info("Called createSightTest mutation with the following parameters: trNumber={}, type={}", trNumber, type);
+
+        SightTest sightTest = new SightTest();
         sightTest.setTrNumber(trNumber);
         sightTest.setType(type);
         sightTest.setCreationDate(LocalDate.now());
-        
-        sightTestRepository.save(sightTest);
 
-		return sightTestMapper.map(sightTest);
-	}
+        sightTest = sightTestRepository.save(sightTest);
 
+        return sightTestMapper.map(sightTest);
+    }
+
+    @Transactional(propagation = Propagation.MANDATORY)
     public HistoryAndSymptomsDto updateHistoryAndSymptoms(UUID sightTestId, @Valid HistoryAndSymptomsDto input) {
         log.info("Called updateHistoryAndSymptoms: sightTestId={}", sightTestId);
 
-        return sightTestRepository.findById(sightTestId)
-                .map(sightTest -> {
-                    sightTestMapper.update(sightTest, input);
-                    var saved = sightTestRepository.save(sightTest);
-                    return sightTestMapper.map(saved);
-                })
-                .map(SightTestDto::getHistoryAndSymptoms)
-                .orElseThrow(NotFoundException::new);
+        SightTest sightTest = sightTestRepository.findById(sightTestId)
+                .orElseThrow(() -> new NotFoundException(sightTestId.toString()));
+        sightTestMapper.update(sightTest, input);
+        var saved = sightTestRepository.save(sightTest);
+        return sightTestMapper
+                .map(saved)
+                .getHistoryAndSymptoms();
     }
 
+    @Transactional(propagation = Propagation.MANDATORY)
     public HabitualRxDto createHabitualRx(UUID sightTestId, Integer pairNumber, @Valid HabitualRxDto input) {
         if (!sightTestRepository.existsById(sightTestId)) {
-            throw new NotFoundException();
+            throw new NotFoundException(sightTestId.toString());
         }
 
         var entity = habitualRxMapper.toEntity(sightTestId, pairNumber, input);
@@ -76,9 +77,10 @@ public class MutationResolver implements GraphQLMutationResolver {
         return habitualRxMapper.fromEntity(entity);
     }
 
+    @Transactional(propagation = Propagation.MANDATORY)
     public HabitualRxDto updateHabitualRx(UUID id, @Valid HabitualRxDto input) {
         var entity = habitualRxRepository.findById(id)
-                .orElseThrow(NotFoundException::new);
+                .orElseThrow(() -> new NotFoundException(id));
 
         habitualRxMapper.updateEntity(input, entity);
         habitualRxRepository.save(entity);
@@ -86,33 +88,35 @@ public class MutationResolver implements GraphQLMutationResolver {
         return habitualRxMapper.fromEntity(entity);
     }
 
+    @Transactional(propagation = Propagation.MANDATORY)
     public RefractedRxDto updateRefractedRx(UUID sightTestId, @Valid RefractedRxDto input) {
         log.info("Called updateRefractedRx: sightTestId={}", sightTestId);
         var sightTest = sightTestRepository.findById(sightTestId)
-            .orElseThrow(NotFoundException::new); 
+                .orElseThrow(() -> new NotFoundException(sightTestId));
 
-        if (sightTest.getRefractedRx() == null){
+        if (sightTest.getRefractedRx() == null) {
             sightTest.setRefractedRx(new RefractedRx());
         }
 
         sightTestMapper.update(input, sightTest.getRefractedRx());
 
         return sightTestMapper
-            .map(sightTestRepository.save(sightTest))
-            .getRefractedRx();
+                .map(sightTestRepository.save(sightTest))
+                .getRefractedRx();
     }
 
+    @Transactional(propagation = Propagation.MANDATORY)
     public RxNotesDto updateRefractedRxNote(UUID sightTestId, String text) {
         log.info("Called updateRefractedRxNote: sightTestId={}", sightTestId);
         var textCheck = new FieldChecks("Text", text);
         textCheck.notBlank();
         textCheck.maxLength(220);
-        
+
         var sightTest = sightTestRepository.findById(sightTestId)
-            .orElseThrow(NotFoundException::new); 
+                .orElseThrow(() -> new NotFoundException(sightTestId));
 
         var refractedRx = sightTest.getRefractedRx();
-        if (refractedRx == null){
+        if (refractedRx == null) {
             refractedRx = new RefractedRx();
             sightTest.setRefractedRx(refractedRx);
         }
