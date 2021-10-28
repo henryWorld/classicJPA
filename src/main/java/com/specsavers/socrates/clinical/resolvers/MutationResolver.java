@@ -15,6 +15,7 @@ import com.specsavers.socrates.clinical.model.type.RxNotesDto;
 import com.specsavers.socrates.clinical.model.type.SightTestDto;
 import com.specsavers.socrates.clinical.repository.HabitualRxRepository;
 import com.specsavers.socrates.clinical.repository.SightTestRepository;
+import com.specsavers.socrates.common.validation.FieldChecks;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -103,6 +104,10 @@ public class MutationResolver implements GraphQLMutationResolver {
 
     public RxNotesDto updateRefractedRxNote(UUID sightTestId, String text) {
         log.info("Called updateRefractedRxNote: sightTestId={}", sightTestId);
+        var textCheck = new FieldChecks("Text", text);
+        textCheck.notBlank();
+        textCheck.maxLength(220);
+        
         var sightTest = sightTestRepository.findById(sightTestId)
             .orElseThrow(NotFoundException::new); 
 

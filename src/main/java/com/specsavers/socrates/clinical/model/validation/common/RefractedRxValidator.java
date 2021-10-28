@@ -2,10 +2,12 @@ package com.specsavers.socrates.clinical.model.validation.common;
 
 import java.util.regex.Pattern;
 
+import com.specsavers.socrates.clinical.model.type.CurrentSpecsVaDto;
 import com.specsavers.socrates.clinical.model.type.EyeRxDto;
 import com.specsavers.socrates.clinical.model.type.PrismDto;
 import com.specsavers.socrates.clinical.model.type.RefractedRxDto;
 import com.specsavers.socrates.clinical.model.type.SpecificAdditionDto;
+import com.specsavers.socrates.clinical.model.type.UnaidedVisualAcuityDto;
 import com.specsavers.socrates.common.exception.ValidationException;
 import com.specsavers.socrates.common.validation.Validator;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -22,15 +24,48 @@ public class RefractedRxValidator extends Validator<RefractedRxDto> {
         var rightEye = item.getRightEye();
 
         checkBvd(item.getBvd());
+        checkCurrentSpecsVa(item.getCurrentSpecsVA());
+        checkUnaidedVisualAcuity(item.getUnaidedVisualAcuity());       
         checkSpecificAdd(item.getSpecificAddition()); 
+        checkVa("Distance Bin VA", item.getDistanceBinVisualAcuity());
         checkEye("Left eye: ", leftEye);
         checkEye("Right eye: ", rightEye); 
 
         if (leftEye != null && rightEye != null) {
-            checkCombinedEyePrism("", item.getLeftEye().getPrism(), item.getRightEye().getPrism());
-            checkCombinedEyePrism("Near", item.getLeftEye().getNearPrism(), item.getRightEye().getNearPrism());
-            checkCombinedEyePrism("Distance", item.getLeftEye().getDistancePrism(), item.getRightEye().getDistancePrism());
+            checkCombinedEyePrism("", leftEye.getPrism(), item.getRightEye().getPrism());
+            checkCombinedEyePrism("Near", leftEye.getNearPrism(), item.getRightEye().getNearPrism());
+            checkCombinedEyePrism("Distance", leftEye.getDistancePrism(), item.getRightEye().getDistancePrism());
+
+            checkCombinedEyeCylinder(leftEye.getCylinder(), item.getRightEye().getCylinder());
         }
+    }
+
+ 
+
+    private void checkVa(String name, String value) {
+        check(name, value).maxLength(10);
+        if (value != null && value.indexOf('*') != -1){
+            throw new ValidationException("Field " + name + " should not contain character '*'");
+        }
+    }
+
+    private void checkUnaidedVisualAcuity(UnaidedVisualAcuityDto value){
+        if (value == null) {
+            return;
+        }
+
+        checkVa("Left eye: UnaidedVisualAcuity", value.getLeftEye());
+        checkVa("Right eye: UnaidedVisualAcuity", value.getRightEye());
+        checkVa("Binocular UnaidedVisualAcuity", value.getBinocular());
+    }
+
+    private void checkCurrentSpecsVa(CurrentSpecsVaDto value){
+        if (value == null) {
+            return;
+        }
+
+        checkVa("Left eye: CurrentSpecsVA", value.getLeftEye());
+        checkVa("Right eye: CurrentSpecsVA", value.getRightEye());
     }
 
     private void checkBvd(Float bvd) {
@@ -63,6 +98,9 @@ public class RefractedRxValidator extends Validator<RefractedRxDto> {
         checkAdd(side + "Near", eye.getNearAddition());
         checkAdd(side + "Inter", eye.getInterAddition());
         checkPd(side, eye.getPupillaryDistance());
+        checkVa(side + "VA", eye.getVisualAcuity());
+        checkVa(side + "Near VA", eye.getNearVisualAcuity());
+        checkVa(side + "Distance VA", eye.getDistanceVisualAcuity());
         checkPrism(side, eye.getPrism());
         checkPrism(side + "Near", eye.getNearPrism());
         checkPrism(side + "Distance", eye.getDistancePrism());
@@ -100,13 +138,50 @@ public class RefractedRxValidator extends Validator<RefractedRxDto> {
     }
    
     private void checkPd(String side, Float pd) {
-        var check = check(side + "Left eye:", pd);
+        var check = check(side + "PupillaryDistance", pd);
         check.between(20, 40);
         check.increment(0.5);
     }
     //endregion
     
     //region Prism Checks
+    private void checkPrism(String side, PrismDto prism) {
+        if (prism == null) {
+            return;
+        }
+
+        var prismH = check(side + "Prism H", getPrismPower(prism.getHorizontal()));
+        prismH.between(0.25, 50);
+        prismH.increment(0.25);
+        check(side + "Prism H Direction", getPrismDirection(prism.getHorizontal())).isOneOf("Out", "In");
+
+        var prismV = check(side + "Prism V", getPrismPower(prism.getVertical()));
+        prismV.between(0.25, 20);
+        prismV.increment(0.25);
+        check(side + "Prism V Direction", getPrismDirection(prism.getVertical())).isOneOf("Up", "Down");
+    } 
+
+    private String getPrismPower(String prism){
+        if (prism == null) {
+            return null;
+        }
+        
+        return WHITESPACE.split(prism)[0];
+    }
+
+    private String getPrismDirection(String prism){
+        if (prism == null) {
+            return null;
+        }
+
+        var prismSlices = WHITESPACE.split(prism);
+        if (prismSlices.length != 2) return "invalidDirection";
+        
+        return prismSlices[1];
+    }
+    //endregion
+
+    //region Combined Checks 
     private void checkCombinedEyePrism(String type, PrismDto left, PrismDto right) {
         if (left == null || right == null ) {
             return;
@@ -136,39 +211,17 @@ public class RefractedRxValidator extends Validator<RefractedRxDto> {
         }
     }
 
-    private void checkPrism(String side, PrismDto prism) {
-        if (prism == null) {
+    private void checkCombinedEyeCylinder(String leftCylinder, String rightCylinder) {
+        if (leftCylinder == null || rightCylinder == null ) {
             return;
         }
 
-        check(side + "Prism H Direction", getPrismDirection(prism.getHorizontal())).isOneOf("Out", "In");
-        var prismH = check(side + "Prism H", getPrismPower(prism.getHorizontal()));
-        prismH.between(0.25, 50);
-        prismH.increment(0.25);
-
-        check(side + "Prism V Direction", getPrismDirection(prism.getVertical())).isOneOf("Up", "Down");
-        var prismV = check(side + "Prism V", getPrismPower(prism.getVertical()));
-        prismV.between(0.25, 20);
-        prismV.increment(0.25);
-    } 
-
-    private String getPrismPower(String prism){
-        if (prism == null) {
-            return null;
-        }
+        var leftSigh = Float.parseFloat(leftCylinder) > 0;
+        var rightSigh = Float.parseFloat(rightCylinder) > 0;
         
-        return WHITESPACE.split(prism)[0];
-    }
-
-    private String getPrismDirection(String prism){
-        if (prism == null) {
-            return null;
+        if (leftSigh != rightSigh){
+            throw new ValidationException("Cylinder should have same sign for both eyes");
         }
-
-        var prismSlices = WHITESPACE.split(prism);
-        if (prismSlices.length < 2) return "";
-        
-        return prismSlices[1];
     }
     //endregion
 }

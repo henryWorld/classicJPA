@@ -240,6 +240,37 @@ public class RefractedRxValidatorTest {
     }
 
     @Nested
+    class RxVaValidation {
+        @ParameterizedTest(name = "validWhenVa = {0}")
+        @ValueSource(strings = {"20/20", "XYZ"})
+        @NullSource
+        void valid(String value) {
+            setupVa(value);
+
+            assertDoesNotThrow(() -> validator.validate(refractedRxDto));
+        }
+
+        @ParameterizedTest(name = "invalidWhenVa = {0}")
+        @ValueSource(strings = {"hasStar*", "moreThan10char"})
+        void invalid(String value) {
+            setupVa(value);
+
+            assertThrows(ValidationException.class, () -> validator.validate(refractedRxDto));
+        }
+
+        private void setupVa(String value) {
+            var eyeRx = new EyeRxDto();
+            eyeRx.setVisualAcuity(value);
+            eyeRx.setNearVisualAcuity(value);
+            eyeRx.setDistanceVisualAcuity(value);
+                
+            refractedRxDto.setLeftEye(eyeRx);
+            refractedRxDto.setRightEye(eyeRx);
+            refractedRxDto.setDistanceBinVisualAcuity(value);
+        }
+    }
+
+    @Nested
     class RxPrismHorizontalValidation {
         @ParameterizedTest(name = "validWhenRxPrismHorizontal = {0}")
         @ValueSource(strings = {"0.25 Out", "5.50 In", "50 Out"})
@@ -251,7 +282,7 @@ public class RefractedRxValidatorTest {
         }
 
         @ParameterizedTest(name = "invalidWhenRxPrismHorizontal = {0}")
-        @ValueSource(strings = {"0 In", "5.50 X", "51 Out", "3.45 Out"})
+        @ValueSource(strings = {"0 In", "5.50 X", "51 Out", "3.45 Out", "2.50 Out X", "5.50" })
         void invalid(String value) {
             setupRxPrismH(value);
 
@@ -350,5 +381,25 @@ public class RefractedRxValidatorTest {
 
             assertDoesNotThrow(() -> validator.validate(refractedRxDto));
         }
+
+        @Test
+        void cylinderSignMustBeSame() {
+            var eyeRx = new EyeRxDto();
+            eyeRx.setCylinder("+3.50");
+            eyeRx.setAxis(1f);
+            refractedRxDto.setLeftEye(eyeRx);
+            refractedRxDto.setRightEye(eyeRx);
+
+            assertDoesNotThrow(() -> validator.validate(refractedRxDto));
+
+            var newEyeRx = new EyeRxDto();
+            newEyeRx.setCylinder("-2.25");
+            newEyeRx.setAxis(1f);
+            refractedRxDto.setLeftEye(eyeRx);
+            refractedRxDto.setRightEye(newEyeRx);
+
+            assertThrows(ValidationException.class, () -> validator.validate(refractedRxDto));
+        }
+        
     }
 }

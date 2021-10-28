@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
+    <changeSet id="007-add_refracted_eye_rx_fields" author="paulo.giron">
+        <modifyDataType tableName="rx_eye" columnName="unaided_va" newDataType="varchar(10)"/>
+        <modifyDataType tableName="rx_eye" columnName="dist_va" newDataType="varchar(10)"/>
+        <modifyDataType tableName="rx_eye" columnName="near_va" newDataType="varchar(10)"/>
+        <modifyDataType tableName="rx_eye" columnName="visual_acuity" newDataType="varchar(10)"/>
+
+        <modifyDataType tableName="rx" columnName="distance_bin_va" newDataType="varchar(10)"/>
+        <modifyDataType tableName="rx" columnName="unaided_bin_va" newDataType="varchar(10)"/>
+        
+        <modifyDataType tableName="sight_test" columnName="ref_rx_current_specs_va_right" newDataType="varchar(10)"/>
+        <modifyDataType tableName="sight_test" columnName="ref_rx_current_specs_va_left" newDataType="varchar(10)"/>
+    </changeSet>
+</databaseChangeLog>

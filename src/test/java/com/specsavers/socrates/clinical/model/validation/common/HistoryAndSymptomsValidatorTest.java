@@ -9,7 +9,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import static java.util.Collections.nCopies;
+import static com.specsavers.socrates.clinical.Utils.StaticHelpers.StringOfLength;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -29,7 +29,7 @@ class HistoryAndSymptomsValidatorTest {
     @ValueSource(ints = {1, 999, 1000})
     void validWhenReasonForVisitLengthX(int length) {
         // given
-        historyAndSymptoms.setReasonForVisit(stringOfLength(length));
+        historyAndSymptoms.setReasonForVisit(StringOfLength(length));
 
         // when
         sut.validate(historyAndSymptoms);
@@ -66,7 +66,7 @@ class HistoryAndSymptomsValidatorTest {
     @ValueSource(ints = {1001, 1002})
     void invalidWhenReasonForVisitLongLengthX(int length) {
         // given
-        historyAndSymptoms.setReasonForVisit(stringOfLength(length));
+        historyAndSymptoms.setReasonForVisit(StringOfLength(length));
 
         // when
         var actual = assertThrows(ValidationException.class, () -> sut.validate(historyAndSymptoms));
@@ -79,7 +79,7 @@ class HistoryAndSymptomsValidatorTest {
     @ValueSource(ints = {1, 999, 1000})
     void validWhenGeneralHealthLengthX(int length) {
         // given
-        historyAndSymptoms.setGeneralHealth(stringOfLength(length));
+        historyAndSymptoms.setGeneralHealth(StringOfLength(length));
 
         // when
         sut.validate(historyAndSymptoms);
@@ -116,7 +116,7 @@ class HistoryAndSymptomsValidatorTest {
     @ValueSource(ints = {1001, 1002})
     void invalidWhenGeneralHealthLongLengthX(int length) {
         // given
-        historyAndSymptoms.setGeneralHealth(stringOfLength(length));
+        historyAndSymptoms.setGeneralHealth(StringOfLength(length));
 
         // when
         var actual = assertThrows(ValidationException.class, () -> sut.validate(historyAndSymptoms));
@@ -129,7 +129,7 @@ class HistoryAndSymptomsValidatorTest {
     @ValueSource(ints = {1, 999, 1000})
     void validWhenMedicationLengthX(int length) {
         // given
-        historyAndSymptoms.setMedication(stringOfLength(length));
+        historyAndSymptoms.setMedication(StringOfLength(length));
 
         // when
         sut.validate(historyAndSymptoms);
@@ -166,7 +166,7 @@ class HistoryAndSymptomsValidatorTest {
     @ValueSource(ints = {1001, 1002})
     void invalidWhenMedicationLongLengthX(int length) {
         // given
-        historyAndSymptoms.setMedication(stringOfLength(length));
+        historyAndSymptoms.setMedication(StringOfLength(length));
 
         // when
         var actual = assertThrows(ValidationException.class, () -> sut.validate(historyAndSymptoms));
@@ -179,7 +179,7 @@ class HistoryAndSymptomsValidatorTest {
     @ValueSource(ints = {1, 999, 1000})
     void validWhenOcularHistoryLengthX(int length) {
         // given
-        historyAndSymptoms.setOcularHistory(stringOfLength(length));
+        historyAndSymptoms.setOcularHistory(StringOfLength(length));
 
         // when
         sut.validate(historyAndSymptoms);
@@ -216,7 +216,7 @@ class HistoryAndSymptomsValidatorTest {
     @ValueSource(ints = {1001, 1002})
     void invalidWhenOcularHistoryLongLengthX(int length) {
         // given
-        historyAndSymptoms.setOcularHistory(stringOfLength(length));
+        historyAndSymptoms.setOcularHistory(StringOfLength(length));
 
         // when
         var actual = assertThrows(ValidationException.class, () -> sut.validate(historyAndSymptoms));
@@ -229,7 +229,7 @@ class HistoryAndSymptomsValidatorTest {
     @ValueSource(ints = {1, 999, 1000})
     void validWhenFamilyHistoryLengthX(int length) {
         // given
-        historyAndSymptoms.setFamilyHistory(stringOfLength(length));
+        historyAndSymptoms.setFamilyHistory(StringOfLength(length));
 
         // when
         sut.validate(historyAndSymptoms);
@@ -266,7 +266,7 @@ class HistoryAndSymptomsValidatorTest {
     @ValueSource(ints = {1001, 1002})
     void invalidWhenFamilyHistoryLongLength(int length) {
         // given
-        historyAndSymptoms.setFamilyHistory(stringOfLength(length));
+        historyAndSymptoms.setFamilyHistory(StringOfLength(length));
 
         // when
         var actual = assertThrows(ValidationException.class, () -> sut.validate(historyAndSymptoms));
@@ -308,7 +308,7 @@ class HistoryAndSymptomsValidatorTest {
     @ValueSource(ints = {1, 59, 60})
     void validWhenOccupationLengthX(int length) {
         // given
-        historyAndSymptoms.getLifestyle().setOccupation(stringOfLength(length));
+        historyAndSymptoms.getLifestyle().setOccupation(StringOfLength(length));
 
         // when
         sut.validate(historyAndSymptoms);
@@ -345,7 +345,7 @@ class HistoryAndSymptomsValidatorTest {
     @ValueSource(ints = {61, 62})
     void invalidWhenOccupationLongLengthX(int length) {
         // given
-        historyAndSymptoms.getLifestyle().setOccupation(stringOfLength(length));
+        historyAndSymptoms.getLifestyle().setOccupation(StringOfLength(length));
 
         // when
         var actual = assertThrows(ValidationException.class, () -> sut.validate(historyAndSymptoms));
@@ -358,7 +358,7 @@ class HistoryAndSymptomsValidatorTest {
     @ValueSource(ints = {1, 59, 60})
     void validWhenHobbiesLengthX(int length) {
         // given
-        historyAndSymptoms.getLifestyle().setHobbies(stringOfLength(length));
+        historyAndSymptoms.getLifestyle().setHobbies(StringOfLength(length));
 
         // when
         sut.validate(historyAndSymptoms);
@@ -395,16 +395,12 @@ class HistoryAndSymptomsValidatorTest {
     @ValueSource(ints = {61, 62})
     void invalidWhenHobbiesLongLengthX(int length) {
         // given
-        historyAndSymptoms.getLifestyle().setHobbies(stringOfLength(length));
+        historyAndSymptoms.getLifestyle().setHobbies(StringOfLength(length));
 
         // when
         var actual = assertThrows(ValidationException.class, () -> sut.validate(historyAndSymptoms));
 
         // then
         assertEquals("lifestyle.hobbies must not be longer than 60 characters", actual.getMessage());
-    }
-
-    private static String stringOfLength(int length) {
-        return String.join("", nCopies(length, "a"));
     }
 }

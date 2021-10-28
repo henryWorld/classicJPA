@@ -320,7 +320,7 @@ class ClinicalApplicationTest {
 
             var refractedRx = new RefractedRxDto();
             refractedRx.setBvd(5.5f);
-            refractedRx.setDistanceBinVisualAcuity("7/6");
+            refractedRx.setDistanceBinVisualAcuity("0123456789");
             refractedRx.setCurrentSpecsVA(currentSpecsVa);
             refractedRx.setUnaidedVisualAcuity(unaidedVisualAcuity);
             refractedRx.setSpecificAddition(specificAddition);

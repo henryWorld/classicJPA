@@ -1,6 +1,5 @@
 package com.specsavers.socrates.clinical.model.validation.common;
 
-import com.graphql.spring.boot.test.GraphQLTestTemplate;
 import com.specsavers.socrates.clinical.model.type.EyeRxDto;
 import com.specsavers.socrates.clinical.model.type.HabitualRxDto;
 import com.specsavers.socrates.clinical.model.type.PrismDto;
@@ -8,19 +7,13 @@ import com.specsavers.socrates.common.exception.ValidationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class HabitualRxValidatorTest {
 
-    @Autowired
-    private GraphQLTestTemplate graphQLTestTemplate;
-
-    private HabitualRxDto habitualRx;
+     private HabitualRxDto habitualRx;
     private HabitualRxValidator validator;
 
     private EyeRxDto rightRx;

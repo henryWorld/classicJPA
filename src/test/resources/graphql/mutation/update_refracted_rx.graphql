@@ -2,7 +2,7 @@ mutation ($sightTestId: ID!){
   updateRefractedRx(
     sightTestId: $sightTestId
     input: {
-      distanceBinVisualAcuity: "7/6"
+      distanceBinVisualAcuity: "0123456789"
       bvd: 5.50
       currentSpecsVA: { rightEye: "10/9" }
       unaidedVisualAcuity: { rightEye: "4/4", binocular: "24/24" }

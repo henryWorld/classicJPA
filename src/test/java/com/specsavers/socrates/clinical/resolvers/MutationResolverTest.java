@@ -12,17 +12,21 @@ import com.specsavers.socrates.clinical.model.type.RefractedRxDto;
 import com.specsavers.socrates.clinical.model.type.SightTestDto;
 import com.specsavers.socrates.clinical.repository.HabitualRxRepository;
 import com.specsavers.socrates.clinical.repository.SightTestRepository;
+import com.specsavers.socrates.common.exception.ValidationException;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import static com.specsavers.socrates.clinical.Utils.StaticHelpers.StringOfLength;
 import static com.specsavers.socrates.clinical.Utils.CommonStaticValues.VALID_SIGHT_TEST_ID;
 import static com.specsavers.socrates.clinical.Utils.CommonStaticValues.VALID_TR_NUMBER_ID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -229,6 +233,14 @@ class MutationResolverTest {
             when(sightTestRepository.findById(eq(id))).thenReturn(Optional.empty());
 
             assertThrows(NotFoundException.class, () -> mutationResolver.updateRefractedRxNote(id, null));
+        }
+
+        @ParameterizedTest(name = "invalidWhenNoteTextLength={0}")
+        @ValueSource(ints = {0, 221})
+        void testWithInvalidNoteText(int length) {
+            var id = UUID.randomUUID();
+
+            assertThrows(ValidationException.class, () -> mutationResolver.updateRefractedRxNote(id, StringOfLength(length)));
         }
 
         @Test

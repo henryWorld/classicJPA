@@ -12,6 +12,7 @@ import com.specsavers.socrates.clinical.model.entity.SpecificAddition;
 import com.specsavers.socrates.clinical.model.type.HistoryAndSymptomsDto;
 import com.specsavers.socrates.clinical.model.type.LifestyleDto;
 import com.specsavers.socrates.clinical.model.type.RefractedRxDto;
+import com.specsavers.socrates.clinical.model.type.RxNotesDto;
 
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
@@ -184,7 +185,7 @@ public class SightTestMapperTest {
     }
 
     @Test
-    void testUpdateRefractedRx(){
+    void testUpdateRefractedRxNullNotesAndVA(){
         var source = new RefractedRxDto();
         var target = new RefractedRx();
 
@@ -206,5 +207,27 @@ public class SightTestMapperTest {
         assertEquals(source.getDistanceBinVisualAcuity(), target.getRx().getDistanceBinVA());
         assertNotNull(target.getNotes());
         assertNotNull(target.getRx());
+    }
+
+    @Test
+    void testUpdateRefractedRxNewNotes(){
+        var source = new RefractedRxDto();
+        var target = new RefractedRx();
+
+        //Those are sample values. Other fields are covered by "testMapRefractedRx"
+        source.setBvd(5.25f);
+        source.setDistanceBinVisualAcuity("distanceBinVA");
+
+        // New notes on source should overwrite notes on target
+        source.setNotes(new RxNotesDto("new text", "new optomName", LocalDate.now()));
+        target.setNotes(new RxNotes("text", "optomName", LocalDate.now()));
+        
+        sightTestMapper.update(source, target);
+
+        assertEquals(source.getBvd(), target.getRx().getBvd());
+        assertEquals(source.getDistanceBinVisualAcuity(), target.getRx().getDistanceBinVA());
+        assertThat(source.getNotes())
+            .usingRecursiveComparison()
+            .isEqualTo(target.getNotes());
     }
 }
