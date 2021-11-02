@@ -102,4 +102,4 @@ jobs:
       terraformRepo: 'git://Socrates-Cloud/terraform-socrates_cloud'
       versionName: java_clinical_microservice_artifact_version
       dependsOn: [GitVersion, mavenBuild, dockerCI]
-  - template: 'jobs/versioning/build-comment-docker.yml@local_templates'     
+  # - template: 'jobs/versioning/build-comment-docker.yml@local_templates'     
