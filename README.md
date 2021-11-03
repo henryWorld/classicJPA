@@ -10,3 +10,5 @@ Installation process:
 
 Setting the spring profile to dev will point to database to the one running locally through docker.
 See https://dev.azure.com/Specsavers/Socrates-Cloud/_git/docker-local_dev for how to launch the database locally.
+
+Test
