@@ -34,7 +34,7 @@ resources:
     - repository: local_templates
       type: git
       name: Socrates-Cloud/azure-pipeline_templates
-      ref:  refs/tags/1.1.7
+      ref:  feat/SC-966-test-build
 
 jobs:
   - template: 'jobs/versioning/conventional-commit.yml@templates'
@@ -102,4 +102,4 @@ jobs:
       terraformRepo: 'git://Socrates-Cloud/terraform-socrates_cloud'
       versionName: java_clinical_microservice_artifact_version
       dependsOn: [GitVersion, mavenBuild, dockerCI]
-  # - template: 'jobs/versioning/build-comment-docker.yml@local_templates'     
+  - template: 'jobs/versioning/build-comment-docker.yml@local_templates'     
