@@ -1,25 +1,29 @@
 package com.specsavers.socrates.clinical.model.entity;
 
-import java.util.UUID;
-
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.AttributeOverride;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
+import javax.persistence.Embedded;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
-
-import org.hibernate.annotations.Type;
 
 import lombok.Data;
 
 @Data
-@Entity
+@Embeddable
 public class PrescribedRx {
-    @Id
-    @GeneratedValue
-    @Type(type = "uuid-char")
-    private UUID id;
-
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "pre_rx_id")
     private Rx rx;
+
+    @Column(name = "pre_rx_recall_period")
     private Integer recallPeriod;
+
+    @Embedded
+    @AttributeOverride(name = "text", column = @Column(name = "pre_rx_notes_text"))
+    @AttributeOverride(name = "optomName", column = @Column(name = "pre_rx_notes_optom_name"))
+    @AttributeOverride(name = "date", column = @Column(name = "pre_rx_notes_date"))
+    private RxNotes notes;
 }

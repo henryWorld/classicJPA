@@ -3,12 +3,14 @@ package com.specsavers.socrates.clinical.resolvers;
 import com.specsavers.socrates.clinical.mapper.HabitualRxMapper;
 import com.specsavers.socrates.clinical.mapper.SightTestMapper;
 import com.specsavers.socrates.clinical.model.entity.HabitualRx;
+import com.specsavers.socrates.clinical.model.entity.PrescribedRx;
 import com.specsavers.socrates.clinical.model.entity.RefractedRx;
 import com.specsavers.socrates.clinical.model.entity.RxNotes;
 import com.specsavers.socrates.clinical.model.entity.SightTest;
 import com.specsavers.socrates.clinical.model.entity.SightTestType;
 import com.specsavers.socrates.clinical.model.type.HabitualRxDto;
 import com.specsavers.socrates.clinical.model.type.HistoryAndSymptomsDto;
+import com.specsavers.socrates.clinical.model.type.PrescribedRxDto;
 import com.specsavers.socrates.clinical.model.type.RefractedRxDto;
 import com.specsavers.socrates.clinical.model.type.SightTestDto;
 import com.specsavers.socrates.clinical.repository.HabitualRxRepository;
@@ -34,7 +36,7 @@ import java.util.UUID;
 
 import static com.specsavers.socrates.clinical.util.CommonStaticValues.VALID_SIGHT_TEST_ID;
 import static com.specsavers.socrates.clinical.util.CommonStaticValues.VALID_TR_NUMBER_ID;
-import static com.specsavers.socrates.clinical.util.StaticHelpers.StringOfLength;
+import static com.specsavers.socrates.clinical.util.StaticHelpers.stringOfLength;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -241,6 +243,33 @@ class MutationResolverTest {
     }
 
     @Nested
+    class UpdatePrescribedRxTest {
+        @Test
+        void testWithInvalidId() {
+            var id = UUID.randomUUID();
+            when(sightTestRepository.findById(id)).thenReturn(Optional.empty());
+
+            assertThrows(NotFoundException.class, () -> mutationResolver.updatePrescribedRx(id, null));
+        }
+
+        @Test
+        void testValidInput() {
+            var id = UUID.randomUUID();
+            var sightTest = new SightTest();
+            var input = new PrescribedRxDto();
+            // Sample field, other fields are tested on mapper tests
+            input.setBvd(5f);
+            when(sightTestRepository.findById(id)).thenReturn(Optional.of(sightTest));
+
+            var actual = mutationResolver.updatePrescribedRx(id, input);
+
+            verify(sightTestMapper).update(same(input), same(sightTest.getPrescribedRx()));
+            verify(sightTestRepository).save(same(sightTest));
+            assertEquals(input.getBvd(), actual.getBvd());
+        }
+    }
+
+    @Nested
     class UpdateRefractedRxNoteTest {
         @Test
         void testWithInvalidId() {
@@ -255,7 +284,7 @@ class MutationResolverTest {
         void testWithInvalidNoteText(int length) {
             var id = UUID.randomUUID();
 
-            String text = StringOfLength(length);
+            String text = stringOfLength(length);
             assertThrows(ValidationException.class, () -> mutationResolver.updateRefractedRxNote(id, text));
         }
 
@@ -283,6 +312,56 @@ class MutationResolverTest {
             when(sightTestRepository.findById(id)).thenReturn(Optional.of(sightTest));
 
             var actual = mutationResolver.updateRefractedRxNote(id, RX_NOTE);
+
+            assertEquals(RX_NOTE, actual.getText());
+            //OptomName is hardcoded while user service is not integrated
+            assertEquals("Will Smith", actual.getOptomName());
+            assertEquals(LocalDate.now(), actual.getDate());
+        }
+    }
+
+    @Nested
+    class UpdatePrescribedRxNoteTest {
+        @Test
+        void testWithInvalidId() {
+            var id = UUID.randomUUID();
+            when(sightTestRepository.findById(eq(id))).thenReturn(Optional.empty());
+
+            assertThrows(NotFoundException.class, () -> mutationResolver.updatePrescribedRxNote(id, null));
+        }
+
+        @ParameterizedTest(name = "invalidWhenNoteTextLength={0}")
+        @ValueSource(ints = {0, 221})
+        void testWithInvalidNoteText(int length) {
+            var id = UUID.randomUUID();
+
+            assertThrows(ValidationException.class, () -> mutationResolver.updatePrescribedRxNote(id, stringOfLength(length)));
+        }
+
+        @Test
+        void testNullNoteShouldDeleteNotes() {
+            var id = UUID.randomUUID();
+            var sightTest = new SightTest();
+            var prescribedRx = new PrescribedRx();
+
+            prescribedRx.setNotes(new RxNotes());
+            sightTest.setPrescribedRx(prescribedRx);
+            when(sightTestRepository.findById(eq(id))).thenReturn(Optional.of(sightTest));
+            
+            var actual = mutationResolver.updatePrescribedRxNote(id, null);
+
+            assertNull(actual);
+        }
+
+        @Test
+        void testValidNoteText() {
+            var RX_NOTE = "PrescribedRx Note";
+            var id = UUID.randomUUID();
+            var sightTest = new SightTest();
+   
+            when(sightTestRepository.findById(eq(id))).thenReturn(Optional.of(sightTest));
+            
+            var actual = mutationResolver.updatePrescribedRxNote(id, RX_NOTE);
 
             assertEquals(RX_NOTE, actual.getText());
             //OptomName is hardcoded while user service is not integrated

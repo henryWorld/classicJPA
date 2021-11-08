@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class HabitualRxValidatorTest {
 
-     private HabitualRxDto habitualRx;
+    private HabitualRxDto habitualRx;
     private HabitualRxValidator validator;
 
     private EyeRxDto rightRx;

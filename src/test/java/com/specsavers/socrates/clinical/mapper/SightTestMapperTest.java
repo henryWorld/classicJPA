@@ -11,6 +11,7 @@ import com.specsavers.socrates.clinical.model.entity.SightTestType;
 import com.specsavers.socrates.clinical.model.entity.SpecificAddition;
 import com.specsavers.socrates.clinical.model.type.HistoryAndSymptomsDto;
 import com.specsavers.socrates.clinical.model.type.LifestyleDto;
+import com.specsavers.socrates.clinical.model.type.PrescribedRxDto;
 import com.specsavers.socrates.clinical.model.type.RefractedRxDto;
 import com.specsavers.socrates.clinical.model.type.RxNotesDto;
 
@@ -140,7 +141,6 @@ class SightTestMapperTest {
                 .build();
 
         var entity = new PrescribedRx();
-        entity.setId(UUID.randomUUID());
         entity.setRecallPeriod(24);
         entity.setRx(rx);
 
@@ -154,7 +154,7 @@ class SightTestMapperTest {
         assertThat(dto)
                 .usingRecursiveComparison()
                 .ignoringFields("distanceBinVisualAcuity", "bvd", "unaidedVisualAcuity", "rightEye", "leftEye",//Tested above
-                        "testDate", "dispenseNotes", "recommendations", "clinicianName", "testRoomNumber")//Not used on get SightTests
+                        "id", "testDate", "dispenseNotes", "recommendations", "clinicianName", "testRoomNumber")//Not used on get SightTests
                 .isEqualTo(entity);
     }
 
@@ -170,6 +170,7 @@ class SightTestMapperTest {
                 .nearVA("nearVA")
                 .pupillaryDistance(20f)
                 .sphere("sphere")
+                .balSphere("balSphere")
                 .unaidedVA("unaidedVA")
                 .visualAcuity("visualAcuity")
                 .build();
@@ -223,6 +224,52 @@ class SightTestMapperTest {
         source.setNotes(new RxNotesDto("new text", "new optomName", LocalDate.now()));
         target.setNotes(new RxNotes("text", "optomName", LocalDate.now()));
 
+        sightTestMapper.update(source, target);
+
+        assertEquals(source.getBvd(), target.getRx().getBvd());
+        assertEquals(source.getDistanceBinVisualAcuity(), target.getRx().getDistanceBinVA());
+        assertThat(source.getNotes())
+            .usingRecursiveComparison()
+            .isEqualTo(target.getNotes());
+    }
+
+    @Test
+    void testUpdatePrescribedRxNullNotesAndVA(){
+        var source = new PrescribedRxDto();
+        var target = new PrescribedRx();
+
+        //Those are sample values. Other fields are covered by "testMapPrescribedRx
+        source.setBvd(5.25f);
+        source.setDistanceBinVisualAcuity("distanceBinVA");
+
+        // Null notes on source should not overwrite notes on target
+        source.setNotes(null);
+        target.setNotes(new RxNotes("text", "optomName", LocalDate.now()));
+
+        // Null UnaidedVisualAcuity on source should not delete RX on target
+        source.setUnaidedVisualAcuity(null);
+        
+        sightTestMapper.update(source, target);
+
+        assertEquals(source.getBvd(), target.getRx().getBvd());
+        assertEquals(source.getDistanceBinVisualAcuity(), target.getRx().getDistanceBinVA());
+        assertNotNull(target.getNotes());
+        assertNotNull(target.getRx());
+    }
+
+    @Test
+    void testUpdatePrescribedRxNewNotes(){
+        var source = new PrescribedRxDto();
+        var target = new PrescribedRx();
+
+        //Those are sample values. Other fields are covered by "testMapPrescribedRx"
+        source.setBvd(5.25f);
+        source.setDistanceBinVisualAcuity("distanceBinVA");
+
+        // New notes on source should overwrite notes on target
+        source.setNotes(new RxNotesDto("new text", "new optomName", LocalDate.now()));
+        target.setNotes(new RxNotes("text", "optomName", LocalDate.now()));
+        
         sightTestMapper.update(source, target);
 
         assertEquals(source.getBvd(), target.getRx().getBvd());

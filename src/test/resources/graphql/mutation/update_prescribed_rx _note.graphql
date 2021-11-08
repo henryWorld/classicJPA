@@ -1,0 +1,7 @@
+mutation ($sightTestId: ID!){
+  updatePrescribedRxNote(sightTestId: $sightTestId, text: "PrescribedRx Notes"){
+    text
+    optomName
+    date
+  }
+}

@@ -14,7 +14,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
@@ -34,7 +33,7 @@ public class SightTest {
     private Integer customerId;
     private Integer trNumber;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @Embedded 
     private PrescribedRx prescribedRx;
     
     @Embedded    

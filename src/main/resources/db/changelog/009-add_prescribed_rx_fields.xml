@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
+    <changeSet id="009-add_prescribed_rx_fields" author="paulo.giron">
+        <addColumn tableName="sight_test">
+            <column name="pre_rx_recall_period" type="int" />
+            <column name="pre_rx_id" type="uuid" />
+            <column name="pre_rx_notes_text" type="varchar(1000)" />
+            <column name="pre_rx_notes_optom_name" type="varchar(50)" />
+            <column name="pre_rx_notes_date" type="date" />
+        </addColumn>
+        <addColumn tableName="rx_eye">
+            <column name="bal_sphere" type="varchar(10)" />
+        </addColumn>
+        <dropColumn tableName="sight_test" columnName="prescribed_rx_id" />
+    </changeSet>
+</databaseChangeLog>

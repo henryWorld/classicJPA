@@ -1,0 +1,54 @@
+mutation ($sightTestId: ID!){
+  updatePrescribedRx(
+    sightTestId: $sightTestId
+    input: {
+      distanceBinVisualAcuity: "0123456789"
+      bvd: 5.50
+      unaidedVisualAcuity: { rightEye: "4/4", binocular: "24/24" }
+      rightEye: {
+        sphere: "30.25"
+        cylinder: "1.0"
+        axis: 0
+        distancePrism: { horizontal: "2.25 In", vertical: "5.5 Up" }
+      }
+      leftEye: { 
+        sphere: "BAL"
+        balSphere: "+2.50"
+        distancePrism: { horizontal: "3.50 In", vertical: "20 Down" } 
+      }
+      recallPeriod: 24
+    }
+  ) {
+    distanceBinVisualAcuity
+    bvd
+    recallPeriod
+    unaidedVisualAcuity {
+      rightEye
+      binocular
+    }
+    rightEye {
+      sphere
+      cylinder
+      axis
+      distancePrism {
+        horizontal
+        vertical
+      }
+    }
+    leftEye {
+      sphere
+      balSphere
+      cylinder
+      axis
+      distancePrism {
+        horizontal
+        vertical
+      }
+    }
+    notes {
+      text
+      optomName
+      date
+    }
+  }
+}

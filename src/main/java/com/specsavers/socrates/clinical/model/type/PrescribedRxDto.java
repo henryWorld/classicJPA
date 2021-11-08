@@ -2,23 +2,29 @@ package com.specsavers.socrates.clinical.model.type;
 
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.OffsetDateTime;
 
-@Getter
+import com.specsavers.socrates.clinical.model.validator.PrescribedRxValidation;
+
+@Data
 @AllArgsConstructor
+@NoArgsConstructor
+@PrescribedRxValidation
 public final class PrescribedRxDto {
-    private final Object id;
-    private final String clinicianName;
-    private final Integer testRoomNumber;
-    private final EyeRxDto rightEye;
-    private final EyeRxDto leftEye;
-    private final String distanceBinVisualAcuity;
-    private final UnaidedVisualAcuityDto unaidedVisualAcuity;
-    private final Float bvd;
-    private final Integer recallPeriod;
-    private final OffsetDateTime testDate;
-    private final String dispenseNotes;
-    private final String recommendations;
+    private Object id;
+    private String clinicianName;
+    private Integer testRoomNumber;
+    private EyeRxDto rightEye;
+    private EyeRxDto leftEye;
+    private String distanceBinVisualAcuity;
+    private UnaidedVisualAcuityDto unaidedVisualAcuity;
+    private Float bvd;
+    private Integer recallPeriod;
+    private OffsetDateTime testDate;
+    private String dispenseNotes;
+    private String recommendations;
+    private RxNotesDto notes;
 }

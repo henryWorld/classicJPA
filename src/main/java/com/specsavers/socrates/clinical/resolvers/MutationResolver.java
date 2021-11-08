@@ -1,6 +1,7 @@
 package com.specsavers.socrates.clinical.resolvers;
 
 import com.specsavers.socrates.clinical.mapper.HabitualRxMapper;
+import com.specsavers.socrates.clinical.model.entity.PrescribedRx;
 import com.specsavers.socrates.clinical.mapper.SightTestMapper;
 import com.specsavers.socrates.clinical.model.entity.RefractedRx;
 import com.specsavers.socrates.clinical.model.entity.RxNotes;
@@ -8,6 +9,7 @@ import com.specsavers.socrates.clinical.model.entity.SightTest;
 import com.specsavers.socrates.clinical.model.entity.SightTestType;
 import com.specsavers.socrates.clinical.model.type.HabitualRxDto;
 import com.specsavers.socrates.clinical.model.type.HistoryAndSymptomsDto;
+import com.specsavers.socrates.clinical.model.type.PrescribedRxDto;
 import com.specsavers.socrates.clinical.model.type.RefractedRxDto;
 import com.specsavers.socrates.clinical.model.type.RxNotesDto;
 import com.specsavers.socrates.clinical.model.type.SightTestDto;
@@ -131,4 +133,48 @@ public class MutationResolver implements GraphQLMutationResolver {
         var sightTestDto = sightTestMapper.map(sightTestRepository.save(sightTest));
         return sightTestDto.getRefractedRx().getNotes();
     }
+
+    //region PrescribedRx
+    public PrescribedRxDto updatePrescribedRx(UUID sightTestId, @Valid PrescribedRxDto input) {
+        log.info("Called updatePrescribedRx: sightTestId={}", sightTestId);
+        var sightTest = sightTestRepository.findById(sightTestId)
+            .orElseThrow(() -> new NotFoundException(sightTestId)); 
+
+        if (sightTest.getPrescribedRx() == null){
+            sightTest.setPrescribedRx(new PrescribedRx());
+        }
+
+        sightTestMapper.update(input, sightTest.getPrescribedRx());
+
+        return sightTestMapper
+            .map(sightTestRepository.save(sightTest))
+            .getPrescribedRx();
+    }
+
+    public RxNotesDto updatePrescribedRxNote(UUID sightTestId, String text) {
+        log.info("Called updatePrescribedRxNote: sightTestId={}", sightTestId);
+        var textCheck = new FieldChecks("Text", text);
+        textCheck.notBlank();
+        textCheck.maxLength(220);
+        
+        var sightTest = sightTestRepository.findById(sightTestId)
+            .orElseThrow(() -> new NotFoundException(sightTestId)); 
+
+        var prescribedRx = sightTest.getPrescribedRx();
+        if (prescribedRx == null){
+            prescribedRx = new PrescribedRx();
+            sightTest.setPrescribedRx(prescribedRx);
+        }
+
+        if (text == null) {
+            prescribedRx.setNotes(null);
+        } else {
+            //OptomName is hardcoded while user service is not integrated
+            prescribedRx.setNotes(new RxNotes(text, "Will Smith", LocalDate.now()));
+        }
+
+        var sightTestDto = sightTestMapper.map(sightTestRepository.save(sightTest));
+        return sightTestDto.getPrescribedRx().getNotes();
+    }
+    //endregion
 }

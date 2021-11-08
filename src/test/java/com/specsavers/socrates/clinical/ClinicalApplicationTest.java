@@ -6,6 +6,7 @@ import com.graphql.spring.boot.test.GraphQLTestTemplate;
 import com.specsavers.socrates.clinical.legacy.model.rx.EyeRX;
 import com.specsavers.socrates.clinical.model.type.CurrentSpecsVaDto;
 import com.specsavers.socrates.clinical.model.type.EyeRxDto;
+import com.specsavers.socrates.clinical.model.type.PrescribedRxDto;
 import com.specsavers.socrates.clinical.model.type.PrismDto;
 import com.specsavers.socrates.clinical.model.type.RefractedRxDto;
 import com.specsavers.socrates.clinical.model.type.RxNotesDto;
@@ -33,9 +34,11 @@ import static com.specsavers.socrates.clinical.util.CommonStaticValues.RIGHT_EYE
 import static com.specsavers.socrates.clinical.util.CommonStaticValues.SIGHT_TEST;
 import static com.specsavers.socrates.clinical.util.CommonStaticValues.STORE_ID_HTTP_HEADER_NAME;
 import static com.specsavers.socrates.clinical.util.CommonStaticValues.UPDATE_HABITUAL_RX;
-import static com.specsavers.socrates.clinical.util.CommonStaticValues.UPDATE_HISTORY_SYMPTOMS;
 import static com.specsavers.socrates.clinical.util.CommonStaticValues.UPDATE_REFRACTED_RX;
 import static com.specsavers.socrates.clinical.util.CommonStaticValues.UPDATE_REFRACTED_RX_NOTE;
+import static com.specsavers.socrates.clinical.util.CommonStaticValues.UPDATE_PRESCRIBED_RX;
+import static com.specsavers.socrates.clinical.util.CommonStaticValues.UPDATE_PRESCRIBED_RX_NOTE;
+import static com.specsavers.socrates.clinical.util.CommonStaticValues.UPDATE_HISTORY_SYMPTOMS;
 import static com.specsavers.socrates.clinical.util.CommonStaticValues.VALID_HABITUAL_RX_ID;
 import static com.specsavers.socrates.clinical.util.CommonStaticValues.VALID_PRESCRIBED_RX_ID;
 import static com.specsavers.socrates.clinical.util.CommonStaticValues.VALID_SIGHT_TEST_ID;
@@ -332,6 +335,78 @@ class ClinicalApplicationTest {
         }
     }
 
+    @Nested
+    class UpdatePrescribedRxTest {
+        @Test
+        void testUpdatePrescribedRxNote() throws IOException {
+            var variables = new ObjectMapper().createObjectNode()
+                    .put("sightTestId", VALID_SIGHT_TEST_ID.toString());
+            var note = new RxNotesDto();
+            note.setDate(LocalDate.now());
+            note.setOptomName("Will Smith");
+            note.setText("PrescribedRx Notes");
+
+            var response = graphQLTestTemplate.perform(UPDATE_PRESCRIBED_RX_NOTE, variables);
+
+            response
+                .assertThatNoErrorsArePresent()
+                .assertThatField("$.data.updatePrescribedRxNote").as(RxNotesDto.class).isEqualTo(note);
+        }
+
+        @Test
+        void testUpdatePrescribedRx() throws IOException {
+            var variables = new ObjectMapper().createObjectNode()
+                    .put("sightTestId", VALID_SIGHT_TEST_ID.toString());
+            
+            //Add some notes so we can validate it returns when updating PrescribedRx
+            graphQLTestTemplate.perform(UPDATE_PRESCRIBED_RX_NOTE, variables);
+            var response = graphQLTestTemplate.perform(UPDATE_PRESCRIBED_RX, variables);
+
+            response
+                .assertThatNoErrorsArePresent()
+                .assertThatField("$.data.updatePrescribedRx").as(PrescribedRxDto.class).isEqualTo(getPrescribedRxValidResponse());
+        }
+
+        private PrescribedRxDto getPrescribedRxValidResponse(){
+            var notes = new RxNotesDto();
+            notes.setDate(LocalDate.now());
+            notes.setOptomName("Will Smith");
+            notes.setText("PrescribedRx Notes");
+
+            var unaidedVisualAcuity = new UnaidedVisualAcuityDto("4/4", null, "24/24");
+            
+            var rightEyePrism = new PrismDto();
+            rightEyePrism.setHorizontal("2.25 In");
+            rightEyePrism.setVertical("5.5 Up");
+
+            var rightEye = new EyeRxDto();
+            rightEye.setSphere("30.25");
+            rightEye.setCylinder("1.0");
+            rightEye.setAxis(0f);
+            rightEye.setDistancePrism(rightEyePrism);
+
+            var leftEyePrism = new PrismDto();
+            leftEyePrism.setHorizontal("3.50 In");
+            leftEyePrism.setVertical("20 Down");
+
+            var leftEye = new EyeRxDto();
+            leftEye.setDistancePrism(leftEyePrism);
+            leftEye.setSphere("BAL");
+            leftEye.setBalSphere("+2.50");
+
+            var prescribedRx = new PrescribedRxDto();
+            prescribedRx.setBvd(5.5f);
+            prescribedRx.setDistanceBinVisualAcuity("0123456789");
+            prescribedRx.setUnaidedVisualAcuity(unaidedVisualAcuity);
+            prescribedRx.setRightEye(rightEye);
+            prescribedRx.setLeftEye(leftEye);
+            prescribedRx.setNotes(notes);
+            prescribedRx.setRecallPeriod(24);
+
+            return prescribedRx;
+        }
+    }
+
     private void validateFullResponse(GraphQLResponse graphQLResponse) {
         graphQLResponse
                 .assertThatNoErrorsArePresent()
@@ -367,5 +442,5 @@ class ClinicalApplicationTest {
                 .and()
                 .assertThatField("$.data.prescribedRX.leftEye").as(EyeRX.class)
                 .isEqualTo(LEFT_EYE);
-    }
+    }    
 }

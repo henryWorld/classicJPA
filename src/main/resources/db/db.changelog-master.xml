@@ -12,4 +12,5 @@
     <include file="/db/changelog/006-add_refracted_rx_fields.xml"/>
     <include file="/db/changelog/007-add_refracted_eye_rx_fields.xml"/>
     <include file="/db/changelog/008-alter_visual_acuity_fields.xml"/>
+    <include file="/db/changelog/009-add_prescribed_rx_fields.xml"/>
 </databaseChangeLog>

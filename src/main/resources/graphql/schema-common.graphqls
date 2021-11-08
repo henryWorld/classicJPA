@@ -32,6 +32,9 @@ type EyeRX {
   """
   sphere: String
 
+  "When a eye don't have function a 'balance' lens is added to provide a balanced look."
+  balSphere: String
+
   "The amount of correction for astigmatism. Matches the same sign as sphere. e.g. +1.25"
   cylinder: String
 
@@ -102,6 +105,9 @@ type PrescribedRx  {
   dispenseNotes: String
 
   recommendations: String
+
+  "Notes associated with an RX"
+  notes: RxNotes
 }
 
 
@@ -138,6 +144,7 @@ type RefractedRx  {
   "The RX for the left eye"
   leftEye: EyeRX
 
+  "Notes associated with an RX"
   notes: RxNotes
 }
 
@@ -246,7 +253,17 @@ type Mutation {
   updateRefractedRx(sightTestId: ID!, input: RefractedRxInput!): RefractedRx!
 
   """
-  Updates the refractedRx fields on a sight test
+  Updates the refractedRx notes on a sight test
   """
   updateRefractedRxNote(sightTestId: ID!, text: String): RxNotes
+
+  """
+  Updates the prescribedRx fields on a sight test
+  """
+  updatePrescribedRx(sightTestId: ID!, input: PrescribedRxInput!): PrescribedRx!
+
+  """
+  Updates the prescribedRx notes on a sight test
+  """
+  updatePrescribedRxNote(sightTestId: ID!, text: String): RxNotes
 }

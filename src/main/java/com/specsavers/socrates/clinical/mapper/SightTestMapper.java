@@ -65,6 +65,10 @@ public interface SightTestMapper {
     @Mapping(target = "leftEye", source = "rx.leftEye")
     PrescribedRxDto map(PrescribedRx value);
 
+    @InheritInverseConfiguration
+    @Mapping(target = "notes", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    void update(PrescribedRxDto source, @MappingTarget PrescribedRx target);
+
     @Mapping(target = "distanceVisualAcuity", source = "distanceVA")
     @Mapping(target = "nearVisualAcuity", source = "nearVA")
     EyeRxDto map(RxEye value);

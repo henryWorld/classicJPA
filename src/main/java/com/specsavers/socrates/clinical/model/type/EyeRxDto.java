@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public final class EyeRxDto {
     private String sphere;
+    private String balSphere;
     private String cylinder;
     private Float axis;
     private String distanceVisualAcuity;

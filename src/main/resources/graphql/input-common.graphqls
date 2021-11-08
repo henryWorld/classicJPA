@@ -13,6 +13,12 @@ input EyeRxInput {
     """
     sphere: String
 
+    """
+    When an eye doesn't have function a 'balance' lens is added to provide a balanced look.
+    Mandatory when 'sphere' has value 'BAL'
+    """
+    balSphere: String
+
     "The amount of correction for astigmatism. Matches the same sign as sphere. e.g. +1.25"
     cylinder: String
 
@@ -99,6 +105,26 @@ input RefractedRxInput  {
     specificAddition: SpecificAdditionInput
 
     currentSpecsVA: CurrentSpecsVaInput
+
+    "The RX for the right eye"
+    rightEye: EyeRxInput
+
+    "The RX for the left eye"
+    leftEye: EyeRxInput
+}
+
+input PrescribedRxInput  {
+    "BIN Vision: The binocular visual acuity of the patient. e.g. 20/20"
+    distanceBinVisualAcuity: String
+
+    "Naked eye visual acuity"
+    unaidedVisualAcuity: UnaidedVaInput
+
+    "Back Vertex Distance - What distance the lenses should sit from the eyes. e.g. 8.00"
+    bvd: Float
+
+    "Recall Period. e.g 12 or 24"
+    recallPeriod: Int
 
     "The RX for the right eye"
     rightEye: EyeRxInput

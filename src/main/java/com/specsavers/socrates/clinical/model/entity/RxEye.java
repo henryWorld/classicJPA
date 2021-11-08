@@ -31,6 +31,7 @@ public class RxEye {
     @Column(name = "unaided_va")
     private String unaidedVA;
     private String sphere;
+    private String balSphere;
     private String cylinder;
     private Float axis;
     private Float pupillaryDistance;
