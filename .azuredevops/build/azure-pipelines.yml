@@ -34,7 +34,7 @@ resources:
     - repository: local_templates
       type: git
       name: Socrates-Cloud/azure-pipeline_templates
-      ref:  feat/SC-966-test-build
+      ref:  refs/tags/1.1.8  
 
 jobs:
   - template: 'jobs/versioning/conventional-commit.yml@templates'
