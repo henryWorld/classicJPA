@@ -1,8 +1,8 @@
 package com.specsavers.socrates.clinical.resolvers;
 
 import com.specsavers.socrates.clinical.mapper.HabitualRxMapper;
-import com.specsavers.socrates.clinical.model.entity.PrescribedRx;
 import com.specsavers.socrates.clinical.mapper.SightTestMapper;
+import com.specsavers.socrates.clinical.model.entity.PrescribedRx;
 import com.specsavers.socrates.clinical.model.entity.RefractedRx;
 import com.specsavers.socrates.clinical.model.entity.RxNotes;
 import com.specsavers.socrates.clinical.model.entity.SightTest;
@@ -59,7 +59,7 @@ public class MutationResolver implements GraphQLMutationResolver {
         log.info("Called updateHistoryAndSymptoms: sightTestId={}", sightTestId);
 
         SightTest sightTest = sightTestRepository.findById(sightTestId)
-                .orElseThrow(() -> new NotFoundException(sightTestId.toString()));
+                .orElseThrow(() -> new NotFoundException(sightTestId));
         sightTestMapper.update(sightTest, input);
         var saved = sightTestRepository.save(sightTest);
         return sightTestMapper
@@ -70,7 +70,7 @@ public class MutationResolver implements GraphQLMutationResolver {
     @Transactional(propagation = Propagation.MANDATORY)
     public HabitualRxDto createHabitualRx(UUID sightTestId, Integer pairNumber, @Valid HabitualRxDto input) {
         if (!sightTestRepository.existsById(sightTestId)) {
-            throw new NotFoundException(sightTestId.toString());
+            throw new NotFoundException(sightTestId);
         }
 
         var entity = habitualRxMapper.toEntity(sightTestId, pairNumber, input);
@@ -138,17 +138,17 @@ public class MutationResolver implements GraphQLMutationResolver {
     public PrescribedRxDto updatePrescribedRx(UUID sightTestId, @Valid PrescribedRxDto input) {
         log.info("Called updatePrescribedRx: sightTestId={}", sightTestId);
         var sightTest = sightTestRepository.findById(sightTestId)
-            .orElseThrow(() -> new NotFoundException(sightTestId)); 
+                .orElseThrow(() -> new NotFoundException(sightTestId));
 
-        if (sightTest.getPrescribedRx() == null){
+        if (sightTest.getPrescribedRx() == null) {
             sightTest.setPrescribedRx(new PrescribedRx());
         }
 
         sightTestMapper.update(input, sightTest.getPrescribedRx());
 
         return sightTestMapper
-            .map(sightTestRepository.save(sightTest))
-            .getPrescribedRx();
+                .map(sightTestRepository.save(sightTest))
+                .getPrescribedRx();
     }
 
     public RxNotesDto updatePrescribedRxNote(UUID sightTestId, String text) {
@@ -156,12 +156,12 @@ public class MutationResolver implements GraphQLMutationResolver {
         var textCheck = new FieldChecks("Text", text);
         textCheck.notBlank();
         textCheck.maxLength(220);
-        
+
         var sightTest = sightTestRepository.findById(sightTestId)
-            .orElseThrow(() -> new NotFoundException(sightTestId)); 
+                .orElseThrow(() -> new NotFoundException(sightTestId));
 
         var prescribedRx = sightTest.getPrescribedRx();
-        if (prescribedRx == null){
+        if (prescribedRx == null) {
             prescribedRx = new PrescribedRx();
             sightTest.setPrescribedRx(prescribedRx);
         }

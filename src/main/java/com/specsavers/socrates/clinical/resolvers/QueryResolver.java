@@ -39,12 +39,12 @@ public class QueryResolver implements GraphQLQueryResolver {
 
         if (hasId) {
             return mapper.fromEntity(prescribedRxRepository.findById(id)
-                    .orElseThrow(() -> new NotFoundException(Integer.toString(id))));
+                    .orElseThrow(() -> new NotFoundException(id)));
         }
 
         if (hasTrNumber) {
             return mapper.fromEntity(prescribedRxRepository.findByTestRoomNumber(testRoomNumber)
-                    .orElseThrow(() -> new NotFoundException(Integer.toString(testRoomNumber))));
+                    .orElseThrow(() -> new NotFoundException(testRoomNumber)));
         }
 
         throw new UnexpectedSocratesException("Provide a valid id OR testRoomNumber");
@@ -54,7 +54,7 @@ public class QueryResolver implements GraphQLQueryResolver {
     public SightTestDto sightTest(UUID id) {
         return sightTestRepository.findById(id)
                 .map(sightTestMapper::map)
-                .orElseThrow(() -> new NotFoundException(id.toString()));
+                .orElseThrow(() -> new NotFoundException(id));
     }
 
     @Transactional(propagation = Propagation.MANDATORY)
