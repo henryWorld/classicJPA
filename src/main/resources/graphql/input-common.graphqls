@@ -22,7 +22,10 @@ input EyeRxInput {
     "The amount of correction for astigmatism. Matches the same sign as sphere. e.g. +1.25"
     cylinder: String
 
-    "The axis for astigmatism correction. An int between 0 and 180"
+    """
+    The axis for astigmatism correction. Mandatory if cylinder has value
+    Range: 0 to 180. Increments: 0.50
+    """
     axis: Float
 
     "The measure of the ability of the eye to distinguish shapes and the details of objects"
@@ -152,3 +155,65 @@ input LifestyleInput {
     occupation: String
     hobbies: String
 }
+
+input DrugInfoInput  {
+    "Time. 24h format: HH:MM"
+    time: String
+
+    "Drug description up to 25 characters"
+    drugUsed: String
+
+    "Drug  Batch Number up to 25 characters"
+    batchNo: String
+
+    "Expiration date equal or greater the current date. Format: MM/YYYY"
+    expiryDate: String
+}
+
+input EyeIopInput { 
+    """
+    The lens power measured in diopters. e.g. +1.50
+    Use a `-` sign for short-sighted and `+` sign for long-sighted
+    Range: -40 to +40 or 'BAL'. Increments: 0.25
+    """
+    sphere: String
+
+    """
+    The amount of correction for astigmatism. Must matches sign for both eyes
+    Range: -20 to +20(except 0.00). Increments: 0.25
+    """
+    cylinder: Float
+
+    """
+    The axis for astigmatism correction. Mandatory if cylinder has value
+    Range: 0 to 180. Increments: 0.50
+    """
+    axis: Float
+
+    """
+    Visual acuity expressed in Snellen (eg. 6/6) or LogMAR(eg. 1.25)
+    Max 10 characters
+    """
+    visualAcuity: String
+
+    "Intraocular Pressure defined in 'mm HG'. Range: 0 to 99."
+    iop1: Int
+    iop2: Int
+    iop3: Int
+    iop4: Int
+}
+
+input ObjectiveAndIopInput {
+    "Measurements  for the right eye"
+    rightEye: EyeIopInput
+
+    "Measurements for the left eye"
+    leftEye: EyeIopInput
+
+    "Time. 24h format: HH:MM"
+    time: String
+    
+    "Notes / Other Tests"
+    notes: String
+}
+

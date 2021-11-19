@@ -1,0 +1,12 @@
+mutation ($sightTestId: ID!, $input: DrugInfoInput!){
+  updateObjectiveAndIopDrugInfo(
+    sightTestId: $sightTestId
+    input: $input
+  )
+  {
+    time
+    drugUsed
+    batchNo
+    expiryDate
+  }
+}

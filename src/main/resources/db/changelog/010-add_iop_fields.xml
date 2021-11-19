@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
+    <changeSet id="010-add_iop_fields" author="paulo.giron">
+        <createTable tableName="iop_eye">
+            <column name="id" type="uuid">
+                <constraints nullable="false" primaryKey="true" />
+            </column>
+            <column name="sphere" type="varchar(10)" />
+            <column name="cylinder" type="decimal(4,2)" />
+            <column name="axis" type="decimal(4,1)" />
+            <column name="visual_acuity" type="varchar(10)" />
+            <column name="iop1" type="tinyint" />
+            <column name="iop2" type="tinyint" />
+            <column name="iop3" type="tinyint" />
+            <column name="iop4" type="tinyint" />
+        </createTable>
+
+        <addColumn tableName="sight_test">
+            <column name="iop_right_eye_id" type="uuid">
+                <constraints foreignKeyName="fk_iop_right_eye_id" references="iop_eye(id)" />
+            </column>
+            <column name="iop_left_eye_id" type="uuid">
+                <constraints foreignKeyName="fk_iop_left_eye_id" references="iop_eye(id)" />
+            </column>
+            <column name="iop_time" type="char(5)" />
+            <column name="iop_notes" type="varchar(255)" />
+            <column name="iop_drug_time" type="char(5)" />
+            <column name="iop_drug_desc" type="varchar(25)" />
+            <column name="iop_drug_batch" type="varchar(25)" />
+            <column name="iop_drug_exp_date" type="char(7)" />
+        </addColumn>
+        
+    </changeSet>
+</databaseChangeLog>

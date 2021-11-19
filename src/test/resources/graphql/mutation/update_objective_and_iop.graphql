@@ -1,0 +1,26 @@
+mutation ($sightTestId: ID!, $input: ObjectiveAndIopInput!){
+  updateObjectiveAndIop(
+    sightTestId: $sightTestId
+    input: $input
+  )
+  {
+    time
+    notes
+    rightEye{
+      sphere
+      cylinder
+      axis
+      visualAcuity
+      iop1
+      iop2
+      iop3
+      iop4
+    }
+    drugInfo{
+      time
+      drugUsed
+      batchNo
+      expiryDate
+    }
+  }
+}

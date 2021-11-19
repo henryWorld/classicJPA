@@ -26,88 +26,88 @@ type UnaidedVA {
 
 "Prescribed assisted eye measurements"
 type EyeRX {
-  """
-  The lens power measured in diopters. e.g. +1.50
-  Use a `-` sign for short-sighted and `+` sign for long-sighted
-  """
-  sphere: String
+    """
+    The lens power measured in diopters. e.g. +1.50
+    Use a `-` sign for short-sighted and `+` sign for long-sighted
+    """
+    sphere: String
 
-  "When a eye don't have function a 'balance' lens is added to provide a balanced look."
-  balSphere: String
+    "When a eye don't have function a 'balance' lens is added to provide a balanced look."
+    balSphere: String
 
-  "The amount of correction for astigmatism. Matches the same sign as sphere. e.g. +1.25"
-  cylinder: String
+    "The amount of correction for astigmatism. Matches the same sign as sphere. e.g. +1.25"
+    cylinder: String
 
-  "The axis for astigmatism correction. An int between 0 and 180"
-  axis: Float
+    "The axis for astigmatism correction. An int between 0 and 180"
+    axis: Float
 
-  "The measure of the ability of the eye to distinguish shapes and the details of objects at distance. e.g. 20/20"
-  distanceVisualAcuity: String
+    "The measure of the ability of the eye to distinguish shapes and the details of objects at distance. e.g. 20/20"
+    distanceVisualAcuity: String
 
-  "The measure of the ability of the eye to distinguish shapes and the details of objects at close range. e.g. 6/6"
-  nearVisualAcuity: String
+    "The measure of the ability of the eye to distinguish shapes and the details of objects at close range. e.g. 6/6"
+    nearVisualAcuity: String
 
-  "The measure of the ability of the eye to distinguish shapes and the details of objects"
-  visualAcuity: String
+    "The measure of the ability of the eye to distinguish shapes and the details of objects"
+    visualAcuity: String
 
-  "PD: The distance between the pupils"
-  pupillaryDistance: Float
+    "PD: The distance between the pupils"
+    pupillaryDistance: Float
 
-  nearAddition: Float
+    nearAddition: Float
 
-  interAddition: Float
+    interAddition: Float
 
-  "ADD Addition"
-  addition: Float
+    "ADD Addition"
+    addition: Float
 
-  "Prismatic power prescribed to compensate for eye alignment on distance vision"
-  distancePrism: Prism
+    "Prismatic power prescribed to compensate for eye alignment on distance vision"
+    distancePrism: Prism
 
-  "Prismatic power prescribed to compensate for eye alignment on near vision"
-  nearPrism: Prism
+    "Prismatic power prescribed to compensate for eye alignment on near vision"
+    nearPrism: Prism
 
-  "General prismatic power"
-  prism: Prism
+    "General prismatic power"
+    prism: Prism
 }
 
 "A RX prescribed by an optometrist after a sight test."
 type PrescribedRx  {
-  "The id of the prescription"
-  id: ID!
+    "The id of the prescription"
+    id: ID!
 
-  "The clinician who wrote the prescription"
-  clinicianName: String
+    "The clinician who wrote the prescription"
+    clinicianName: String
 
-  "The Test Room (TR) number for the appointment"
-  testRoomNumber: Int
+    "The Test Room (TR) number for the appointment"
+    testRoomNumber: Int
 
-  "The RX for the right eye"
-  rightEye: EyeRX
+    "The RX for the right eye"
+    rightEye: EyeRX
 
-  "The RX for the left eye"
-  leftEye: EyeRX
+    "The RX for the left eye"
+    leftEye: EyeRX
 
-  "BIN Vision: The binocular visual acuity of the patient. e.g. 20/20"
-  distanceBinVisualAcuity: String
+    "BIN Vision: The binocular visual acuity of the patient. e.g. 20/20"
+    distanceBinVisualAcuity: String
 
-  "Naked eye visual acuity"
-  unaidedVisualAcuity: UnaidedVA
+    "Naked eye visual acuity"
+    unaidedVisualAcuity: UnaidedVA
 
-  "Back Vertex Distance - What distance the lenses should sit from the eyes. e.g. 8.00"
-  bvd: Float
+    "Back Vertex Distance - What distance the lenses should sit from the eyes. e.g. 8.00"
+    bvd: Float
 
-  "Recall Period. e.g 12 or 24"
-  recallPeriod: Int
+    "Recall Period. e.g 12 or 24"
+    recallPeriod: Int
 
-  "Test Date. e.g 2021-05-25"
-  testDate: DateTime
+    "Test Date. e.g 2021-05-25"
+    testDate: DateTime
 
-  dispenseNotes: String
+    dispenseNotes: String
 
-  recommendations: String
+    recommendations: String
 
-  "Notes associated with an RX"
-  notes: RxNotes
+    "Notes associated with an RX"
+    notes: RxNotes
 }
 
 
@@ -125,145 +125,199 @@ type CurrentSpecsVA {
 
 
 type RefractedRx  {
-  "BIN Vision: The binocular visual acuity of the patient. e.g. 20/20"
-  distanceBinVisualAcuity: String
+    "BIN Vision: The binocular visual acuity of the patient. e.g. 20/20"
+    distanceBinVisualAcuity: String
 
-  "Naked eye visual acuity"
-  unaidedVisualAcuity: UnaidedVA
+    "Naked eye visual acuity"
+    unaidedVisualAcuity: UnaidedVA
 
-  "Back Vertex Distance - What distance the lenses should sit from the eyes. e.g. 8.00"
-  bvd: Float
+    "Back Vertex Distance - What distance the lenses should sit from the eyes. e.g. 8.00"
+    bvd: Float
 
-  specificAddition: SpecificAddition
+    specificAddition: SpecificAddition
 
-  currentSpecsVA: CurrentSpecsVA
+    currentSpecsVA: CurrentSpecsVA
 
-  "The RX for the right eye"
-  rightEye: EyeRX
+    "The RX for the right eye"
+    rightEye: EyeRX
 
-  "The RX for the left eye"
-  leftEye: EyeRX
+    "The RX for the left eye"
+    leftEye: EyeRX
 
-  "Notes associated with an RX"
-  notes: RxNotes
+    "Notes associated with an RX"
+    notes: RxNotes
 }
 
 enum SightTestType {
-  MY_SIGHT_TEST,
-  SIGHT_TEST
+    MY_SIGHT_TEST,
+    SIGHT_TEST
 }
 
 type SightTest {
-  id: ID!
-  trNumber: Int
-  type: SightTestType
-  creationDate: Date
-  prescribedRx: PrescribedRx
-  refractedRx: RefractedRx
-  historyAndSymptoms: HistoryAndSymptoms!
+    id: ID!
+    trNumber: Int
+    type: SightTestType
+    creationDate: Date
+    prescribedRx: PrescribedRx
+    refractedRx: RefractedRx
+    historyAndSymptoms: HistoryAndSymptoms!
+    objectiveAndIop: ObjectiveAndIop
 }
 
 type HistoryAndSymptoms {
-  reasonForVisit: String
-  generalHealth: String
-  medication: String
-  ocularHistory: String
-  familyHistory: String
-  lifestyle: Lifestyle!
+    reasonForVisit: String
+    generalHealth: String
+    medication: String
+    ocularHistory: String
+    familyHistory: String
+    lifestyle: Lifestyle!
 }
 
 type Lifestyle {
-  driveHeavyGoods: Boolean
-  drivePrivate: Boolean
-  drivePublic: Boolean
-  driveMotorcycle: Boolean
-  vdu: Boolean
-  vduHoursPerDay: Int
-  occupation: String
-  hobbies: String
+    driveHeavyGoods: Boolean
+    drivePrivate: Boolean
+    drivePublic: Boolean
+    driveMotorcycle: Boolean
+    vdu: Boolean
+    vduHoursPerDay: Int
+    occupation: String
+    hobbies: String
 }
 
 type HabitualRx {
-  "The id of the pair"
-  id: ID!
+    "The id of the pair"
+    id: ID!
 
-  "The sight test ID"
-  sightTestId: ID!
+    "The sight test ID"
+    sightTestId: ID!
 
-  "The pair number 1-3"
-  pairNumber: Int!
+    "The pair number 1-3"
+    pairNumber: Int!
 
-  "Age of the pair in years"
-  age: Float
+    "Age of the pair in years"
+    age: Float
 
-  "The clinician who wrote the rx"
-  clinicianName: String
+    "The clinician who wrote the rx"
+    clinicianName: String
 
-  "Left Eye rx"
-  leftEye: EyeRX
+    "Left Eye rx"
+    leftEye: EyeRX
 
-  "Right Eye rx"
-  rightEye: EyeRX
+    "Right Eye rx"
+    rightEye: EyeRX
 
-  "Notes"
-  notes: String
+    "Notes"
+    notes: String
 }
 
 "RxNotes will be used on RefrectedRx and PrescribedRx"
 type RxNotes {
-  text: String
-  optomName: String
-  date:Date
+    text: String
+    optomName: String
+    date:Date
+}
+
+type DrugInfo  {
+    "Time. 24h format: HH:MM"
+    time: String
+
+    "Drug description up to 25 characters"
+    drugUsed: String
+
+    "Drug  Batch Number up to 25 characters"
+    batchNo: String
+
+    "Expiration date equal or greater the current date. Format: MM/YYYY"
+    expiryDate: String
+}
+
+type ObjectiveAndIop {
+    "Measurements  for the right eye"
+    rightEye: EyeIop
+
+    "Measurements for the left eye"
+    leftEye: EyeIop
+
+    "Time. 24h format: HH:MM"
+    time: String
+
+    "Notes / Other Tests"
+    notes: String
+
+    drugInfo: DrugInfo
+}
+
+type EyeIop {
+    """
+    The lens power measured in diopters. e.g. +1.50
+    Use a `-` sign for short-sighted and `+` sign for long-sighted
+    Range: -40 to +40 or 'BAL'. Increments: 0.25
+    """
+    sphere: String
+
+    """
+    The amount of correction for astigmatism. Must matches sign for both eyes
+    Range: -20 to +20(except 0.00). Increments: 0.25
+    """
+    cylinder: String
+
+    """
+    The axis for astigmatism correction. Mandatory if cylinder has value
+    Range: 0 to 180. Increments: 0.50
+    """
+    axis: Float
+
+    """
+    Visual acuity expressed in Snellen (eg. 6/6) or LogMAR(eg. 1.25)
+    Max 10 characters
+    """
+    visualAcuity: String
+
+    "Intraocular Pressure defined in 'mm HG'. Range: 0 to 99."
+    iop1: Int
+    iop2: Int
+    iop3: Int
+    iop4: Int
 }
 
 type Query {
-  "Returns a prescribedRX from legacy DB, searching by id OR testRoomNumber"
-  prescribedRX(id: ID, testRoomNumber: Int): PrescribedRx
+    "Returns a prescribedRX from legacy DB, searching by id OR testRoomNumber"
+    prescribedRX(id: ID, testRoomNumber: Int): PrescribedRx
 
-  "Returns a sight test by ID"
-  sightTest(id: ID!): SightTest!
+    "Returns a sight test by ID"
+    sightTest(id: ID!): SightTest!
 
-  sightTests(customerID: ID!): [SightTest]
+    sightTests(customerID: ID!): [SightTest]
 }
 
 type Mutation {
-  """
-  Creates and return a new Sight Test record on the main DB
-  """
-  createSightTest(trNumber: Int!, type: SightTestType!): SightTest!
+    "Creates and return a new Sight Test record on the main DB"
+    createSightTest(trNumber: Int!, type: SightTestType!): SightTest!
 
-  """
-  Creates and return a new habitual rx pair
-  """
-  createHabitualRx(sightTestId: ID!, pairNumber: Int!, pair: HabitualRxInput!): HabitualRx!
+    "Creates and return a new habitual rx pair"
+    createHabitualRx(sightTestId: ID!, pairNumber: Int!, pair: HabitualRxInput!): HabitualRx!
 
-  """
-  Updates and returns an existing habitual rx pair
-  """
-  updateHabitualRx(id: ID!, pair: HabitualRxInput!): HabitualRx!
+    "Updates and returns an existing habitual rx pair"
+    updateHabitualRx(id: ID!, pair: HabitualRxInput!): HabitualRx!
 
-  """
-  Updates the history and symptoms on a sight test
-  """
-  updateHistoryAndSymptoms(sightTestId: ID!, input: HistoryAndSymptomsInput!): HistoryAndSymptoms!
+    "Updates the history and symptoms on a sight test"
+    updateHistoryAndSymptoms(sightTestId: ID!, input: HistoryAndSymptomsInput!): HistoryAndSymptoms!
 
-  """
-  Updates the refractedRx fields on a sight test
-  """
-  updateRefractedRx(sightTestId: ID!, input: RefractedRxInput!): RefractedRx!
+    "Updates the refractedRx fields on a sight test"
+    updateRefractedRx(sightTestId: ID!, input: RefractedRxInput!): RefractedRx!
 
-  """
-  Updates the refractedRx notes on a sight test
-  """
-  updateRefractedRxNote(sightTestId: ID!, text: String): RxNotes
+    "Updates the refractedRx notes on a sight test"
+    updateRefractedRxNote(sightTestId: ID!, text: String): RxNotes
 
-  """
-  Updates the prescribedRx fields on a sight test
-  """
-  updatePrescribedRx(sightTestId: ID!, input: PrescribedRxInput!): PrescribedRx!
+    "Updates the prescribedRx fields on a sight test"
+    updatePrescribedRx(sightTestId: ID!, input: PrescribedRxInput): PrescribedRx!
 
-  """
-  Updates the prescribedRx notes on a sight test
-  """
-  updatePrescribedRxNote(sightTestId: ID!, text: String): RxNotes
+    "Updates the prescribedRx notes on a sight test"
+    updatePrescribedRxNote(sightTestId: ID!, text: String): RxNotes
+
+    "Updates 'Objective and IOP(Intraocular pressure)' main fields"
+    updateObjectiveAndIop(sightTestId: ID!, input: ObjectiveAndIopInput): ObjectiveAndIop!
+
+    "Updates 'Objective and IOP(Intraocular pressure)' DrugInfo fields"
+    updateObjectiveAndIopDrugInfo(sightTestId: ID!, input: DrugInfoInput!): DrugInfo!
 }

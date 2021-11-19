@@ -18,6 +18,8 @@ public class CommonStaticValues {
     public static final String UPDATE_HISTORY_SYMPTOMS = "graphql/mutation/update_history_symptoms.graphql";
     public static final String GET_SIGHT_TEST = "graphql/query/get_sight_test.graphql";
     public static final String UNKNOWN_REQUEST = "graphql/query/unknown_request.graphql";
+    public static final String UPDATE_OBJECTIVE_AND_IOP = "graphql/mutation/update_objective_and_iop.graphql";
+    public static final String UPDATE_OBJECTIVE_AND_IOP_DRUG_INFO = "graphql/mutation/update_objective_and_iop_drug_info.graphql";
 
     public static final String VALID_STORE_ID = "8306";
     public static final String STORE_ID_HTTP_HEADER_NAME = "SOCRATES_STORE_ID";

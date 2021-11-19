@@ -1,14 +1,17 @@
 package com.specsavers.socrates.clinical.resolvers;
 
 import com.specsavers.socrates.clinical.mapper.HabitualRxMapper;
-import com.specsavers.socrates.clinical.mapper.SightTestMapper;
+import com.specsavers.socrates.clinical.model.entity.ObjectiveAndIop;
 import com.specsavers.socrates.clinical.model.entity.PrescribedRx;
+import com.specsavers.socrates.clinical.mapper.SightTestMapper;
 import com.specsavers.socrates.clinical.model.entity.RefractedRx;
 import com.specsavers.socrates.clinical.model.entity.RxNotes;
 import com.specsavers.socrates.clinical.model.entity.SightTest;
 import com.specsavers.socrates.clinical.model.entity.SightTestType;
+import com.specsavers.socrates.clinical.model.type.DrugInfoDto;
 import com.specsavers.socrates.clinical.model.type.HabitualRxDto;
 import com.specsavers.socrates.clinical.model.type.HistoryAndSymptomsDto;
+import com.specsavers.socrates.clinical.model.type.ObjectiveAndIopDto;
 import com.specsavers.socrates.clinical.model.type.PrescribedRxDto;
 import com.specsavers.socrates.clinical.model.type.RefractedRxDto;
 import com.specsavers.socrates.clinical.model.type.RxNotesDto;
@@ -175,6 +178,43 @@ public class MutationResolver implements GraphQLMutationResolver {
 
         var sightTestDto = sightTestMapper.map(sightTestRepository.save(sightTest));
         return sightTestDto.getPrescribedRx().getNotes();
+    }
+    //endregion
+
+    //region ObjectiveAndIOP
+    public ObjectiveAndIopDto updateObjectiveAndIop(UUID sightTestId, @Valid ObjectiveAndIopDto input) {
+        log.info("Called updateObjectiveAndIOP: sightTestId={}", sightTestId);
+        var sightTest = sightTestRepository.findById(sightTestId)
+            .orElseThrow(() -> new NotFoundException(sightTestId));
+
+        if (sightTest.getObjectiveAndIop() == null){
+            sightTest.setObjectiveAndIop(new ObjectiveAndIop());
+        }
+
+        sightTestMapper.update(input, sightTest.getObjectiveAndIop());
+
+        return sightTestMapper
+            .map(sightTestRepository.save(sightTest))
+            .getObjectiveAndIop();
+    }
+
+    public DrugInfoDto updateObjectiveAndIopDrugInfo(UUID sightTestId, @Valid DrugInfoDto input) {
+        log.info("Called updateObjectiveAndIopDrugInfo: sightTestId={}", sightTestId);
+        var sightTest = sightTestRepository.findById(sightTestId)
+            .orElseThrow(() -> new NotFoundException(sightTestId));
+
+        var objectiveAndIop = sightTest.getObjectiveAndIop();
+        if (objectiveAndIop == null) {
+            objectiveAndIop = new ObjectiveAndIop();
+            sightTest.setObjectiveAndIop(objectiveAndIop);
+        }
+
+        objectiveAndIop.setDrugInfo(sightTestMapper.map(input));
+
+        return sightTestMapper
+            .map(sightTestRepository.save(sightTest))
+            .getObjectiveAndIop()
+            .getDrugInfo();
     }
     //endregion
 }

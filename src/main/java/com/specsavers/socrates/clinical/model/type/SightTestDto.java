@@ -20,4 +20,5 @@ public final class SightTestDto {
     private PrescribedRxDto prescribedRx;
     private RefractedRxDto refractedRx;
     private HistoryAndSymptomsDto historyAndSymptoms;
+    private ObjectiveAndIopDto objectiveAndIop;
 }

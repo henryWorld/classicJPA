@@ -8,11 +8,7 @@ import com.specsavers.socrates.clinical.model.entity.RefractedRx;
 import com.specsavers.socrates.clinical.model.entity.RxNotes;
 import com.specsavers.socrates.clinical.model.entity.SightTest;
 import com.specsavers.socrates.clinical.model.entity.SightTestType;
-import com.specsavers.socrates.clinical.model.type.HabitualRxDto;
-import com.specsavers.socrates.clinical.model.type.HistoryAndSymptomsDto;
-import com.specsavers.socrates.clinical.model.type.PrescribedRxDto;
-import com.specsavers.socrates.clinical.model.type.RefractedRxDto;
-import com.specsavers.socrates.clinical.model.type.SightTestDto;
+import com.specsavers.socrates.clinical.model.type.*;
 import com.specsavers.socrates.clinical.repository.HabitualRxRepository;
 import com.specsavers.socrates.clinical.repository.SightTestRepository;
 import com.specsavers.socrates.common.exception.NotFoundException;
@@ -367,6 +363,59 @@ class MutationResolverTest {
             //OptomName is hardcoded while user service is not integrated
             assertEquals("Will Smith", actual.getOptomName());
             assertEquals(LocalDate.now(), actual.getDate());
+        }
+    }
+
+    @Nested
+    class UpdateObjectiveAndIopTest {
+        @Test
+        void testWithInvalidId() {
+            var id = UUID.randomUUID();
+            when(sightTestRepository.findById(eq(id))).thenReturn(Optional.empty());
+
+            assertThrows(NotFoundException.class, () -> mutationResolver.updateObjectiveAndIop(id, null));
+        }
+
+        @Test
+        void testWithInvalidIdDrugInfo() {
+            var id = UUID.randomUUID();
+            when(sightTestRepository.findById(eq(id))).thenReturn(Optional.empty());
+
+            assertThrows(NotFoundException.class, () -> mutationResolver.updateObjectiveAndIopDrugInfo(id, null));
+        }
+
+        @Test
+        void testValidInput() {
+            var id = UUID.randomUUID();
+            var sightTest = new SightTest();
+            var input = new ObjectiveAndIopDto();
+            // Sample field, other fields are tested on mapper tests
+            input.setTime("15:20");
+            when(sightTestRepository.findById(id)).thenReturn(Optional.of(sightTest));
+
+            var actual = mutationResolver.updateObjectiveAndIop(id, input);
+
+            verify(sightTestMapper).update(same(input), same(sightTest.getObjectiveAndIop()));
+            verify(sightTestRepository).save(same(sightTest));
+            assertEquals(input.getTime(), actual.getTime());
+        }
+
+
+        @Test
+        void testValidDrugInfo() {
+            var id = UUID.randomUUID();
+            var sightTest = new SightTest();
+            var input = new DrugInfoDto();
+
+            // Sample field, other fields are tested on mapper tests
+            input.setDrugUsed("XYZ");
+            when(sightTestRepository.findById(eq(id))).thenReturn(Optional.of(sightTest));
+
+            var actual = mutationResolver.updateObjectiveAndIopDrugInfo(id, input);
+
+            verify(sightTestMapper).map(same(input));
+            verify(sightTestRepository).save(same(sightTest));
+            assertEquals(input, actual);
         }
     }
 }

@@ -1,14 +1,18 @@
 package com.specsavers.socrates.clinical.mapper;
 
 import com.specsavers.socrates.clinical.model.entity.CurrentSpecsVA;
+import com.specsavers.socrates.clinical.model.entity.DrugInfo;
+import com.specsavers.socrates.clinical.model.entity.ObjectiveAndIop;
 import com.specsavers.socrates.clinical.model.entity.PrescribedRx;
 import com.specsavers.socrates.clinical.model.entity.RefractedRx;
 import com.specsavers.socrates.clinical.model.entity.RxEye;
 import com.specsavers.socrates.clinical.model.entity.SightTest;
 import com.specsavers.socrates.clinical.model.entity.SpecificAddition;
 import com.specsavers.socrates.clinical.model.type.CurrentSpecsVaDto;
+import com.specsavers.socrates.clinical.model.type.DrugInfoDto;
 import com.specsavers.socrates.clinical.model.type.EyeRxDto;
 import com.specsavers.socrates.clinical.model.type.HistoryAndSymptomsDto;
+import com.specsavers.socrates.clinical.model.type.ObjectiveAndIopDto;
 import com.specsavers.socrates.clinical.model.type.PrescribedRxDto;
 import com.specsavers.socrates.clinical.model.type.RefractedRxDto;
 import com.specsavers.socrates.clinical.model.type.SightTestDto;
@@ -46,7 +50,7 @@ public interface SightTestMapper {
     
     @BeforeMapping
     default void beforeUpdate(RefractedRxDto source){
-        // Workaroud to avoid deleting RX when UnaidedVisualAcuity is null
+        // Workaround to avoid deleting RX when UnaidedVisualAcuity is null
         if (source.getUnaidedVisualAcuity() == null) {
             source.setUnaidedVisualAcuity(new UnaidedVisualAcuityDto(null, null, null));
         }  
@@ -78,4 +82,11 @@ public interface SightTestMapper {
 
     @Mapping(target = "lifestyle", source = "entity")
     HistoryAndSymptomsDto mapHistoryAndSymptoms(SightTest entity);
+
+    @InheritInverseConfiguration
+    @Mapping(target = "drugInfo", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    void update(ObjectiveAndIopDto source, @MappingTarget ObjectiveAndIop target);
+
+    @InheritInverseConfiguration
+    DrugInfo map(DrugInfoDto source);
 }

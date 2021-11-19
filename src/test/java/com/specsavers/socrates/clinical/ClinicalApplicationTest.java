@@ -1,17 +1,11 @@
 package com.specsavers.socrates.clinical;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.graphql.spring.boot.test.GraphQLResponse;
 import com.graphql.spring.boot.test.GraphQLTestTemplate;
 import com.specsavers.socrates.clinical.legacy.model.rx.EyeRX;
-import com.specsavers.socrates.clinical.model.type.CurrentSpecsVaDto;
-import com.specsavers.socrates.clinical.model.type.EyeRxDto;
-import com.specsavers.socrates.clinical.model.type.PrescribedRxDto;
-import com.specsavers.socrates.clinical.model.type.PrismDto;
-import com.specsavers.socrates.clinical.model.type.RefractedRxDto;
-import com.specsavers.socrates.clinical.model.type.RxNotesDto;
-import com.specsavers.socrates.clinical.model.type.SpecificAdditionDto;
-import com.specsavers.socrates.clinical.model.type.UnaidedVisualAcuityDto;
+import com.specsavers.socrates.clinical.model.type.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -23,27 +17,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.UUID;
 
-import static com.specsavers.socrates.clinical.util.CommonStaticValues.CREATE_HABITUAL_RX;
-import static com.specsavers.socrates.clinical.util.CommonStaticValues.CREATE_SIGHT_TEST;
-import static com.specsavers.socrates.clinical.util.CommonStaticValues.GET_PRESCRIBEDRX_BY_ID;
-import static com.specsavers.socrates.clinical.util.CommonStaticValues.GET_PRESCRIBEDRX_BY_TRNUMBER;
-import static com.specsavers.socrates.clinical.util.CommonStaticValues.GET_SIGHT_TEST;
-import static com.specsavers.socrates.clinical.util.CommonStaticValues.LEFT_EYE;
-import static com.specsavers.socrates.clinical.util.CommonStaticValues.NOT_FOUND_ID;
-import static com.specsavers.socrates.clinical.util.CommonStaticValues.RIGHT_EYE;
-import static com.specsavers.socrates.clinical.util.CommonStaticValues.SIGHT_TEST;
-import static com.specsavers.socrates.clinical.util.CommonStaticValues.STORE_ID_HTTP_HEADER_NAME;
-import static com.specsavers.socrates.clinical.util.CommonStaticValues.UPDATE_HABITUAL_RX;
-import static com.specsavers.socrates.clinical.util.CommonStaticValues.UPDATE_REFRACTED_RX;
-import static com.specsavers.socrates.clinical.util.CommonStaticValues.UPDATE_REFRACTED_RX_NOTE;
-import static com.specsavers.socrates.clinical.util.CommonStaticValues.UPDATE_PRESCRIBED_RX;
-import static com.specsavers.socrates.clinical.util.CommonStaticValues.UPDATE_PRESCRIBED_RX_NOTE;
-import static com.specsavers.socrates.clinical.util.CommonStaticValues.UPDATE_HISTORY_SYMPTOMS;
-import static com.specsavers.socrates.clinical.util.CommonStaticValues.VALID_HABITUAL_RX_ID;
-import static com.specsavers.socrates.clinical.util.CommonStaticValues.VALID_PRESCRIBED_RX_ID;
-import static com.specsavers.socrates.clinical.util.CommonStaticValues.VALID_SIGHT_TEST_ID;
-import static com.specsavers.socrates.clinical.util.CommonStaticValues.VALID_STORE_ID;
-import static com.specsavers.socrates.clinical.util.CommonStaticValues.VALID_TR_NUMBER_ID;
+import static com.specsavers.socrates.clinical.util.CommonStaticValues.*;
 import static java.util.Collections.nCopies;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -280,7 +254,7 @@ class ClinicalApplicationTest {
             var variables = new ObjectMapper().createObjectNode()
                     .put("sightTestId", VALID_SIGHT_TEST_ID.toString());
 
-            //Add some notes so we can validate it returns when updating RefractedRx
+            //Add some notes, so we can validate it returns when updating RefractedRx
             graphQLTestTemplate.perform(UPDATE_REFRACTED_RX_NOTE, variables);
             var response = graphQLTestTemplate.perform(UPDATE_REFRACTED_RX, variables);
 
@@ -358,7 +332,7 @@ class ClinicalApplicationTest {
             var variables = new ObjectMapper().createObjectNode()
                     .put("sightTestId", VALID_SIGHT_TEST_ID.toString());
             
-            //Add some notes so we can validate it returns when updating PrescribedRx
+            //Add some notes, so we can validate it returns when updating PrescribedRx
             graphQLTestTemplate.perform(UPDATE_PRESCRIBED_RX_NOTE, variables);
             var response = graphQLTestTemplate.perform(UPDATE_PRESCRIBED_RX, variables);
 
@@ -404,6 +378,107 @@ class ClinicalApplicationTest {
             prescribedRx.setRecallPeriod(24);
 
             return prescribedRx;
+        }
+    }
+
+    @Nested
+    class UpdateObjectiveAndIopTest {
+        @Test
+        void testUpdateObjectiveAndIopDrugInfo() throws IOException {
+            var mapper = new ObjectMapper();
+            var drugInfo = new DrugInfoDto();
+            drugInfo.setTime("00:30");
+            drugInfo.setBatchNo("AX123");
+            drugInfo.setDrugUsed("drugName");
+            drugInfo.setExpiryDate("11/2021");
+
+            var variables = mapper.createObjectNode();
+            variables.put("sightTestId", VALID_SIGHT_TEST_ID.toString());
+            variables.set("input", mapper.valueToTree(drugInfo));
+
+            var response = graphQLTestTemplate.perform(UPDATE_OBJECTIVE_AND_IOP_DRUG_INFO, variables);
+
+            response
+                    .assertThatNoErrorsArePresent()
+                    .assertThatField("$.data.updateObjectiveAndIopDrugInfo").as(DrugInfoDto.class).isEqualTo(drugInfo);
+        }
+
+        @Test
+        void testUpdateObjectiveAndIopDrugInfoTriggersValidation() throws IOException {
+            var mapper = new ObjectMapper();
+            var drugInfo = new DrugInfoDto();
+            drugInfo.setExpiryDate("99/2021");
+
+            var variables = mapper.createObjectNode();
+            variables.put("sightTestId", VALID_SIGHT_TEST_ID.toString());
+            variables.set("input", mapper.valueToTree(drugInfo));
+
+            graphQLTestTemplate.perform(UPDATE_OBJECTIVE_AND_IOP_DRUG_INFO, variables)
+                    .assertThatField("$.errors[*].message")
+                    .asListOf(String.class)
+                    .contains("ExpiryDate is not in correct format 'MM/YYYY'")
+                    .and()
+                    .assertThatDataField()
+                    .isNull();
+        }
+
+        @Test
+        void testUpdateObjectiveAndIop() throws IOException {
+            var mapper = new ObjectMapper();
+            var objectiveAndIopDto = getObjectiveAndIopDto();
+
+            ObjectNode input = mapper.valueToTree(objectiveAndIopDto);
+            input.remove("drugInfo");
+
+            var variables = mapper.createObjectNode();
+            variables.put("sightTestId", VALID_SIGHT_TEST_ID.toString());
+            variables.set("input", input);
+
+            graphQLTestTemplate.perform(UPDATE_OBJECTIVE_AND_IOP, variables)
+                    .assertThatNoErrorsArePresent()
+                    .assertThatField("$.data.updateObjectiveAndIop").as(ObjectiveAndIopDto.class)
+                    .isEqualTo(getObjectiveAndIopDto());
+        }
+
+        @Test
+        void testUpdateObjectiveAndIopTriggersValidation() throws IOException {
+            var mapper = new ObjectMapper();
+            var objectiveAndIopDto = getObjectiveAndIopDto();
+            objectiveAndIopDto.setTime("99:99");
+
+            ObjectNode input = mapper.valueToTree(objectiveAndIopDto);
+            input.remove("drugInfo");
+
+            var variables = mapper.createObjectNode();
+            variables.put("sightTestId", VALID_SIGHT_TEST_ID.toString());
+            variables.set("input", input);
+
+            graphQLTestTemplate.perform(UPDATE_OBJECTIVE_AND_IOP, variables)
+                    .assertThatField("$.errors[*].message")
+                    .asListOf(String.class)
+                    .contains("Time is not in correct format 'HH:mm'")
+                    .and()
+                    .assertThatDataField()
+                    .isNull();
+        }
+
+        private ObjectiveAndIopDto getObjectiveAndIopDto(){
+            var rightEye = new EyeIopDto();
+            rightEye.setSphere("-2.50");
+            rightEye.setCylinder(-2.50f);
+            rightEye.setAxis(180f);
+            rightEye.setIop1(10);
+            rightEye.setIop2(20);
+            rightEye.setIop3(30);
+            rightEye.setIop4(40);
+            rightEye.setVisualAcuity("6/6");
+
+            var objectiveAndIop = new ObjectiveAndIopDto();
+            objectiveAndIop.setTime("12:50");
+            objectiveAndIop.setNotes("Some Notes");
+            objectiveAndIop.setRightEye(rightEye);
+
+            return objectiveAndIop;
         }
     }
 

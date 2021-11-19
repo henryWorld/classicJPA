@@ -56,15 +56,15 @@ public class EyeRxValidator {
         }      
     }
 
-    void checkVa(String name, String value) {
+    public void checkVa(String name, String value) {
         check(name, value).maxLength(10);
         if (value != null && value.indexOf('*') != -1){
             throw new ValidationException("Field " + name + " should not contain character '*'");
         }
     }
-    
 
-    private void checkSphere(String side, String sphere) {
+
+    public void checkSphere(String side, String sphere) {
         if (!BALANCED.equals(sphere)) {
             var check = check(side + "Sphere", sphere);
             check.maxLength(10);
@@ -73,7 +73,13 @@ public class EyeRxValidator {
         }
     }
 
-    private void checkCylinder(String side, String cylinder) {
+    public void checkCylinder(String side, Float cylinder) {
+        if (cylinder != null) {
+            checkCylinder(side, cylinder.toString());
+        }
+    }
+
+    public void checkCylinder(String side, String cylinder) {
         var check = check(side + "Cylinder", cylinder);
         check.maxLength(10);
         check.between(-20, +20);
@@ -81,7 +87,7 @@ public class EyeRxValidator {
         check.isNot(0.0);
     }
 
-    private void checkAxis(String side, Float axis) {
+    public void checkAxis(String side, Float axis) {
         var check = check(side + "Axis", axis);
         check.between(0, 180);
         check.increment(0.5);
@@ -170,7 +176,12 @@ public class EyeRxValidator {
         }
     }
 
-    private void checkCombinedEyeCylinder(String leftCylinder, String rightCylinder) {
+    public void checkCombinedEyeCylinder(Float leftCylinder, Float rightCylinder) {
+        if (leftCylinder != null && rightCylinder != null) {
+            checkCombinedEyeCylinder(leftCylinder.toString(), rightCylinder.toString());
+        }
+    }
+    public void checkCombinedEyeCylinder(String leftCylinder, String rightCylinder) {
         if (leftCylinder == null || rightCylinder == null ) {
             return;
         }
@@ -183,7 +194,7 @@ public class EyeRxValidator {
         }
     }
 
-    private void checkCombinedEyeSphere(String leftSphere, String rightSphere) {      
+    public void checkCombinedEyeSphere(String leftSphere, String rightSphere) {
         if (BALANCED.equals(leftSphere) &&  BALANCED.equals(rightSphere)) {          
             throw new ValidationException("Sphere can't be BAL for both eyes");
         }
