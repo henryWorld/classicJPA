@@ -26,6 +26,10 @@ public class SightTest {
     @JoinColumn(name = "prescribed_rx_id")
     private PrescribedRX prescribedRX;
 
+    @OneToOne
+    @JoinColumn(name = "refracted_rx_id")
+    private RefractedRX refractedRx;
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "prescribed_option_recommendation",

@@ -22,6 +22,7 @@ public final class PrescribedRxDto {
     private String distanceBinVisualAcuity;
     private UnaidedVisualAcuityDto unaidedVisualAcuity;
     private Float bvd;
+    private SpecificAdditionDto specificAddition;
     private Integer recallPeriod;
     private OffsetDateTime testDate;
     private String dispenseNotes;

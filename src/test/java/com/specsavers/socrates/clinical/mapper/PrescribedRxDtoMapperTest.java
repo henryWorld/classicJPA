@@ -4,12 +4,15 @@ import com.specsavers.socrates.clinical.legacy.model.Name;
 import com.specsavers.socrates.clinical.legacy.model.OptionRecommendation;
 import com.specsavers.socrates.clinical.legacy.model.PrescribedRX;
 import com.specsavers.socrates.clinical.legacy.model.Record;
+import com.specsavers.socrates.clinical.legacy.model.RefractedRX;
 import com.specsavers.socrates.clinical.legacy.model.SightTest;
+import com.specsavers.socrates.clinical.legacy.model.SpecificAdd;
 import com.specsavers.socrates.clinical.legacy.model.Staff;
 import com.specsavers.socrates.clinical.legacy.model.rx.EyeRX;
 import com.specsavers.socrates.clinical.legacy.model.rx.Prism;
 import com.specsavers.socrates.clinical.legacy.model.rx.RX;
 import com.specsavers.socrates.clinical.legacy.model.rx.UnaidedVA;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -155,6 +158,29 @@ class PrescribedRxDtoMapperTest {
         assertEquals("left", actual.getLeftEye());
         assertEquals("right", actual.getRightEye());
         assertEquals("binocular", actual.getBinocular());
+    }
+
+    @Test
+    void mapsSpecificAdd() {
+        var specificAdd = new SpecificAdd();
+        specificAdd.setLeftEye(1.2F);
+        specificAdd.setRightEye(2.3F);
+        specificAdd.setReason("This is the reason");
+
+        var refractedRX = new RefractedRX();
+        refractedRX.setSpecificAddition(specificAdd);
+
+        var sightTest = new SightTest();
+        sightTest.setRefractedRx(refractedRX);
+
+        var entity = new PrescribedRX();
+        entity.setSightTest(sightTest);
+
+        var actual = sut.fromEntity(entity).getSpecificAddition();
+
+        assertEquals(1.2F, actual.getLeftEye());
+        assertEquals(2.3F, actual.getRightEye());
+        assertEquals("This is the reason", actual.getReason());
     }
 
     private static OptionRecommendation optionRecommendation(String text) {

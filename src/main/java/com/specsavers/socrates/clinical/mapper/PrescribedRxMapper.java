@@ -28,6 +28,7 @@ public abstract class PrescribedRxMapper {
     @Mapping(target = "distanceBinVisualAcuity", source = "rx.distanceBinVisualAcuity")
     @Mapping(target = "unaidedVisualAcuity", source = "rx.unaidedVisualAcuity")
     @Mapping(target = "bvd", source = "rx.bvd")
+    @Mapping(target = "specificAddition", source = "sightTest.refractedRx.specificAddition")
     @Mapping(target = "testDate", source = "sightTest.record.customerArrivalTime")
     @Mapping(target = "dispenseNotes", source = "sightTest.dispenseNotes")
     @Mapping(target = "recommendations", source = "sightTest.optionRecommendations")

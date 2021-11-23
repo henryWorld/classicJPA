@@ -34,6 +34,5 @@ INSERT INTO prescribed_option_recommendation (option_recommendation_id, sight_te
 VALUES (1, 1),
        (2, 1);
 
-
-
-
+INSERT INTO refracted_rx (refracted_rx_id, specific_add_right, specific_add_left, specific_add_reason, rx_id)
+VALUES (40, 1.2, -1.4, 'Test Reason', 1);

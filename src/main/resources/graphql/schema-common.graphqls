@@ -93,6 +93,9 @@ type PrescribedRx  {
     "Naked eye visual acuity"
     unaidedVisualAcuity: UnaidedVA
 
+    "Specific Addition"
+    specificAddition: SpecificAddition
+
     "Back Vertex Distance - What distance the lenses should sit from the eyes. e.g. 8.00"
     bvd: Float
 

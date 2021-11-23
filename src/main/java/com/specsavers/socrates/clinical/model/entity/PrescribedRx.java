@@ -22,6 +22,9 @@ public class PrescribedRx {
     private Integer recallPeriod;
 
     @Embedded
+    private SpecificAddition specificAddition;
+
+    @Embedded
     @AttributeOverride(name = "text", column = @Column(name = "pre_rx_notes_text"))
     @AttributeOverride(name = "optomName", column = @Column(name = "pre_rx_notes_optom_name"))
     @AttributeOverride(name = "date", column = @Column(name = "pre_rx_notes_date"))

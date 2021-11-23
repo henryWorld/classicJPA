@@ -6,6 +6,7 @@ DROP TABLE IF EXISTS `record`;
 DROP TABLE IF EXISTS `rx`;
 DROP TABLE IF EXISTS `sight_test`;
 DROP TABLE IF EXISTS `staff`;
+DROP TABLE IF EXISTS `refracted_rx`;
 
 CREATE TABLE `name`
 (
@@ -147,4 +148,15 @@ CREATE TABLE `staff`
     `payee_staff_id`                int(11) DEFAULT NULL,
     `email`                         varchar(255)          DEFAULT NULL,
     PRIMARY KEY (`staff_id`)
+);
+
+CREATE TABLE `refracted_rx` (
+  `refracted_rx_id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `specific_add_right` decimal(4,2) DEFAULT NULL,
+  `specific_add_left` decimal(4,2) DEFAULT NULL,
+  `specific_add_reason` varchar(250) DEFAULT NULL,
+  `current_specs_va_right_as_string` varchar(10) DEFAULT NULL,
+  `current_specs_va_left_as_string` varchar(10) DEFAULT NULL,
+  `rx_id` bigint(20) DEFAULT NULL,
+  PRIMARY KEY (`refracted_rx_id`)
 );
