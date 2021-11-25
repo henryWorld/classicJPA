@@ -37,7 +37,7 @@
         <dependency>
             <groupId>com.specsavers.socrates</groupId>
             <artifactId>socrates-common</artifactId>
-            <version>0.37.0</version>
+            <version>0.48.0</version>
         </dependency>
         <dependency>
             <groupId>mysql</groupId>
