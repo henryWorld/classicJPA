@@ -8,7 +8,13 @@ import com.specsavers.socrates.clinical.model.entity.RefractedRx;
 import com.specsavers.socrates.clinical.model.entity.RxNotes;
 import com.specsavers.socrates.clinical.model.entity.SightTest;
 import com.specsavers.socrates.clinical.model.entity.SightTestType;
-import com.specsavers.socrates.clinical.model.type.*;
+import com.specsavers.socrates.clinical.model.type.DrugInfoDto;
+import com.specsavers.socrates.clinical.model.type.HabitualRxDto;
+import com.specsavers.socrates.clinical.model.type.HistoryAndSymptomsDto;
+import com.specsavers.socrates.clinical.model.type.ObjectiveAndIopDto;
+import com.specsavers.socrates.clinical.model.type.PrescribedRxDto;
+import com.specsavers.socrates.clinical.model.type.RefractedRxDto;
+import com.specsavers.socrates.clinical.model.type.SightTestDto;
 import com.specsavers.socrates.clinical.repository.HabitualRxRepository;
 import com.specsavers.socrates.clinical.repository.SightTestRepository;
 import com.specsavers.socrates.common.exception.NotFoundException;
@@ -321,7 +327,7 @@ class MutationResolverTest {
         @Test
         void testWithInvalidId() {
             var id = UUID.randomUUID();
-            when(sightTestRepository.findById(eq(id))).thenReturn(Optional.empty());
+            when(sightTestRepository.findById(id)).thenReturn(Optional.empty());
 
             assertThrows(NotFoundException.class, () -> mutationResolver.updatePrescribedRxNote(id, null));
         }
@@ -331,7 +337,8 @@ class MutationResolverTest {
         void testWithInvalidNoteText(int length) {
             var id = UUID.randomUUID();
 
-            assertThrows(ValidationException.class, () -> mutationResolver.updatePrescribedRxNote(id, stringOfLength(length)));
+            String text = stringOfLength(length);
+            assertThrows(ValidationException.class, () -> mutationResolver.updatePrescribedRxNote(id, text));
         }
 
         @Test
@@ -342,8 +349,8 @@ class MutationResolverTest {
 
             prescribedRx.setNotes(new RxNotes());
             sightTest.setPrescribedRx(prescribedRx);
-            when(sightTestRepository.findById(eq(id))).thenReturn(Optional.of(sightTest));
-            
+            when(sightTestRepository.findById(id)).thenReturn(Optional.of(sightTest));
+
             var actual = mutationResolver.updatePrescribedRxNote(id, null);
 
             assertNull(actual);
@@ -354,9 +361,9 @@ class MutationResolverTest {
             var RX_NOTE = "PrescribedRx Note";
             var id = UUID.randomUUID();
             var sightTest = new SightTest();
-   
-            when(sightTestRepository.findById(eq(id))).thenReturn(Optional.of(sightTest));
-            
+
+            when(sightTestRepository.findById(id)).thenReturn(Optional.of(sightTest));
+
             var actual = mutationResolver.updatePrescribedRxNote(id, RX_NOTE);
 
             assertEquals(RX_NOTE, actual.getText());
@@ -371,7 +378,7 @@ class MutationResolverTest {
         @Test
         void testWithInvalidId() {
             var id = UUID.randomUUID();
-            when(sightTestRepository.findById(eq(id))).thenReturn(Optional.empty());
+            when(sightTestRepository.findById(id)).thenReturn(Optional.empty());
 
             assertThrows(NotFoundException.class, () -> mutationResolver.updateObjectiveAndIop(id, null));
         }
@@ -379,7 +386,7 @@ class MutationResolverTest {
         @Test
         void testWithInvalidIdDrugInfo() {
             var id = UUID.randomUUID();
-            when(sightTestRepository.findById(eq(id))).thenReturn(Optional.empty());
+            when(sightTestRepository.findById(id)).thenReturn(Optional.empty());
 
             assertThrows(NotFoundException.class, () -> mutationResolver.updateObjectiveAndIopDrugInfo(id, null));
         }
@@ -409,7 +416,7 @@ class MutationResolverTest {
 
             // Sample field, other fields are tested on mapper tests
             input.setDrugUsed("XYZ");
-            when(sightTestRepository.findById(eq(id))).thenReturn(Optional.of(sightTest));
+            when(sightTestRepository.findById(id)).thenReturn(Optional.of(sightTest));
 
             var actual = mutationResolver.updateObjectiveAndIopDrugInfo(id, input);
 
