@@ -290,8 +290,8 @@ class HistoryAndSymptomsValidatorTest {
 
     @ParameterizedTest(name = "invalidWhenVduHoursPerDay={0}")
     @CsvSource({
-            "0,lifestyle.vduHoursPerDay must be between 1.0 and 24.0",
-            "25,lifestyle.vduHoursPerDay must be between 1.0 and 24.0"
+            "0,lifestyle.vduHoursPerDay must be between 1 and 24",
+            "25,lifestyle.vduHoursPerDay must be between 1 and 24"
     })
     void invalidWhenVduHoursPerDayX(int value, String message) {
         // given

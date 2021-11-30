@@ -130,7 +130,7 @@ class ClinicalApplicationTest {
             graphQLResponse
                     .assertThatField("$.errors[*].message")
                     .asListOf(String.class)
-                    .contains("Left cylinder must be between -20.0 and 20.0")
+                    .contains("Left cylinder must be between -20 and 20")
                     .and()
                     .assertThatDataField()
                     .isNull();
