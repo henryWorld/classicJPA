@@ -15,6 +15,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 import static com.specsavers.socrates.clinical.util.CommonStaticValues.*;
@@ -383,6 +385,8 @@ class ClinicalApplicationTest {
 
     @Nested
     class UpdateObjectiveAndIopTest {
+        private final DateTimeFormatter expiryFormat = DateTimeFormatter.ofPattern("MM/yyyy");
+
         @Test
         void testUpdateObjectiveAndIopDrugInfo() throws IOException {
             var mapper = new ObjectMapper();
@@ -390,7 +394,8 @@ class ClinicalApplicationTest {
             drugInfo.setTime("00:30");
             drugInfo.setBatchNo("AX123");
             drugInfo.setDrugUsed("drugName");
-            drugInfo.setExpiryDate("11/2021");
+            String expiry = YearMonth.now().format(expiryFormat);
+            drugInfo.setExpiryDate(expiry);
 
             var variables = mapper.createObjectNode();
             variables.put("sightTestId", VALID_SIGHT_TEST_ID.toString());
