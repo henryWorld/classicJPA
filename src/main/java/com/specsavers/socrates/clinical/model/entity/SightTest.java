@@ -40,7 +40,13 @@ public class SightTest {
     private RefractedRx refractedRx; 
     
     @Embedded    
-    private ObjectiveAndIop objectiveAndIop; 
+    private ObjectiveAndIop objectiveAndIop;
+
+    @Embedded
+    private OptionRecommendations optionRecommendations;
+
+    @Column(name = "dispense_notes")
+    private String dispenseNotes;
     
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "sight_test_id")

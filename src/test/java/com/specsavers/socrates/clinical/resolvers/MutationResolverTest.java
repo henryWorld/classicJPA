@@ -3,9 +3,12 @@ package com.specsavers.socrates.clinical.resolvers;
 import com.specsavers.socrates.clinical.mapper.HabitualRxMapper;
 import com.specsavers.socrates.clinical.mapper.SightTestMapper;
 import com.specsavers.socrates.clinical.model.entity.HabitualRx;
+import com.specsavers.socrates.clinical.model.entity.OptionRecommendations;
 import com.specsavers.socrates.clinical.model.entity.PrescribedRx;
+import com.specsavers.socrates.clinical.model.entity.Recommendations;
 import com.specsavers.socrates.clinical.model.entity.RefractedRx;
 import com.specsavers.socrates.clinical.model.entity.RxNotes;
+import com.specsavers.socrates.clinical.model.entity.RxOptionType;
 import com.specsavers.socrates.clinical.model.entity.SightTest;
 import com.specsavers.socrates.clinical.model.entity.SightTestType;
 import com.specsavers.socrates.clinical.model.type.DrugInfoDto;
@@ -39,6 +42,7 @@ import java.util.UUID;
 import static com.specsavers.socrates.clinical.util.CommonStaticValues.VALID_SIGHT_TEST_ID;
 import static com.specsavers.socrates.clinical.util.CommonStaticValues.VALID_TR_NUMBER_ID;
 import static com.specsavers.socrates.clinical.util.StaticHelpers.stringOfLength;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -421,6 +425,60 @@ class MutationResolverTest {
             var actual = mutationResolver.updateObjectiveAndIopDrugInfo(id, input);
 
             verify(sightTestMapper).map(same(input));
+            verify(sightTestRepository).save(same(sightTest));
+            assertEquals(input, actual);
+        }
+    }
+
+    @Nested
+    class UpdateOptionRecommendationsTest {
+        @Test
+        void testWithInvalidId() {
+            var id = UUID.randomUUID();
+            when(sightTestRepository.findById(eq(id))).thenReturn(Optional.empty());
+
+            assertThrows(NotFoundException.class, () -> mutationResolver.updateOptionRecommendations(id, null));
+        }
+
+        @Test
+        void testWithInvalidIdDispenseNote() {
+            var id = UUID.randomUUID();
+            when(sightTestRepository.findById(eq(id))).thenReturn(Optional.empty());
+
+            assertThrows(NotFoundException.class, () -> mutationResolver.updateDispenseNote(id, null));
+        }
+
+        @Test
+        void testValidInput() {
+            var id = UUID.randomUUID();
+            var sightTest = new SightTest();
+            var rec = new Recommendations();
+            rec.setPolar(true);
+
+            var input = new OptionRecommendations();
+            input.setRxOptionType(RxOptionType.NEW_RX);
+            input.setReferToDoctor(true);
+            input.setRecommendations(rec);
+
+            when(sightTestRepository.findById(id)).thenReturn(Optional.of(sightTest));
+
+            var actual = mutationResolver.updateOptionRecommendations(id, input);
+
+            verify(sightTestRepository).save(same(sightTest));
+            assertThat(actual).isEqualTo(input);
+        }
+
+
+        @Test
+        void testValidDispenseNote() {
+            var id = UUID.randomUUID();
+            var sightTest = new SightTest();
+            var input = "Some Notes";
+
+            when(sightTestRepository.findById(eq(id))).thenReturn(Optional.of(sightTest));
+
+            var actual = mutationResolver.updateDispenseNote(id, input);
+
             verify(sightTestRepository).save(same(sightTest));
             assertEquals(input, actual);
         }

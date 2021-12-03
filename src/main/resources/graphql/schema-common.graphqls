@@ -165,6 +165,8 @@ type SightTest {
     refractedRx: RefractedRx
     historyAndSymptoms: HistoryAndSymptoms!
     objectiveAndIop: ObjectiveAndIop
+    optionRecommendations: OptionRecommendations
+    dispenseNotes: String
 }
 
 type HistoryAndSymptoms {
@@ -283,6 +285,33 @@ type EyeIop {
     iop4: Int
 }
 
+enum RxOptionType {
+    NO_RX_REQUIRED,
+    NO_CHANGE,
+    NEW_RX
+}
+
+type Recommendations {
+    considerContactLens: Boolean
+    svd: Boolean
+    svi: Boolean
+    svn: Boolean
+    bif: Boolean
+    vari: Boolean
+    ultraClear: Boolean
+    ultraTough: Boolean
+    thinAndLight: Boolean
+    tints: Boolean
+    react: Boolean
+    polar: Boolean
+}
+
+type OptionRecommendations {
+    rxOptionType: RxOptionType
+    referToDoctor: Boolean
+    recommendations: Recommendations
+}
+
 type Query {
     "Returns a prescribedRX from legacy DB, searching by id OR testRoomNumber"
     prescribedRX(id: ID, testRoomNumber: Int): PrescribedRx
@@ -323,4 +352,10 @@ type Mutation {
 
     "Updates 'Objective and IOP(Intraocular pressure)' DrugInfo fields"
     updateObjectiveAndIopDrugInfo(sightTestId: ID!, input: DrugInfoInput!): DrugInfo!
+
+    "Updates 'Option Recommendations' main fields"
+    updateOptionRecommendations(sightTestId: ID!, input: OptionRecommendationsInput): OptionRecommendations!
+
+    "Updates Dispense Note field"
+    updateDispenseNote(sightTestId: ID!, text: String): String
 }

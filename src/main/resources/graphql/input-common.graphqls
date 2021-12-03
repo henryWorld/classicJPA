@@ -217,3 +217,25 @@ input ObjectiveAndIopInput {
     notes: String
 }
 
+input RecommendationsInput {
+    considerContactLens: Boolean
+    svd: Boolean
+    svi: Boolean
+    svn: Boolean
+    bif: Boolean
+    vari: Boolean
+    ultraClear: Boolean
+    ultraTough: Boolean
+    thinAndLight: Boolean
+    tints: Boolean
+    react: Boolean
+    polar: Boolean
+
+}
+
+input OptionRecommendationsInput {
+    rxOptionType: RxOptionType
+    referToDoctor: Boolean
+    recommendations: RecommendationsInput
+}
+

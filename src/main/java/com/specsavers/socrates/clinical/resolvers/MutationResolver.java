@@ -12,6 +12,7 @@ import com.specsavers.socrates.clinical.model.type.DrugInfoDto;
 import com.specsavers.socrates.clinical.model.type.HabitualRxDto;
 import com.specsavers.socrates.clinical.model.type.HistoryAndSymptomsDto;
 import com.specsavers.socrates.clinical.model.type.ObjectiveAndIopDto;
+import com.specsavers.socrates.clinical.model.entity.OptionRecommendations;
 import com.specsavers.socrates.clinical.model.type.PrescribedRxDto;
 import com.specsavers.socrates.clinical.model.type.RefractedRxDto;
 import com.specsavers.socrates.clinical.model.type.RxNotesDto;
@@ -96,8 +97,7 @@ public class MutationResolver implements GraphQLMutationResolver {
     @Transactional(propagation = Propagation.MANDATORY)
     public RefractedRxDto updateRefractedRx(UUID sightTestId, @Valid RefractedRxDto input) {
         log.info("Called updateRefractedRx: sightTestId={}", sightTestId);
-        var sightTest = sightTestRepository.findById(sightTestId)
-                .orElseThrow(() -> new NotFoundException(sightTestId));
+        var sightTest = getSightTest(sightTestId);
 
         if (sightTest.getRefractedRx() == null) {
             sightTest.setRefractedRx(new RefractedRx());
@@ -113,12 +113,9 @@ public class MutationResolver implements GraphQLMutationResolver {
     @Transactional(propagation = Propagation.MANDATORY)
     public RxNotesDto updateRefractedRxNote(UUID sightTestId, String text) {
         log.info("Called updateRefractedRxNote: sightTestId={}", sightTestId);
-        var textCheck = new FieldChecks("Text", text);
-        textCheck.notBlank();
-        textCheck.maxLength(220);
+        checkNotes(text);
 
-        var sightTest = sightTestRepository.findById(sightTestId)
-                .orElseThrow(() -> new NotFoundException(sightTestId));
+        var sightTest = getSightTest(sightTestId);
 
         var refractedRx = sightTest.getRefractedRx();
         if (refractedRx == null) {
@@ -140,8 +137,7 @@ public class MutationResolver implements GraphQLMutationResolver {
     //region PrescribedRx
     public PrescribedRxDto updatePrescribedRx(UUID sightTestId, @Valid PrescribedRxDto input) {
         log.info("Called updatePrescribedRx: sightTestId={}", sightTestId);
-        var sightTest = sightTestRepository.findById(sightTestId)
-                .orElseThrow(() -> new NotFoundException(sightTestId));
+        var sightTest = getSightTest(sightTestId);
 
         if (sightTest.getPrescribedRx() == null) {
             sightTest.setPrescribedRx(new PrescribedRx());
@@ -156,12 +152,9 @@ public class MutationResolver implements GraphQLMutationResolver {
 
     public RxNotesDto updatePrescribedRxNote(UUID sightTestId, String text) {
         log.info("Called updatePrescribedRxNote: sightTestId={}", sightTestId);
-        var textCheck = new FieldChecks("Text", text);
-        textCheck.notBlank();
-        textCheck.maxLength(220);
+        checkNotes(text);
 
-        var sightTest = sightTestRepository.findById(sightTestId)
-                .orElseThrow(() -> new NotFoundException(sightTestId));
+        var sightTest = getSightTest(sightTestId);
 
         var prescribedRx = sightTest.getPrescribedRx();
         if (prescribedRx == null) {
@@ -184,8 +177,7 @@ public class MutationResolver implements GraphQLMutationResolver {
     //region ObjectiveAndIOP
     public ObjectiveAndIopDto updateObjectiveAndIop(UUID sightTestId, @Valid ObjectiveAndIopDto input) {
         log.info("Called updateObjectiveAndIOP: sightTestId={}", sightTestId);
-        var sightTest = sightTestRepository.findById(sightTestId)
-            .orElseThrow(() -> new NotFoundException(sightTestId));
+        var sightTest = getSightTest(sightTestId);
 
         if (sightTest.getObjectiveAndIop() == null){
             sightTest.setObjectiveAndIop(new ObjectiveAndIop());
@@ -200,8 +192,7 @@ public class MutationResolver implements GraphQLMutationResolver {
 
     public DrugInfoDto updateObjectiveAndIopDrugInfo(UUID sightTestId, @Valid DrugInfoDto input) {
         log.info("Called updateObjectiveAndIopDrugInfo: sightTestId={}", sightTestId);
-        var sightTest = sightTestRepository.findById(sightTestId)
-            .orElseThrow(() -> new NotFoundException(sightTestId));
+        var sightTest = getSightTest(sightTestId);
 
         var objectiveAndIop = sightTest.getObjectiveAndIop();
         if (objectiveAndIop == null) {
@@ -215,6 +206,43 @@ public class MutationResolver implements GraphQLMutationResolver {
             .map(sightTestRepository.save(sightTest))
             .getObjectiveAndIop()
             .getDrugInfo();
+    }
+    //endregion
+
+    //region OptionRecommendations
+    public OptionRecommendations updateOptionRecommendations(UUID sightTestId, @Valid OptionRecommendations input) {
+        log.info("Called updateOptionRecommendations: sightTestId={}", sightTestId);
+        var sightTest = getSightTest(sightTestId);
+
+        sightTest.setOptionRecommendations(input);
+        sightTest = sightTestRepository.save(sightTest);
+
+        return sightTest.getOptionRecommendations();
+    }
+
+    public String updateDispenseNote(UUID sightTestId, String text) {
+        log.info("Called updateDispenseNote: sightTestId={}", sightTestId);
+        checkNotes(text);
+        var sightTest = getSightTest(sightTestId);
+
+        sightTest.setDispenseNotes(text);
+        sightTest = sightTestRepository.save(sightTest);
+
+        return sightTest.getDispenseNotes();
+    }
+    //endregion
+
+    //region Helpers
+    private SightTest getSightTest(UUID sightTestId){
+        return sightTestRepository
+                .findById(sightTestId)
+                .orElseThrow(() -> new NotFoundException(sightTestId));
+    }
+
+    private void checkNotes(String text){
+        var textCheck = new FieldChecks("Text", text);
+        textCheck.notBlank();
+        textCheck.maxLength(220);
     }
     //endregion
 }

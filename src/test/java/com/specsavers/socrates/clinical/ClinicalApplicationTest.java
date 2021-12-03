@@ -5,6 +5,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.graphql.spring.boot.test.GraphQLResponse;
 import com.graphql.spring.boot.test.GraphQLTestTemplate;
 import com.specsavers.socrates.clinical.legacy.model.rx.EyeRX;
+import com.specsavers.socrates.clinical.model.entity.OptionRecommendations;
+import com.specsavers.socrates.clinical.model.entity.Recommendations;
+import com.specsavers.socrates.clinical.model.entity.RxOptionType;
 import com.specsavers.socrates.clinical.model.type.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -20,6 +23,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 import static com.specsavers.socrates.clinical.util.CommonStaticValues.*;
+import static com.specsavers.socrates.clinical.util.StaticHelpers.stringOfLength;
 import static java.util.Collections.nCopies;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -484,6 +488,94 @@ class ClinicalApplicationTest {
             objectiveAndIop.setRightEye(rightEye);
 
             return objectiveAndIop;
+        }
+    }
+
+    @Nested
+    class UpdateOptionRecommendations {
+        @Test
+        void testUpdateDispenseNotes() throws IOException {
+            var input = "Some Notes";
+
+            var variables = new ObjectMapper().createObjectNode();
+            variables.put("sightTestId", VALID_SIGHT_TEST_ID.toString());
+            variables.put("input", input);
+
+            var response = graphQLTestTemplate.perform(UPDATE_DISPENSE_NOTE, variables);
+
+            response
+                    .assertThatNoErrorsArePresent()
+                    .assertThatField("$.data.updateDispenseNote").asString().isEqualTo(input);
+        }
+
+        @Test
+        void testUpdateDispenseNotesTriggersValidation() throws IOException {
+            var variables = new ObjectMapper().createObjectNode();
+            variables.put("sightTestId", VALID_SIGHT_TEST_ID.toString());
+            variables.put("input", stringOfLength(250));
+
+            graphQLTestTemplate.perform(UPDATE_DISPENSE_NOTE, variables)
+                    .assertThatField("$.errors[*].message")
+                    .asListOf(String.class)
+                    .contains("Text must not be longer than 220 characters")
+                    .and()
+                    .assertThatField("$.data.updateDispenseNote")
+                    .isNull();
+        }
+
+        @Test
+        void testUpdateOptionRecommendations() throws IOException {
+            var mapper = new ObjectMapper();
+            var optionRecommendations = getOptionRecommendations();
+            var variables = mapper.createObjectNode();
+            variables.put("sightTestId", VALID_SIGHT_TEST_ID.toString());
+            variables.set("input", mapper.valueToTree(optionRecommendations));
+
+            graphQLTestTemplate.perform(UPDATE_OPTION_RECOMMENDATIONS, variables)
+                    .assertThatNoErrorsArePresent()
+                    .assertThatField("$.data.updateOptionRecommendations").as(OptionRecommendations.class)
+                    .isEqualTo(optionRecommendations);
+        }
+
+        @Test
+        void testUpdateOptionRecommendationsTriggersValidation() throws IOException {
+            var mapper = new ObjectMapper();
+            var optionRecommendations = getOptionRecommendations();
+            optionRecommendations.setRxOptionType(RxOptionType.NO_RX_REQUIRED);
+
+            ObjectNode input = mapper.valueToTree(optionRecommendations);
+            //input.remove("drugInfo");
+
+            var variables = mapper.createObjectNode();
+            variables.put("sightTestId", VALID_SIGHT_TEST_ID.toString());
+            variables.set("input", input);
+
+            graphQLTestTemplate.perform(UPDATE_OPTION_RECOMMENDATIONS, variables)
+                    .assertThatField("$.errors[*].message")
+                    .asListOf(String.class)
+                    .contains("No recommendations are allowed when RxOptionType = NO_RX_REQUIRED")
+                    .and()
+                    .assertThatDataField()
+                    .isNull();
+        }
+
+        private OptionRecommendations getOptionRecommendations(){
+            var rec = new Recommendations();
+            rec.setPolar(true);
+            rec.setReact(true);
+            rec.setTints(true);
+            rec.setThinAndLight(true);
+            rec.setUltraTough(true);
+            rec.setVari(true);
+            rec.setSvn(true);
+            rec.setSvd(true);
+
+            var optionRecommendations = new OptionRecommendations();
+            optionRecommendations.setRxOptionType(RxOptionType.NEW_RX);
+            optionRecommendations.setReferToDoctor(true);
+            optionRecommendations.setRecommendations(rec);
+
+            return optionRecommendations;
         }
     }
 

@@ -1,5 +1,6 @@
 package com.specsavers.socrates.clinical.model.type;
 
+import com.specsavers.socrates.clinical.model.entity.OptionRecommendations;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,4 +22,6 @@ public final class SightTestDto {
     private RefractedRxDto refractedRx;
     private HistoryAndSymptomsDto historyAndSymptoms;
     private ObjectiveAndIopDto objectiveAndIop;
+    private OptionRecommendations optionRecommendations;
+    private String dispenseNotes;
 }

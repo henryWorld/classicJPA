@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
+    <changeSet id="011-add_option_rec_fields" author="paulo.giron">
+        <addColumn tableName="sight_test">
+            <column name="dispense_notes" type="varchar(220)" />
+            <column name="opt_rx_option_type" type="varchar(15)" />
+            <column name="opt_refer_to_doctor" type="bit" />
+            <column name="opt_consider_contact_lens" type="bit" />
+            <column name="opt_svd" type="bit" />
+            <column name="opt_svi" type="bit" />
+            <column name="opt_svn" type="bit" />
+            <column name="opt_bif" type="bit" />
+            <column name="opt_vari" type="bit" />
+            <column name="opt_ultra_clear" type="bit" />
+            <column name="opt_ultra_tough" type="bit" />
+            <column name="opt_thin_and_light" type="bit" />
+            <column name="opt_tints" type="bit" />
+            <column name="opt_react" type="bit" />
+            <column name="opt_polar" type="bit" />
+        </addColumn>
+    </changeSet>
+</databaseChangeLog>
