@@ -11,40 +11,40 @@ pr:
 
 pool:
   vmImage: 'ubuntu-latest'
-
 variables:
-- name: artifactFeed
-  value: 'Socrates-Cloud/Socrates-Cloud'
-- name: buildArtifactName
-  value: 'clinical'
-- name: buildMetadataName
-  value: 'build-metadata'  
-- name: sonarQubeServiceConnection
-  value: 'Specsavers IT - SonarQube - Prod'
-- name: acrServiceConnection
-  value: 'ACR - Corp - Non-Prod - Docker'
-- name: packageName
-  value: java-clinical_microservice
+  - name: artifactFeed
+    value: 'Socrates-Cloud/Socrates-Cloud'
+  - name: buildArtifactName
+    value: 'clinical'
+  - name: buildMetadataName
+    value: 'build-metadata'
+  - name: sonarQubeServiceConnection
+    value: 'Specsavers IT - SonarQube - Prod'
+  - name: acrServiceConnection
+    value: 'ACR - Corp - Non-Prod - Docker'
+  - name: packageName
+    value: java-clinical_microservice
 resources:
   repositories:
     - repository: templates
       type: git
       name: DevOpsEngineering/azure-pipeline_templates
-      ref: refs/tags/10.19.0
+      ref: refs/tags/12.7.0
     - repository: local_templates
       type: git
       name: Socrates-Cloud/azure-pipeline_templates
-      ref:  refs/tags/1.1.8  
+      ref: refs/tags/1.1.8
 
 jobs:
   - template: 'jobs/versioning/conventional-commit.yml@templates'
   - template: "jobs/maven/maven-ci.yml@templates"
     parameters:
-      jobName: mavenBuild
-      dependsOn: [ GitVersion]
+      jobName: apiMavenBuild
+      workingDirectory: api
+      dependsOn: [ GitVersion ]
       sonarServiceConnection: $(sonarQubeServiceConnection)
       buildGoals: test
-      effectivePomSkip: true      
+      effectivePomSkip: true
       runComponentTest: false
       componentGoals: verify
       artifactVersion: $[dependencies.GitVersion.outputs['setVersion.semVer']]
@@ -53,53 +53,131 @@ jobs:
       publishToFeed: true
       gitTag: true
       logToDeliveryDb: false
-      customPreSteps: []
+      customPreSteps:
+        - task: Maven@3
+          displayName: Update pom version
+          inputs:
+            mavenPomFile: "pom.xml"
+            mavenOptions: "$(MAVEN_OPTS)"
+            mavenAuthenticateFeed: true
+            javaHomeOption: "JDKVersion"
+            jdkVersionOption: "1.11"
+            jdkArchitectureOption: "x64"
+            goals: versions:set
+            options: '-DnewVersion=$(version) -DartifactId=* -DprocessAllModules -Drevision=$(version)'
+            effectivePomSkip: true
+            publishJUnitResults: false
+            sonarQubeRunAnalysis: false
       customPostSteps:
+        - task: Maven@3
+          displayName: Publish To Feeds
+          inputs:
+            mavenPomFile: "api/pom.xml"
+            mavenOptions: "$(MAVEN_OPTS)"
+            mavenAuthenticateFeed: true
+            javaHomeOption: "JDKVersion"
+            jdkVersionOption: "1.11"
+            jdkArchitectureOption: "x64"
+            goals: "deploy"
+            options: "-DskipTests -Drevision=$(version) -B -ntp"
+            effectivePomSkip: true
+            sonarQubeRunAnalysis: false
+            sqMavenPluginVersionChoice: pom
         - script: |
-            mkdir -p $(build.artifactStagingDirectory)/$(buildMetadataName)
-            echo $(jq -n --arg version "$(version)" '{version: $version}') > $(build.artifactStagingDirectory)/$(buildMetadataName)/metadata.json
+            mkdir -p $(build.artifactStagingDirectory)/$(buildMetadataName)-api
+            echo $(jq -n --arg version "$(version)" '{version: $version}') > $(build.artifactStagingDirectory)/$(buildMetadataName)-api/metadata.json
           displayName: Create Build Metadata
-        - publish: $(Build.ArtifactStagingDirectory)/$(buildMetadataName)
-          artifact: $(buildMetadataName)
+        - publish: $(Build.ArtifactStagingDirectory)/$(buildMetadataName)-api
+          artifact: $(buildMetadataName)-api
         - script: |
-            mv ./target/*.jar $(Build.ArtifactStagingDirectory)
+            mv ./api/target/*.jar $(Build.ArtifactStagingDirectory)
             ls -la $(Build.ArtifactStagingDirectory)
           displayName: Stage Jar Files
         - publish: $(Build.ArtifactStagingDirectory)
-          artifact: ${{ variables.buildArtifactName }} 
+          artifact: ${{ variables.buildArtifactName }}-api
+  - template: "jobs/maven/maven-ci.yml@templates"
+    parameters:
+      jobName: serviceMavenBuild
+      workingDirectory: service
+      dependsOn: [ GitVersion, apiMavenBuild ]
+      sonarServiceConnection: $(sonarQubeServiceConnection)
+      buildGoals: test
+      effectivePomSkip: true
+      runComponentTest: false
+      componentGoals: verify
+      artifactVersion: $[dependencies.GitVersion.outputs['setVersion.semVer']]
+      authenticationFeeds:
+        - ${{ variables.artifactFeed }}
+      publishToFeed: true
+      gitTag: true
+      logToDeliveryDb: false
+      customPreSteps:
+        - task: Maven@3
+          displayName: Update pom version
+          inputs:
+            mavenPomFile: "pom.xml"
+            mavenOptions: "$(MAVEN_OPTS)"
+            mavenAuthenticateFeed: true
+            javaHomeOption: "JDKVersion"
+            jdkVersionOption: "1.11"
+            jdkArchitectureOption: "x64"
+            goals: versions:set
+            options: '-DnewVersion=$(version) -DartifactId=* -DprocessAllModules -Drevision=$(version)'
+            effectivePomSkip: true
+            publishJUnitResults: false
+            sonarQubeRunAnalysis: false
+      customPostSteps:
+        - script: |
+            mkdir -p $(build.artifactStagingDirectory)/$(buildMetadataName)-service
+            echo $(jq -n --arg version "$(version)" '{version: $version}') > $(build.artifactStagingDirectory)/$(buildMetadataName)-service/metadata.json
+          displayName: Create Build Metadata
+        - publish: $(Build.ArtifactStagingDirectory)/$(buildMetadataName)-service
+          artifact: $(buildMetadataName)-service
+        - script: |
+            ls -la
+            mv ./service/target/*.jar $(Build.ArtifactStagingDirectory)
+            ls -la $(Build.ArtifactStagingDirectory)
+          displayName: Stage Jar Files
+        - publish: $(Build.ArtifactStagingDirectory)
+          artifact: ${{ variables.buildArtifactName }}-service
   - template: 'jobs/docker/docker-ci.yml@templates'
     parameters:
-      variables: 
+      variables:
         packageVersion: $[dependencies.GitVersion.outputs['setVersion.semVer']]
       customPreSteps: # 'Include any custom pre steps i.e pull an artifact before building the Dockerfile. Default: []'
-      - download: current
-        artifact: ${{ variables.buildArtifactName }}
-      - script: |
-          cp $(Pipeline.Workspace)/clinical/*.jar .
-          pwd
-          ls -la
-        displayName: Copy Jar
-      - script: |
-          contents="$(jq '.version="$(packageVersion)" | .appVersion="$(packageVersion)"' metadata.json)" && \
-          echo "${contents}" > metadata.json
-        displayName: Update metadata.json with versions
-        name: MetadataVersion
-      dependsOn: [GitVersion, mavenBuild]
+        - download: current
+          artifact: ${{ variables.buildArtifactName }}-service
+        - script: |
+            cp $(Pipeline.Workspace)/clinical-service/*.jar ./app.jar
+            pwd
+            ls -la
+            ls -la service
+            ls -la $(Pipeline.Workspace)
+            ls -la $(Pipeline.Workspace)/clinical-service
+            pwd $(build.artifactStagingDirectory)
+            ls -la $(build.artifactStagingDirectory)
+          displayName: Copy Jar
+        - script: |
+            contents="$(jq '.version="$(packageVersion)" | .appVersion="$(packageVersion)"' metadata.json)" && \
+            echo "${contents}" > metadata.json
+          displayName: Update metadata.json with versions
+          name: MetadataVersion
+      dependsOn: [ GitVersion, serviceMavenBuild ]
       dockerFile: ./Dockerfile
       gitTag: true # 'A Boolean to determine if a this job should tag the git repository. Default: true'
       logToDeliveryDb: true # 'Boolean to log the image to the delivery database. Default: true'
-      publishBranches: 
+      publishBranches:
         - 'refs/heads/main' # 'The list of branches that are allowed to publish the artifact. Default: refs/heads/master'
       dockerBuildArgs: |
-        --build-arg CLINICAL_VERSION=$(packageVersion)
+        --build-arg clinical_VERSION=$(packageVersion)
   - template: 'jobs/versioning/dynamic-branch-publish.yml@templates'
     parameters:
       terraformRepo: 'git://Socrates-Cloud/terraform-socrates_cloud'
       versionName: java_clinical_microservice_artifact_version
-      dependsOn: [GitVersion, mavenBuild, dockerCI]
+      dependsOn: [ GitVersion, serviceMavenBuild, dockerCI ]
   - template: 'jobs/versioning/component-publish.yml@templates'
     parameters:
       terraformRepo: 'git://Socrates-Cloud/terraform-socrates_cloud'
       versionName: java_clinical_microservice_artifact_version
-      dependsOn: [GitVersion, mavenBuild, dockerCI]
-  - template: 'jobs/versioning/build-comment-docker.yml@local_templates'     
+      dependsOn: [ GitVersion, serviceMavenBuild, dockerCI ]
+  - template: 'jobs/versioning/build-comment-docker.yml@local_templates'

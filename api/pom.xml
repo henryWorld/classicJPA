@@ -4,11 +4,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.specsavers.socrates</groupId>
-    <artifactId>clinical</artifactId>
+    <artifactId>clinical-api</artifactId>
     <version>dev</version>
-    <name>clinical</name>
-    <description>Clinical Service</description>
-    <packaging>pom</packaging>
+    <name>clinical-api</name>
+    <description>Clinical Service API</description>
 
     <properties>
         <java.version>11</java.version>
@@ -16,10 +15,29 @@
         <maven.compiler.source>11</maven.compiler.source>
     </properties>
 
-    <modules>
-        <module>api/pom.xml</module>
-        <module>service/pom.xml</module>
-    </modules>
+    <profiles>
+        <profile>
+            <id>dev</id>
+            <properties>
+                <spring-boot.run.profiles>dev</spring-boot.run.profiles>
+                <buildVersion>dev</buildVersion>
+            </properties>
+        </profile>
+    </profiles>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.22</version>
+        </dependency>
+        <dependency>
+            <groupId>com.specsavers.socrates</groupId>
+            <artifactId>socrates-common</artifactId>
+            <version>0.51.0</version>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
 
     <build>
         <plugins>
