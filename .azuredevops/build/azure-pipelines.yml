@@ -29,7 +29,7 @@ resources:
     - repository: templates
       type: git
       name: DevOpsEngineering/azure-pipeline_templates
-      ref: refs/tags/12.8.1
+      ref: fix/ABP-48-temp-remove-sonarqube-step
     - repository: local_templates
       type: git
       name: Socrates-Cloud/azure-pipeline_templates
@@ -109,7 +109,7 @@ jobs:
       authenticationFeeds:
         - ${{ variables.artifactFeed }}
       publishToFeed: true
-      gitTag: true
+      gitTag: false
       logToDeliveryDb: false
       customPreSteps:
         - task: Maven@3
