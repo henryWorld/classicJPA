@@ -29,7 +29,7 @@ resources:
     - repository: templates
       type: git
       name: DevOpsEngineering/azure-pipeline_templates
-      ref: refs/tags/12.7.0
+      ref: refs/tags/12.8.1
     - repository: local_templates
       type: git
       name: Socrates-Cloud/azure-pipeline_templates
@@ -50,8 +50,8 @@ jobs:
       artifactVersion: $[dependencies.GitVersion.outputs['setVersion.semVer']]
       authenticationFeeds:
         - ${{ variables.artifactFeed }}
-      publishToFeed: true
-      gitTag: true
+      publishToFeed: false
+      gitTag: false
       logToDeliveryDb: false
       customPreSteps:
         - task: Maven@3
@@ -169,7 +169,7 @@ jobs:
       publishBranches:
         - 'refs/heads/main' # 'The list of branches that are allowed to publish the artifact. Default: refs/heads/master'
       dockerBuildArgs: |
-        --build-arg clinical_VERSION=$(packageVersion)
+        --build-arg CLINICAL_VERSION=$(packageVersion)
   - template: 'jobs/versioning/dynamic-branch-publish.yml@templates'
     parameters:
       terraformRepo: 'git://Socrates-Cloud/terraform-socrates_cloud'
