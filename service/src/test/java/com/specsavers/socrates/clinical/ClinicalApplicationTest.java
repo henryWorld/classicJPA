@@ -58,6 +58,7 @@ import static com.specsavers.socrates.clinical.util.CommonStaticValues.VALID_SIG
 import static com.specsavers.socrates.clinical.util.CommonStaticValues.VALID_STORE_ID;
 import static com.specsavers.socrates.clinical.util.CommonStaticValues.VALID_TR_NUMBER_ID;
 import static com.specsavers.socrates.clinical.util.StaticHelpers.stringOfLength;
+import static com.specsavers.socrates.common.util.GraphQLUtils.CORRELATION_ID_HEADER_NAME;
 import static java.util.Collections.nCopies;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -71,6 +72,7 @@ class ClinicalApplicationTest {
         // Clear any headers from previous tests and set mandatory storeID
         this.graphQLTestTemplate
                 .withClearHeaders()
+                .withAdditionalHeader(CORRELATION_ID_HEADER_NAME, UUID.randomUUID().toString())
                 .withAdditionalHeader(STORE_ID_HTTP_HEADER_NAME, VALID_STORE_ID);
     }
 

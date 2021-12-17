@@ -37,7 +37,7 @@
         <dependency>
             <groupId>com.specsavers.socrates</groupId>
             <artifactId>socrates-common</artifactId>
-            <version>0.51.0</version>
+            <version>0.60.0</version>
         </dependency>
         <dependency>
             <groupId>com.specsavers.socrates</groupId>
