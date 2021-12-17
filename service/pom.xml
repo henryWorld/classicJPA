@@ -37,13 +37,14 @@
         <dependency>
             <groupId>com.specsavers.socrates</groupId>
             <artifactId>socrates-common</artifactId>
-            <version>0.60.0</version>
+            <version>0.61.0</version>
         </dependency>
         <dependency>
             <groupId>com.specsavers.socrates</groupId>
             <artifactId>clinical-api</artifactId>
             <version>dev</version>
         </dependency>
+
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
