@@ -29,7 +29,7 @@ resources:
     - repository: templates
       type: git
       name: DevOpsEngineering/azure-pipeline_templates
-      ref: fix/ABP-48-temp-remove-sonarqube-step
+      ref: refs/tags/12.8.4
     - repository: local_templates
       type: git
       name: Socrates-Cloud/azure-pipeline_templates
