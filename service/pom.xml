@@ -7,9 +7,8 @@
 
     <parent>
         <groupId>com.specsavers.socrates</groupId>
-        <artifactId>socrates-parent</artifactId>
-        <version>0.4.0</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <artifactId>clinical-parent</artifactId>
+        <version>dev</version>
     </parent>
 
     <artifactId>clinical-service</artifactId>
@@ -18,37 +17,29 @@
     <description>Clinical Service</description>
 
     <properties>
-        <mapstruct.version>1.4.2.Final</mapstruct.version>
-        <lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
+        <maven.deploy.skip>true</maven.deploy.skip>
     </properties>
-
-
-    <profiles>
-        <profile>
-            <id>dev</id>
-            <properties>
-                <spring-boot.run.profiles>dev</spring-boot.run.profiles>
-                <buildVersion>dev</buildVersion>
-            </properties>
-        </profile>
-    </profiles>
 
     <dependencies>
         <dependency>
             <groupId>com.specsavers.socrates</groupId>
             <artifactId>socrates-common</artifactId>
-            <version>0.61.0</version>
         </dependency>
         <dependency>
             <groupId>com.specsavers.socrates</groupId>
             <artifactId>clinical-api</artifactId>
             <version>dev</version>
         </dependency>
-
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct</artifactId>
+        </dependency>
+
+        <!-- test dependencies -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -57,15 +48,8 @@
         <dependency>
             <groupId>com.graphql-java-kickstart</groupId>
             <artifactId>graphql-spring-boot-starter-test</artifactId>
-            <version>${graphql-kickstart-spring-boot.version}</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.mapstruct</groupId>
-            <artifactId>mapstruct</artifactId>
-            <version>${mapstruct.version}</version>
-        </dependency>
-
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
@@ -74,14 +58,23 @@
     </dependencies>
 
     <build>
-        <finalName>app</finalName>
         <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
                     <annotationProcessorPaths>
                         <path>
                             <groupId>org.projectlombok</groupId>
@@ -102,36 +95,25 @@
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <configuration>
-                    <excludes>
-                        <exclude>
-                            <groupId>org.projectlombok</groupId>
-                            <artifactId>lombok</artifactId>
-                        </exclude>
-                    </excludes>
-                </configuration>
-            </plugin>
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
+                <artifactId>maven-resources-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>unpack</id>
+                        <id>copy-schema</id>
                         <phase>generate-sources</phase>
                         <goals>
-                            <goal>unpack</goal>
+                            <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <artifactItems>
-                                <artifactItem>
-                                    <groupId>com.specsavers.socrates</groupId>
-                                    <artifactId>clinical-api</artifactId>
-                                    <outputDirectory>${basedir}/target/classes</outputDirectory>
-                                    <includes>graphql/*.graphqls</includes>
-                                </artifactItem>
-                            </artifactItems>
+                            <outputDirectory>${basedir}/target/classes</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>../api/src/main/resources</directory>
+                                    <includes>
+                                        <include>graphql/*.graphqls</include>
+                                    </includes>
+                                </resource>
+                            </resources>
                         </configuration>
                     </execution>
                 </executions>
@@ -160,5 +142,4 @@
             </url>
         </repository>
     </distributionManagement>
-
 </project>
