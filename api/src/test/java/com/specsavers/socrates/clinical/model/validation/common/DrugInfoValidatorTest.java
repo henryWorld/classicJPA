@@ -13,7 +13,7 @@ import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
 
-import static com.specsavers.socrates.clinical.util.StaticHelpers.stringOfLength;
+import static com.specsavers.socrates.clinical.model.validation.common.TestHelpers.stringOfLength;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 

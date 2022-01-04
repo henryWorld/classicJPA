@@ -57,7 +57,7 @@ import static com.specsavers.socrates.clinical.util.CommonStaticValues.VALID_PRE
 import static com.specsavers.socrates.clinical.util.CommonStaticValues.VALID_SIGHT_TEST_ID;
 import static com.specsavers.socrates.clinical.util.CommonStaticValues.VALID_STORE_ID;
 import static com.specsavers.socrates.clinical.util.CommonStaticValues.VALID_TR_NUMBER_ID;
-import static com.specsavers.socrates.clinical.util.StaticHelpers.stringOfLength;
+import static com.specsavers.socrates.clinical.util.TestHelpers.stringOfLength;
 import static com.specsavers.socrates.common.util.GraphQLUtils.CORRELATION_ID_HEADER_NAME;
 import static java.util.Collections.nCopies;
 

@@ -30,7 +30,6 @@ public class CommonStaticValues {
     public static final int VALID_CUSTOMER_ID = 5001;
     public static final int NOT_FOUND_ID = 999;
     public static final String SIGHT_TEST = "SIGHT_TEST";
-    public static final String BALANCED = "BAL";
     public static final UUID VALID_SIGHT_TEST_ID = UUID.fromString("17396D3B-FD1F-4454-B309-41990D705E6B");
     public static final UUID VALID_HABITUAL_RX_ID = UUID.fromString("9A759CFA-E8D8-4DD8-932D-84F9DE23956C");
 

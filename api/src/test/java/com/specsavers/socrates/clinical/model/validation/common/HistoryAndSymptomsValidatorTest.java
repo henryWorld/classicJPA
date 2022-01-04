@@ -9,7 +9,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import static com.specsavers.socrates.clinical.util.StaticHelpers.stringOfLength;
+import static com.specsavers.socrates.clinical.model.validation.common.TestHelpers.stringOfLength;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 

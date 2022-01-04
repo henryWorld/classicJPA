@@ -12,7 +12,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import static com.specsavers.socrates.clinical.util.CommonStaticValues.BALANCED;
+import static com.specsavers.socrates.clinical.model.validation.common.TestHelpers.BALANCED;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -86,7 +86,7 @@ public class RefractedRxValidatorTest {
         }
 
         @ParameterizedTest(name = "validWhenRxSphere = {0}")
-        @ValueSource(strings = {"BAL", "+5.50", "-2.25"})
+        @ValueSource(strings = {BALANCED, "+5.50", "-2.25"})
         @NullSource
         void valid(String value) {
             var eyeRx = new EyeRxDto();

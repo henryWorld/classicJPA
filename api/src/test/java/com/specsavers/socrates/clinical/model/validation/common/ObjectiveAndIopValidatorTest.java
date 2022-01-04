@@ -10,8 +10,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import static com.specsavers.socrates.clinical.util.CommonStaticValues.BALANCED;
-import static com.specsavers.socrates.clinical.util.StaticHelpers.stringOfLength;
+import static com.specsavers.socrates.clinical.model.validation.common.TestHelpers.BALANCED;
+import static com.specsavers.socrates.clinical.model.validation.common.TestHelpers.stringOfLength;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
@@ -250,6 +250,5 @@ public class ObjectiveAndIopValidatorTest {
 
             assertThrows(ValidationException.class, () -> validator.validate(objectiveAndIopDto));
         }
-        
     }
 }
