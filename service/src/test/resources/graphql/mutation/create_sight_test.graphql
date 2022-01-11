@@ -1,6 +1,7 @@
 mutation ($trNumber: Int!, $type: SightTestType!) {
     createSightTest(trNumber: $trNumber, type: $type) {
         id
+        version
         trNumber
         type
     }

@@ -25,6 +25,7 @@ import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 import static com.specsavers.socrates.clinical.util.CommonStaticValues.VALID_TR_NUMBER_ID;
@@ -40,6 +41,7 @@ class SightTestMapperTest {
     void testMapSightTest() {
         var entity = new SightTest();
         var date = LocalDate.now();
+        var updated = OffsetDateTime.now();
         var id = UUID.randomUUID();
         entity.setCreationDate(date);
         entity.setId(id);
@@ -47,6 +49,8 @@ class SightTestMapperTest {
         entity.setType(SightTestType.MY_SIGHT_TEST);
         entity.setFamilyHistory("family");
         entity.setOccupation("occupation");
+        entity.setUpdated(updated);
+        entity.setVersion(4L);
 
         var actual = sightTestMapper.map(entity);
 
@@ -56,6 +60,7 @@ class SightTestMapperTest {
         assertEquals(SightTestTypeDto.MY_SIGHT_TEST, actual.getType());
         assertEquals("family", actual.getHistoryAndSymptoms().getFamilyHistory());
         assertEquals("occupation", actual.getHistoryAndSymptoms().getLifestyle().getOccupation());
+        assertThat(actual.getVersion()).isEqualTo(4L);
     }
 
     @Test
@@ -237,9 +242,10 @@ class SightTestMapperTest {
             assertEquals(rx.getUnaidedBinVA(), dto.getUnaidedVisualAcuity().getBinocular());
             assertNull(dto.getRightEye());
             assertNull(dto.getLeftEye());
+            assertNull(dto.getSpecificAddition());
             assertThat(dto)
                     .usingRecursiveComparison()
-                    .ignoringFields("distanceBinVisualAcuity", "bvd", "unaidedVisualAcuity", "rightEye", "leftEye",//Tested above
+                    .ignoringFields("distanceBinVisualAcuity", "bvd", "unaidedVisualAcuity", "rightEye", "leftEye", "specificAddition",//Tested above
                             "id", "testDate", "dispenseNotes", "recommendations", "clinicianName", "testRoomNumber")//Not used on get SightTests
                     .isEqualTo(entity);
         }

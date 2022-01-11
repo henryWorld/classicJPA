@@ -1,7 +1,0 @@
-mutation ($sightTestId: ID!){
-  updateRefractedRxNote(sightTestId: $sightTestId, text: "RefractedRx Notes"){
-    text
-    optomName
-    date
-  }
-}

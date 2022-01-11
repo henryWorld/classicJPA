@@ -158,9 +158,11 @@ enum SightTestType {
 
 type SightTest {
     id: ID!
+    version: Int!
     trNumber: Int
     type: SightTestType
     creationDate: Date
+    habitualRx: [HabitualRx!]!
     prescribedRx: PrescribedRx
     refractedRx: RefractedRx
     historyAndSymptoms: HistoryAndSymptoms!
@@ -192,9 +194,6 @@ type Lifestyle {
 type HabitualRx {
     "The id of the pair"
     id: ID!
-
-    "The sight test ID"
-    sightTestId: ID!
 
     "The pair number 1-3"
     pairNumber: Int!
@@ -326,36 +325,33 @@ type Mutation {
     "Creates and return a new Sight Test record on the main DB"
     createSightTest(trNumber: Int!, type: SightTestType!): SightTest!
 
-    "Creates and return a new habitual rx pair"
-    createHabitualRx(sightTestId: ID!, pairNumber: Int!, pair: HabitualRxInput!): HabitualRx!
-
     "Updates and returns an existing habitual rx pair"
-    updateHabitualRx(id: ID!, pair: HabitualRxInput!): HabitualRx!
+    updateHabitualRx(sightTestId: ID!, version: Int!, pairNumber: Int!, pair: HabitualRxInput!): SightTest!
 
     "Updates the history and symptoms on a sight test"
-    updateHistoryAndSymptoms(sightTestId: ID!, input: HistoryAndSymptomsInput!): HistoryAndSymptoms!
+    updateHistoryAndSymptoms(sightTestId: ID!, version: Int!, input: HistoryAndSymptomsInput!): SightTest!
 
     "Updates the refractedRx fields on a sight test"
-    updateRefractedRx(sightTestId: ID!, input: RefractedRxInput!): RefractedRx!
+    updateRefractedRx(sightTestId: ID!, version: Int!, input: RefractedRxInput!): SightTest!
 
     "Updates the refractedRx notes on a sight test"
-    updateRefractedRxNote(sightTestId: ID!, text: String): RxNotes
+    updateRefractedRxNote(sightTestId: ID!, version: Int!, text: String): SightTest!
 
     "Updates the prescribedRx fields on a sight test"
-    updatePrescribedRx(sightTestId: ID!, input: PrescribedRxInput): PrescribedRx!
+    updatePrescribedRx(sightTestId: ID!, version: Int!, input: PrescribedRxInput): SightTest!
 
     "Updates the prescribedRx notes on a sight test"
-    updatePrescribedRxNote(sightTestId: ID!, text: String): RxNotes
+    updatePrescribedRxNote(sightTestId: ID!, version: Int!, text: String): SightTest!
 
     "Updates 'Objective and IOP(Intraocular pressure)' main fields"
-    updateObjectiveAndIop(sightTestId: ID!, input: ObjectiveAndIopInput): ObjectiveAndIop!
+    updateObjectiveAndIop(sightTestId: ID!, version: Int!, input: ObjectiveAndIopInput): SightTest!
 
     "Updates 'Objective and IOP(Intraocular pressure)' DrugInfo fields"
-    updateObjectiveAndIopDrugInfo(sightTestId: ID!, input: DrugInfoInput!): DrugInfo!
+    updateObjectiveAndIopDrugInfo(sightTestId: ID!, version: Int!, input: DrugInfoInput!): SightTest!
 
     "Updates 'Option Recommendations' main fields"
-    updateOptionRecommendations(sightTestId: ID!, input: OptionRecommendationsInput): OptionRecommendations!
+    updateOptionRecommendations(sightTestId: ID!, version: Int!, input: OptionRecommendationsInput): SightTest!
 
     "Updates Dispense Note field"
-    updateDispenseNote(sightTestId: ID!, text: String): String
+    updateDispenseNote(sightTestId: ID!, version: Int!, text: String): SightTest!
 }

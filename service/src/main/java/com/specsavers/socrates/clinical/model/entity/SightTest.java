@@ -1,5 +1,6 @@
 package com.specsavers.socrates.clinical.model.entity;
 
+import com.specsavers.socrates.common.entity.Versioned;
 import lombok.Data;
 import org.hibernate.annotations.Type;
 
@@ -12,15 +13,17 @@ import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
+import javax.persistence.Version;
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 
 @Entity
 @Data
-public class SightTest {
+public class SightTest implements Versioned {
     @Id
     @GeneratedValue
     @Type(type = "uuid-char")
@@ -48,8 +51,8 @@ public class SightTest {
     @Column(name = "dispense_notes")
     private String dispenseNotes;
     
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "sight_test_id")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "sightTest")
+    @OrderBy("pairNumber")
     private List<HabitualRx> habitualRx;
 
     @Column(name = "reason_for_visit")
@@ -90,4 +93,11 @@ public class SightTest {
 
     @Column(name = "hobbies")
     private String hobbies;
+
+    @Version
+    @Column(name = "version")
+    private Long version;
+
+    @Column(name = "updated")
+    private OffsetDateTime updated;
 }

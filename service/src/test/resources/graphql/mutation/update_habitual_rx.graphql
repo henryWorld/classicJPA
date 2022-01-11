@@ -1,13 +1,15 @@
-mutation ($id: ID!, $clinicianName: String!) {
+mutation ($sightTestId: ID!, $version: Int!, $pairNumber: Int!, $clinicianName: String!, $leftCylinder: String!) {
   updateHabitualRx(
-    id: $id
+    sightTestId: $sightTestId
+    version: $version
+    pairNumber: $pairNumber
     pair: {
       clinicianName: $clinicianName
       age: 2
       leftEye: {
         addition: 1.23
         axis: 2.25
-        cylinder: "+1.50"
+        cylinder: $leftCylinder
         sphere: "+1.50"
       }
       rightEye: {
@@ -17,7 +19,9 @@ mutation ($id: ID!, $clinicianName: String!) {
         sphere: "+1.50"
       }
     }) {
-    id
-    clinicianName
+      habitualRx {
+        id
+        clinicianName
+      }
   }
 }

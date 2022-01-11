@@ -13,7 +13,6 @@ import java.util.UUID;
 @HabitualRxValidation
 public final class HabitualRxDto {
     private UUID id;
-    private UUID sightTestId;
     private Integer pairNumber;
     private Float age;
     private String clinicianName;

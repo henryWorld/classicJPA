@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -15,6 +16,8 @@ public final class SightTestDto {
     private Integer trNumber;
     private SightTestTypeDto type;
     private LocalDate creationDate;
+    private Long version;
+    private List<HabitualRxDto> habitualRx;
     private PrescribedRxDto prescribedRx;
     private RefractedRxDto refractedRx;
     private HistoryAndSymptomsDto historyAndSymptoms;

@@ -1,6 +1,9 @@
-mutation ($sightTestId: ID!, $input: String){
+mutation ($sightTestId: ID!, $version: Int!, $input: String){
   updateDispenseNote(
     sightTestId: $sightTestId
+    version: $version
     text: $input
-  )
+  ) {
+    dispenseNotes
+  }
 }

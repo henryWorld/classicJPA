@@ -12,9 +12,9 @@ public class CommonStaticValues {
     public static final String CREATE_HABITUAL_RX = "graphql/mutation/create_habitual_rx.graphql";
     public static final String UPDATE_HABITUAL_RX = "graphql/mutation/update_habitual_rx.graphql";
     public static final String UPDATE_REFRACTED_RX = "graphql/mutation/update_refracted_rx.graphql";
-    public static final String UPDATE_REFRACTED_RX_NOTE = "graphql/mutation/update_refracted_rx _note.graphql";
+    public static final String UPDATE_REFRACTED_RX_NOTE = "graphql/mutation/update_refracted_rx_note.graphql";
     public static final String UPDATE_PRESCRIBED_RX = "graphql/mutation/update_prescribed_rx.graphql";
-    public static final String UPDATE_PRESCRIBED_RX_NOTE = "graphql/mutation/update_prescribed_rx _note.graphql";
+    public static final String UPDATE_PRESCRIBED_RX_NOTE = "graphql/mutation/update_prescribed_rx_note.graphql";
     public static final String UPDATE_HISTORY_SYMPTOMS = "graphql/mutation/update_history_symptoms.graphql";
     public static final String GET_SIGHT_TEST = "graphql/query/get_sight_test.graphql";
     public static final String UNKNOWN_REQUEST = "graphql/query/unknown_request.graphql";
@@ -31,7 +31,7 @@ public class CommonStaticValues {
     public static final int NOT_FOUND_ID = 999;
     public static final String SIGHT_TEST = "SIGHT_TEST";
     public static final UUID VALID_SIGHT_TEST_ID = UUID.fromString("17396D3B-FD1F-4454-B309-41990D705E6B");
-    public static final UUID VALID_HABITUAL_RX_ID = UUID.fromString("9A759CFA-E8D8-4DD8-932D-84F9DE23956C");
+    public static final long VALID_SIGHT_TEST_VERSION = 1L;
 
     public static final EyeRX RIGHT_EYE = EyeRX.builder()
             .axis(50f)

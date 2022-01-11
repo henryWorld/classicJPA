@@ -1,6 +1,7 @@
-mutation ($sightTestId: ID!){
+mutation ($sightTestId: ID! $version: Int!){
   updatePrescribedRx(
     sightTestId: $sightTestId
+    version: $version
     input: {
       distanceBinVisualAcuity: "0123456789"
       bvd: 5.50
@@ -19,36 +20,38 @@ mutation ($sightTestId: ID!){
       recallPeriod: 24
     }
   ) {
-    distanceBinVisualAcuity
-    bvd
-    recallPeriod
-    unaidedVisualAcuity {
-      rightEye
-      binocular
-    }
-    rightEye {
-      sphere
-      cylinder
-      axis
-      distancePrism {
-        horizontal
-        vertical
+    prescribedRx {
+      distanceBinVisualAcuity
+      bvd
+      recallPeriod
+      unaidedVisualAcuity {
+        rightEye
+        binocular
       }
-    }
-    leftEye {
-      sphere
-      balSphere
-      cylinder
-      axis
-      distancePrism {
-        horizontal
-        vertical
+      rightEye {
+        sphere
+        cylinder
+        axis
+        distancePrism {
+          horizontal
+          vertical
+        }
       }
-    }
-    notes {
-      text
-      optomName
-      date
+      leftEye {
+        sphere
+        balSphere
+        cylinder
+        axis
+        distancePrism {
+          horizontal
+          vertical
+        }
+      }
+      notes {
+        text
+        optomName
+        date
+      }
     }
   }
 }

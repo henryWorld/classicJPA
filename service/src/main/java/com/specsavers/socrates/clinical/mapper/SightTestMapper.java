@@ -3,6 +3,7 @@ package com.specsavers.socrates.clinical.mapper;
 import com.specsavers.socrates.clinical.model.CurrentSpecsVaDto;
 import com.specsavers.socrates.clinical.model.DrugInfoDto;
 import com.specsavers.socrates.clinical.model.EyeRxDto;
+import com.specsavers.socrates.clinical.model.HabitualRxDto;
 import com.specsavers.socrates.clinical.model.HistoryAndSymptomsDto;
 import com.specsavers.socrates.clinical.model.ObjectiveAndIopDto;
 import com.specsavers.socrates.clinical.model.OptionRecommendationsDto;
@@ -14,6 +15,7 @@ import com.specsavers.socrates.clinical.model.SpecificAdditionDto;
 import com.specsavers.socrates.clinical.model.UnaidedVisualAcuityDto;
 import com.specsavers.socrates.clinical.model.entity.CurrentSpecsVA;
 import com.specsavers.socrates.clinical.model.entity.DrugInfo;
+import com.specsavers.socrates.clinical.model.entity.HabitualRx;
 import com.specsavers.socrates.clinical.model.entity.ObjectiveAndIop;
 import com.specsavers.socrates.clinical.model.entity.OptionRecommendations;
 import com.specsavers.socrates.clinical.model.entity.PrescribedRx;
@@ -101,4 +103,8 @@ public interface SightTestMapper {
 
     OptionRecommendationsDto map(OptionRecommendations entity);
 
+    @Mapping(target = "notes", source = "rx.notes")
+    @Mapping(target = "leftEye", source = "rx.leftEye")
+    @Mapping(target = "rightEye", source = "rx.rightEye")
+    HabitualRxDto fromEntity(HabitualRx entity);
 }

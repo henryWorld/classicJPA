@@ -1,0 +1,11 @@
+mutation ($sightTestId: ID!, $version: Int!){
+  updateRefractedRxNote(sightTestId: $sightTestId, version: $version, text: "RefractedRx Notes") {
+    refractedRx {
+      notes {
+        text
+        optomName
+        date
+      }
+    }
+  }
+}

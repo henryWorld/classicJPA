@@ -1,24 +1,27 @@
-mutation ($sightTestId: ID!, $input: OptionRecommendationsInput!){
+mutation ($sightTestId: ID!, $version: Int!, $input: OptionRecommendationsInput!) {
   updateOptionRecommendations(
     sightTestId: $sightTestId
+    version: $version
     input: $input
   )
   {
-    rxOptionType
-    referToDoctor
-    recommendations{
-      bif
-      considerContactLens
-      polar
-      react
-      svd
-      svi
-      svn
-      thinAndLight
-      tints
-      ultraClear
-      ultraTough
-      vari
+    optionRecommendations {
+      rxOptionType
+      referToDoctor
+      recommendations {
+        bif
+        considerContactLens
+        polar
+        react
+        svd
+        svi
+        svn
+        thinAndLight
+        tints
+        ultraClear
+        ultraTough
+        vari
+      }
     }
   }
 }

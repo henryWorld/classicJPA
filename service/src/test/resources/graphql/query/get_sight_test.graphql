@@ -1,6 +1,7 @@
 query($id: ID!) {
     sightTest(id: $id) {
         id
+        version
         type
     }
 }

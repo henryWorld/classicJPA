@@ -1,6 +1,7 @@
-mutation ($sightTestId: ID!){
+mutation ($sightTestId: ID!, $version: Int!){
   updateRefractedRx(
     sightTestId: $sightTestId
+    version: $version
     input: {
       distanceBinVisualAcuity: "0123456789"
       bvd: 5.50
@@ -18,43 +19,45 @@ mutation ($sightTestId: ID!){
       }
     }
   ) {
-    distanceBinVisualAcuity
-    bvd
-    currentSpecsVA {
-      rightEye
-      leftEye
-    }
-    unaidedVisualAcuity {
-      rightEye
-      binocular
-    }
-    specificAddition {
-      rightEye
-      leftEye
-      reason
-    }
-    rightEye {
-      sphere
-      cylinder
-      axis
-      distancePrism {
-        horizontal
-        vertical
+    refractedRx {
+      distanceBinVisualAcuity
+      bvd
+      currentSpecsVA {
+        rightEye
+        leftEye
       }
-    }
-    leftEye {
-      sphere
-      cylinder
-      axis
-      distancePrism {
-        horizontal
-        vertical
+      unaidedVisualAcuity {
+        rightEye
+        binocular
       }
-    }
-    notes {
-      text
-      optomName
-      date
+      specificAddition {
+        rightEye
+        leftEye
+        reason
+      }
+      rightEye {
+        sphere
+        cylinder
+        axis
+        distancePrism {
+          horizontal
+          vertical
+        }
+      }
+      leftEye {
+        sphere
+        cylinder
+        axis
+        distancePrism {
+          horizontal
+          vertical
+        }
+      }
+      notes {
+        text
+        optomName
+        date
+      }
     }
   }
 }

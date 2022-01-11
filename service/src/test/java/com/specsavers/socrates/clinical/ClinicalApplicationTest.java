@@ -19,8 +19,8 @@ import com.specsavers.socrates.clinical.model.RxNotesDto;
 import com.specsavers.socrates.clinical.model.RxOptionTypeDto;
 import com.specsavers.socrates.clinical.model.SpecificAdditionDto;
 import com.specsavers.socrates.clinical.model.UnaidedVisualAcuityDto;
+import com.specsavers.socrates.clinical.repository.SightTestRepository;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +32,6 @@ import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
-import static com.specsavers.socrates.clinical.util.CommonStaticValues.CREATE_HABITUAL_RX;
 import static com.specsavers.socrates.clinical.util.CommonStaticValues.CREATE_SIGHT_TEST;
 import static com.specsavers.socrates.clinical.util.CommonStaticValues.GET_PRESCRIBEDRX_BY_ID;
 import static com.specsavers.socrates.clinical.util.CommonStaticValues.GET_PRESCRIBEDRX_BY_TRNUMBER;
@@ -52,9 +51,9 @@ import static com.specsavers.socrates.clinical.util.CommonStaticValues.UPDATE_PR
 import static com.specsavers.socrates.clinical.util.CommonStaticValues.UPDATE_PRESCRIBED_RX_NOTE;
 import static com.specsavers.socrates.clinical.util.CommonStaticValues.UPDATE_REFRACTED_RX;
 import static com.specsavers.socrates.clinical.util.CommonStaticValues.UPDATE_REFRACTED_RX_NOTE;
-import static com.specsavers.socrates.clinical.util.CommonStaticValues.VALID_HABITUAL_RX_ID;
 import static com.specsavers.socrates.clinical.util.CommonStaticValues.VALID_PRESCRIBED_RX_ID;
 import static com.specsavers.socrates.clinical.util.CommonStaticValues.VALID_SIGHT_TEST_ID;
+import static com.specsavers.socrates.clinical.util.CommonStaticValues.VALID_SIGHT_TEST_VERSION;
 import static com.specsavers.socrates.clinical.util.CommonStaticValues.VALID_STORE_ID;
 import static com.specsavers.socrates.clinical.util.CommonStaticValues.VALID_TR_NUMBER_ID;
 import static com.specsavers.socrates.clinical.util.TestHelpers.stringOfLength;
@@ -66,6 +65,9 @@ class ClinicalApplicationTest {
 
     @Autowired
     private GraphQLTestTemplate graphQLTestTemplate;
+
+    @Autowired
+    private SightTestRepository repository;
 
     @BeforeEach
     public void setup() {
@@ -127,6 +129,9 @@ class ClinicalApplicationTest {
                     .assertThatNoErrorsArePresent()
                     .assertThatField("$.data.createSightTest.id").as(UUID.class)
                     .and()
+                    .assertThatField("$.data.createSightTest.version").asInteger()
+                    .isEqualTo(0)
+                    .and()
                     .assertThatField("$.data.createSightTest.trNumber").asInteger()
                     .isEqualTo(VALID_TR_NUMBER_ID)
                     .and()
@@ -136,40 +141,33 @@ class ClinicalApplicationTest {
     }
 
     @Nested
-    class CreateHabitualRxTest {
+    class UpdateHabitualRxTest {
         @Test
-        void testCreateHabitualRx() throws IOException {
-            var variables = new ObjectMapper().createObjectNode()
-                    .put("sightTestId", VALID_SIGHT_TEST_ID.toString())
-                    .put("pairNumber", 4)
-                    .put("name", "a name")
-                    .put("leftCylinder", "+2.50");
+        void testUpdateHabitualRx() throws IOException {
+            var variables = variables()
+                    .put("pairNumber", 1)
+                    .put("leftCylinder", "+1.50")
+                    .put("clinicianName", "new name");
 
-            var response = graphQLTestTemplate.perform(CREATE_HABITUAL_RX, variables);
+            var response = graphQLTestTemplate.perform(UPDATE_HABITUAL_RX, variables);
 
             response
                     .assertThatNoErrorsArePresent()
-                    .assertThatField("$.data.createHabitualRx.id").as(UUID.class).isNotNull()
-                    .and()
-                    .assertThatField("$.data.createHabitualRx.pairNumber").asInteger().isEqualTo(4)
-                    .and()
-                    .assertThatField("$.data.createHabitualRx.clinicianName").asString().isEqualTo("a name")
-                    .and()
-                    .assertThatField("$.data.createHabitualRx.leftEye.cylinder").asString().isEqualTo("+2.50");
+                    .assertThatField("$.data.updateHabitualRx.habitualRx[0].clinicianName").asString().isEqualTo("new name");
         }
 
         @Test
-        @DisplayName("Test createHabitualRx with an invalid rx")
-        void testCreateHabitualRxTriggersValidation() throws IOException {
+        void testUpdateInvalidHabitualRx() throws IOException {
             var variables = new ObjectMapper().createObjectNode()
                     .put("sightTestId", VALID_SIGHT_TEST_ID.toString())
-                    .put("pairNumber", 4)
-                    .put("name", "a name")
-                    .put("leftCylinder", "+30.25");
+                    .put("version", VALID_SIGHT_TEST_VERSION)
+                    .put("pairNumber", 1)
+                    .put("leftCylinder", "+30.25")
+                    .put("clinicianName", "name");
 
-            var graphQLResponse = graphQLTestTemplate.perform(CREATE_HABITUAL_RX, variables);
+            var response = graphQLTestTemplate.perform(UPDATE_HABITUAL_RX, variables);
 
-            graphQLResponse
+            response
                     .assertThatField("$.errors[*].message")
                     .asListOf(String.class)
                     .contains("Left cylinder must be between -20 and 20")
@@ -180,34 +178,15 @@ class ClinicalApplicationTest {
     }
 
     @Nested
-    class UpdatedHabitualRxTest {
-        @Test
-        void testUpdateHabitualRx() throws IOException {
-            var variables = new ObjectMapper().createObjectNode()
-                    .put("id", VALID_HABITUAL_RX_ID.toString())
-                    .put("clinicianName", "new name");
-
-            var response = graphQLTestTemplate.perform(UPDATE_HABITUAL_RX, variables);
-
-            response
-                    .assertThatNoErrorsArePresent()
-                    .assertThatField("$.data.updateHabitualRx.id").as(UUID.class).isEqualTo(VALID_HABITUAL_RX_ID)
-                    .and()
-                    .assertThatField("$.data.updateHabitualRx.clinicianName").asString().isEqualTo("new name");
-        }
-    }
-
-    @Nested
     class UpdateHistoryAndSymptomsTest {
         @Test
         void testUpdateHistoryAndSymptoms() throws IOException {
-            var variables = new ObjectMapper().createObjectNode()
-                    .put("sightTestId", VALID_SIGHT_TEST_ID.toString())
+            var variables = variables()
                     .put("reason", "blurry vision");
 
             var response = graphQLTestTemplate.perform(UPDATE_HISTORY_SYMPTOMS, variables);
 
-            final var prefix = "$.data.updateHistoryAndSymptoms.";
+            final var prefix = "$.data.updateHistoryAndSymptoms.historyAndSymptoms.";
             final var lifestyle = prefix + "lifestyle.";
             response
                     .assertThatNoErrorsArePresent()
@@ -230,6 +209,7 @@ class ClinicalApplicationTest {
         void testUpdateHistoryAndSymptomsTriggersValidation() throws IOException {
             var variables = new ObjectMapper().createObjectNode()
                     .put("sightTestId", VALID_SIGHT_TEST_ID.toString())
+                    .put("version", VALID_SIGHT_TEST_VERSION)
                     .put("reason", String.join("", nCopies(1001, "x")));
 
             var response = graphQLTestTemplate.perform(UPDATE_HISTORY_SYMPTOMS, variables);
@@ -255,6 +235,7 @@ class ClinicalApplicationTest {
             response
                     .assertThatNoErrorsArePresent()
                     .assertThatField(sightTest + "id").asString().isEqualTo(id)
+                    .and().assertThatField(sightTest + "version").asInteger()
                     .and().assertThatField(sightTest + "type").asString().isEqualTo("SIGHT_TEST");
         }
 
@@ -277,8 +258,7 @@ class ClinicalApplicationTest {
     class UpdateRefractedRxTest {
         @Test
         void testUpdateRefractedRxNote() throws IOException {
-            var variables = new ObjectMapper().createObjectNode()
-                    .put("sightTestId", VALID_SIGHT_TEST_ID.toString());
+            var variables = variables();
             var note = new RxNotesDto();
             note.setDate(LocalDate.now());
             note.setOptomName("Will Smith");
@@ -288,21 +268,18 @@ class ClinicalApplicationTest {
 
             response
                     .assertThatNoErrorsArePresent()
-                    .assertThatField("$.data.updateRefractedRxNote").as(RxNotesDto.class).isEqualTo(note);
+                    .assertThatField("$.data.updateRefractedRxNote.refractedRx.notes").as(RxNotesDto.class).isEqualTo(note);
         }
 
         @Test
         void testUpdateRefractedRx() throws IOException {
-            var variables = new ObjectMapper().createObjectNode()
-                    .put("sightTestId", VALID_SIGHT_TEST_ID.toString());
-
             //Add some notes, so we can validate it returns when updating RefractedRx
-            graphQLTestTemplate.perform(UPDATE_REFRACTED_RX_NOTE, variables);
-            var response = graphQLTestTemplate.perform(UPDATE_REFRACTED_RX, variables);
+            graphQLTestTemplate.perform(UPDATE_REFRACTED_RX_NOTE, variables());
+            var response = graphQLTestTemplate.perform(UPDATE_REFRACTED_RX, variables());
 
             response
                     .assertThatNoErrorsArePresent()
-                    .assertThatField("$.data.updateRefractedRx").as(RefractedRxDto.class).isEqualTo(getRefractedRxValidResponse());
+                    .assertThatField("$.data.updateRefractedRx.refractedRx").as(RefractedRxDto.class).isEqualTo(getRefractedRxValidResponse());
         }
 
         private RefractedRxDto getRefractedRxValidResponse() {
@@ -355,8 +332,7 @@ class ClinicalApplicationTest {
     class UpdatePrescribedRxTest {
         @Test
         void testUpdatePrescribedRxNote() throws IOException {
-            var variables = new ObjectMapper().createObjectNode()
-                    .put("sightTestId", VALID_SIGHT_TEST_ID.toString());
+            var variables = variables();
             var note = new RxNotesDto();
             note.setDate(LocalDate.now());
             note.setOptomName("Will Smith");
@@ -366,21 +342,18 @@ class ClinicalApplicationTest {
 
             response
                 .assertThatNoErrorsArePresent()
-                .assertThatField("$.data.updatePrescribedRxNote").as(RxNotesDto.class).isEqualTo(note);
+                .assertThatField("$.data.updatePrescribedRxNote.prescribedRx.notes").as(RxNotesDto.class).isEqualTo(note);
         }
 
         @Test
         void testUpdatePrescribedRx() throws IOException {
-            var variables = new ObjectMapper().createObjectNode()
-                    .put("sightTestId", VALID_SIGHT_TEST_ID.toString());
-            
             //Add some notes, so we can validate it returns when updating PrescribedRx
-            graphQLTestTemplate.perform(UPDATE_PRESCRIBED_RX_NOTE, variables);
-            var response = graphQLTestTemplate.perform(UPDATE_PRESCRIBED_RX, variables);
+            graphQLTestTemplate.perform(UPDATE_PRESCRIBED_RX_NOTE, variables());
+            var response = graphQLTestTemplate.perform(UPDATE_PRESCRIBED_RX, variables());
 
             response
                 .assertThatNoErrorsArePresent()
-                .assertThatField("$.data.updatePrescribedRx").as(PrescribedRxDto.class).isEqualTo(getPrescribedRxValidResponse());
+                .assertThatField("$.data.updatePrescribedRx.prescribedRx").as(PrescribedRxDto.class).isEqualTo(getPrescribedRxValidResponse());
         }
 
         private PrescribedRxDto getPrescribedRxValidResponse(){
@@ -437,15 +410,14 @@ class ClinicalApplicationTest {
             String expiry = YearMonth.now().format(expiryFormat);
             drugInfo.setExpiryDate(expiry);
 
-            var variables = mapper.createObjectNode();
-            variables.put("sightTestId", VALID_SIGHT_TEST_ID.toString());
+            var variables = variables();
             variables.set("input", mapper.valueToTree(drugInfo));
 
             var response = graphQLTestTemplate.perform(UPDATE_OBJECTIVE_AND_IOP_DRUG_INFO, variables);
 
             response
                     .assertThatNoErrorsArePresent()
-                    .assertThatField("$.data.updateObjectiveAndIopDrugInfo").as(DrugInfoDto.class).isEqualTo(drugInfo);
+                    .assertThatField("$.data.updateObjectiveAndIopDrugInfo.objectiveAndIop.drugInfo").as(DrugInfoDto.class).isEqualTo(drugInfo);
         }
 
         @Test
@@ -454,8 +426,9 @@ class ClinicalApplicationTest {
             var drugInfo = new DrugInfoDto();
             drugInfo.setExpiryDate("99/2021");
 
-            var variables = mapper.createObjectNode();
-            variables.put("sightTestId", VALID_SIGHT_TEST_ID.toString());
+            var variables = mapper.createObjectNode()
+                    .put("sightTestId", VALID_SIGHT_TEST_ID.toString())
+                    .put("version", VALID_SIGHT_TEST_VERSION);
             variables.set("input", mapper.valueToTree(drugInfo));
 
             graphQLTestTemplate.perform(UPDATE_OBJECTIVE_AND_IOP_DRUG_INFO, variables)
@@ -475,13 +448,12 @@ class ClinicalApplicationTest {
             ObjectNode input = mapper.valueToTree(objectiveAndIopDto);
             input.remove("drugInfo");
 
-            var variables = mapper.createObjectNode();
-            variables.put("sightTestId", VALID_SIGHT_TEST_ID.toString());
+            var variables = variables();
             variables.set("input", input);
 
             graphQLTestTemplate.perform(UPDATE_OBJECTIVE_AND_IOP, variables)
                     .assertThatNoErrorsArePresent()
-                    .assertThatField("$.data.updateObjectiveAndIop").as(ObjectiveAndIopDto.class)
+                    .assertThatField("$.data.updateObjectiveAndIop.objectiveAndIop").as(ObjectiveAndIopDto.class)
                     .isEqualTo(getObjectiveAndIopDto());
         }
 
@@ -494,8 +466,9 @@ class ClinicalApplicationTest {
             ObjectNode input = mapper.valueToTree(objectiveAndIopDto);
             input.remove("drugInfo");
 
-            var variables = mapper.createObjectNode();
-            variables.put("sightTestId", VALID_SIGHT_TEST_ID.toString());
+            var variables = mapper.createObjectNode()
+                    .put("sightTestId", VALID_SIGHT_TEST_ID.toString())
+                    .put("version", VALID_SIGHT_TEST_VERSION);
             variables.set("input", input);
 
             graphQLTestTemplate.perform(UPDATE_OBJECTIVE_AND_IOP, variables)
@@ -533,29 +506,32 @@ class ClinicalApplicationTest {
         void testUpdateDispenseNotes() throws IOException {
             var input = "Some Notes";
 
-            var variables = new ObjectMapper().createObjectNode();
-            variables.put("sightTestId", VALID_SIGHT_TEST_ID.toString());
-            variables.put("input", input);
+            var variables = new ObjectMapper().createObjectNode()
+                .put("sightTestId", VALID_SIGHT_TEST_ID.toString())
+                .put("version", VALID_SIGHT_TEST_VERSION)
+                .put("input", input);
 
             var response = graphQLTestTemplate.perform(UPDATE_DISPENSE_NOTE, variables);
 
             response
                     .assertThatNoErrorsArePresent()
-                    .assertThatField("$.data.updateDispenseNote").asString().isEqualTo(input);
+                    .assertThatField("$.data.updateDispenseNote.dispenseNotes").asString().isEqualTo(input);
         }
 
         @Test
         void testUpdateDispenseNotesTriggersValidation() throws IOException {
-            var variables = new ObjectMapper().createObjectNode();
-            variables.put("sightTestId", VALID_SIGHT_TEST_ID.toString());
-            variables.put("input", stringOfLength(250));
+            var variables = new ObjectMapper().createObjectNode()
+                    .put("sightTestId", VALID_SIGHT_TEST_ID.toString())
+                    .put("version", VALID_SIGHT_TEST_VERSION)
+                    .put("input", stringOfLength(250));
 
-            graphQLTestTemplate.perform(UPDATE_DISPENSE_NOTE, variables)
-                    .assertThatField("$.errors[*].message")
+            var response = graphQLTestTemplate.perform(UPDATE_DISPENSE_NOTE, variables);
+
+            response.assertThatField("$.errors[*].message")
                     .asListOf(String.class)
                     .contains("Text must not be longer than 220 characters")
                     .and()
-                    .assertThatField("$.data.updateDispenseNote")
+                    .assertThatField("$.data")
                     .isNull();
         }
 
@@ -563,13 +539,12 @@ class ClinicalApplicationTest {
         void testUpdateOptionRecommendations() throws IOException {
             var mapper = new ObjectMapper();
             var optionRecommendations = getOptionRecommendations();
-            var variables = mapper.createObjectNode();
-            variables.put("sightTestId", VALID_SIGHT_TEST_ID.toString());
+            var variables = variables();
             variables.set("input", mapper.valueToTree(optionRecommendations));
 
             graphQLTestTemplate.perform(UPDATE_OPTION_RECOMMENDATIONS, variables)
                     .assertThatNoErrorsArePresent()
-                    .assertThatField("$.data.updateOptionRecommendations").as(OptionRecommendationsDto.class)
+                    .assertThatField("$.data.updateOptionRecommendations.optionRecommendations").as(OptionRecommendationsDto.class)
                     .isEqualTo(optionRecommendations);
         }
 
@@ -582,8 +557,9 @@ class ClinicalApplicationTest {
             ObjectNode input = mapper.valueToTree(optionRecommendations);
             //input.remove("drugInfo");
 
-            var variables = mapper.createObjectNode();
-            variables.put("sightTestId", VALID_SIGHT_TEST_ID.toString());
+            var variables = mapper.createObjectNode()
+                    .put("sightTestId", VALID_SIGHT_TEST_ID.toString())
+                    .put("version", VALID_SIGHT_TEST_VERSION);
             variables.set("input", input);
 
             graphQLTestTemplate.perform(UPDATE_OPTION_RECOMMENDATIONS, variables)
@@ -650,5 +626,14 @@ class ClinicalApplicationTest {
                 .and()
                 .assertThatField("$.data.prescribedRX.leftEye").as(EyeRX.class)
                 .isEqualTo(LEFT_EYE);
-    }    
+    }
+
+    private ObjectNode variables() {
+        var version = repository.findById(VALID_SIGHT_TEST_ID)
+                .orElseThrow()
+                .getVersion();
+        return new ObjectMapper().createObjectNode()
+                .put("sightTestId", VALID_SIGHT_TEST_ID.toString())
+                .put("version", version);
+    }
 }

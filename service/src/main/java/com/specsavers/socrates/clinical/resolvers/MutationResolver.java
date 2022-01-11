@@ -9,40 +9,52 @@ import com.specsavers.socrates.clinical.model.ObjectiveAndIopDto;
 import com.specsavers.socrates.clinical.model.OptionRecommendationsDto;
 import com.specsavers.socrates.clinical.model.PrescribedRxDto;
 import com.specsavers.socrates.clinical.model.RefractedRxDto;
-import com.specsavers.socrates.clinical.model.RxNotesDto;
 import com.specsavers.socrates.clinical.model.SightTestDto;
 import com.specsavers.socrates.clinical.model.SightTestTypeDto;
+import com.specsavers.socrates.clinical.model.entity.HabitualRx;
 import com.specsavers.socrates.clinical.model.entity.ObjectiveAndIop;
 import com.specsavers.socrates.clinical.model.entity.PrescribedRx;
 import com.specsavers.socrates.clinical.model.entity.RefractedRx;
 import com.specsavers.socrates.clinical.model.entity.RxNotes;
 import com.specsavers.socrates.clinical.model.entity.SightTest;
-import com.specsavers.socrates.clinical.repository.HabitualRxRepository;
 import com.specsavers.socrates.clinical.repository.SightTestRepository;
 import com.specsavers.socrates.common.exception.NotFoundException;
 import com.specsavers.socrates.common.validation.FieldChecks;
 import graphql.kickstart.tools.GraphQLMutationResolver;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.Valid;
+import java.time.Clock;
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.util.Objects;
 import java.util.UUID;
+import java.util.function.Consumer;
+
+import static com.specsavers.socrates.common.entity.Versioned.withVersioned;
 
 @Slf4j
 @Component
-@AllArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PACKAGE)
 @Validated
 public class MutationResolver implements GraphQLMutationResolver {
 
     private final SightTestRepository sightTestRepository;
-    private final HabitualRxRepository habitualRxRepository;
     private final HabitualRxMapper habitualRxMapper;
     private final SightTestMapper sightTestMapper;
+    private final Clock clock;
+
+    @Autowired
+    public MutationResolver(SightTestRepository sightTestRepository, HabitualRxMapper habitualRxMapper, SightTestMapper sightTestMapper) {
+        this(sightTestRepository, habitualRxMapper, sightTestMapper, Clock.systemUTC());
+    }
 
     @Transactional(propagation = Propagation.MANDATORY)
     public SightTestDto createSightTest(Integer trNumber, SightTestTypeDto type) {
@@ -53,196 +65,173 @@ public class MutationResolver implements GraphQLMutationResolver {
         sightTest.setType(sightTestMapper.map(type));
         sightTest.setCreationDate(LocalDate.now());
 
-        sightTest = sightTestRepository.save(sightTest);
+        sightTest = save(sightTest);
 
         return sightTestMapper.map(sightTest);
     }
 
     @Transactional(propagation = Propagation.MANDATORY)
-    public HistoryAndSymptomsDto updateHistoryAndSymptoms(UUID sightTestId, @Valid HistoryAndSymptomsDto input) {
+    public SightTestDto updateHistoryAndSymptoms(UUID sightTestId, long version, @Valid HistoryAndSymptomsDto input) {
         log.info("Called updateHistoryAndSymptoms: sightTestId={}", sightTestId);
 
-        SightTest sightTest = sightTestRepository.findById(sightTestId)
-                .orElseThrow(() -> new NotFoundException(sightTestId));
-        sightTestMapper.update(sightTest, input);
-        var saved = sightTestRepository.save(sightTest);
-        return sightTestMapper
-                .map(saved)
-                .getHistoryAndSymptoms();
+        return mutation(sightTestId, version, sightTest -> sightTestMapper.update(sightTest, input));
     }
 
     @Transactional(propagation = Propagation.MANDATORY)
-    public HabitualRxDto createHabitualRx(UUID sightTestId, Integer pairNumber, @Valid HabitualRxDto input) {
-        if (!sightTestRepository.existsById(sightTestId)) {
-            throw new NotFoundException(sightTestId);
-        }
+    public SightTestDto updateHabitualRx(UUID sightTestId, long version, int pairNumber, @Valid HabitualRxDto input) {
+        return mutation(sightTestId, version, sightTest -> {
+            var habituals = sightTest.getHabitualRx();
 
-        var entity = habitualRxMapper.toEntity(sightTestId, pairNumber, input);
-        entity = habitualRxRepository.save(entity);
+            var entity = habituals.stream()
+                    .filter(rx -> Objects.equals(pairNumber, rx.getPairNumber()))
+                    .findFirst()
+                    .orElseGet(() -> {
+                        var rx = new HabitualRx();
+                        rx.setSightTest(sightTest);
+                        rx.setPairNumber(pairNumber);
+                        habituals.add(rx);
+                        return rx;
+                    });
 
-        return habitualRxMapper.fromEntity(entity);
+            habitualRxMapper.updateEntity(input, entity);
+        });
     }
 
     @Transactional(propagation = Propagation.MANDATORY)
-    public HabitualRxDto updateHabitualRx(UUID id, @Valid HabitualRxDto input) {
-        var entity = habitualRxRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(id));
-
-        habitualRxMapper.updateEntity(input, entity);
-        habitualRxRepository.save(entity);
-
-        return habitualRxMapper.fromEntity(entity);
-    }
-
-    @Transactional(propagation = Propagation.MANDATORY)
-    public RefractedRxDto updateRefractedRx(UUID sightTestId, @Valid RefractedRxDto input) {
+    public SightTestDto updateRefractedRx(UUID sightTestId, long version, @Valid RefractedRxDto input) {
         log.info("Called updateRefractedRx: sightTestId={}", sightTestId);
-        var sightTest = getSightTest(sightTestId);
 
-        if (sightTest.getRefractedRx() == null) {
-            sightTest.setRefractedRx(new RefractedRx());
-        }
+        return mutation(sightTestId, version, sightTest -> {
+            if (sightTest.getRefractedRx() == null) {
+                sightTest.setRefractedRx(new RefractedRx());
+            }
 
-        sightTestMapper.update(input, sightTest.getRefractedRx());
-
-        return sightTestMapper
-                .map(sightTestRepository.save(sightTest))
-                .getRefractedRx();
+            sightTestMapper.update(input, sightTest.getRefractedRx());
+        });
     }
 
     @Transactional(propagation = Propagation.MANDATORY)
-    public RxNotesDto updateRefractedRxNote(UUID sightTestId, String text) {
+    public SightTestDto updateRefractedRxNote(UUID sightTestId, long version, String text) {
         log.info("Called updateRefractedRxNote: sightTestId={}", sightTestId);
         checkNotes(text);
 
-        var sightTest = getSightTest(sightTestId);
+        return mutation(sightTestId, version, sightTest -> {
+            var refractedRx = sightTest.getRefractedRx();
+            if (refractedRx == null) {
+                refractedRx = new RefractedRx();
+                sightTest.setRefractedRx(refractedRx);
+            }
 
-        var refractedRx = sightTest.getRefractedRx();
-        if (refractedRx == null) {
-            refractedRx = new RefractedRx();
-            sightTest.setRefractedRx(refractedRx);
-        }
-
-        if (text == null) {
-            refractedRx.setNotes(null);
-        } else {
-            //OptomName is hardcoded while user service is not integrated
-            refractedRx.setNotes(new RxNotes(text, "Will Smith", LocalDate.now()));
-        }
-
-        var sightTestDto = sightTestMapper.map(sightTestRepository.save(sightTest));
-        return sightTestDto.getRefractedRx().getNotes();
+            if (text == null) {
+                refractedRx.setNotes(null);
+            } else {
+                //OptomName is hardcoded while user service is not integrated
+                refractedRx.setNotes(new RxNotes(text, "Will Smith", LocalDate.now()));
+            }
+        });
     }
 
     //region PrescribedRx
-    public PrescribedRxDto updatePrescribedRx(UUID sightTestId, @Valid PrescribedRxDto input) {
+    public SightTestDto updatePrescribedRx(UUID sightTestId, long version, @Valid PrescribedRxDto input) {
         log.info("Called updatePrescribedRx: sightTestId={}", sightTestId);
-        var sightTest = getSightTest(sightTestId);
 
-        if (sightTest.getPrescribedRx() == null) {
-            sightTest.setPrescribedRx(new PrescribedRx());
-        }
+        return mutation(sightTestId, version, sightTest -> {
+            if (sightTest.getPrescribedRx() == null) {
+                sightTest.setPrescribedRx(new PrescribedRx());
+            }
 
-        sightTestMapper.update(input, sightTest.getPrescribedRx());
-
-        return sightTestMapper
-                .map(sightTestRepository.save(sightTest))
-                .getPrescribedRx();
+            sightTestMapper.update(input, sightTest.getPrescribedRx());
+        });
     }
 
-    public RxNotesDto updatePrescribedRxNote(UUID sightTestId, String text) {
+    public SightTestDto updatePrescribedRxNote(UUID sightTestId, long version, String text) {
         log.info("Called updatePrescribedRxNote: sightTestId={}", sightTestId);
         checkNotes(text);
 
-        var sightTest = getSightTest(sightTestId);
+        return mutation(sightTestId, version, sightTest -> {
+            var prescribedRx = sightTest.getPrescribedRx();
+            if (prescribedRx == null) {
+                prescribedRx = new PrescribedRx();
+                sightTest.setPrescribedRx(prescribedRx);
+            }
 
-        var prescribedRx = sightTest.getPrescribedRx();
-        if (prescribedRx == null) {
-            prescribedRx = new PrescribedRx();
-            sightTest.setPrescribedRx(prescribedRx);
-        }
-
-        if (text == null) {
-            prescribedRx.setNotes(null);
-        } else {
-            //OptomName is hardcoded while user service is not integrated
-            prescribedRx.setNotes(new RxNotes(text, "Will Smith", LocalDate.now()));
-        }
-
-        var sightTestDto = sightTestMapper.map(sightTestRepository.save(sightTest));
-        return sightTestDto.getPrescribedRx().getNotes();
+            if (text == null) {
+                prescribedRx.setNotes(null);
+            } else {
+                //OptomName is hardcoded while user service is not integrated
+                prescribedRx.setNotes(new RxNotes(text, "Will Smith", LocalDate.now()));
+            }
+        });
     }
     //endregion
 
     //region ObjectiveAndIOP
-    public ObjectiveAndIopDto updateObjectiveAndIop(UUID sightTestId, @Valid ObjectiveAndIopDto input) {
+    public SightTestDto updateObjectiveAndIop(UUID sightTestId, long version, @Valid ObjectiveAndIopDto input) {
         log.info("Called updateObjectiveAndIOP: sightTestId={}", sightTestId);
-        var sightTest = getSightTest(sightTestId);
 
-        if (sightTest.getObjectiveAndIop() == null){
-            sightTest.setObjectiveAndIop(new ObjectiveAndIop());
-        }
+        return mutation(sightTestId, version, sightTest -> {
+            if (sightTest.getObjectiveAndIop() == null) {
+                sightTest.setObjectiveAndIop(new ObjectiveAndIop());
+            }
 
-        sightTestMapper.update(input, sightTest.getObjectiveAndIop());
-
-        return sightTestMapper
-            .map(sightTestRepository.save(sightTest))
-            .getObjectiveAndIop();
+            sightTestMapper.update(input, sightTest.getObjectiveAndIop());
+        });
     }
 
-    public DrugInfoDto updateObjectiveAndIopDrugInfo(UUID sightTestId, @Valid DrugInfoDto input) {
+    public SightTestDto updateObjectiveAndIopDrugInfo(UUID sightTestId, long version, @Valid DrugInfoDto input) {
         log.info("Called updateObjectiveAndIopDrugInfo: sightTestId={}", sightTestId);
-        var sightTest = getSightTest(sightTestId);
 
-        var objectiveAndIop = sightTest.getObjectiveAndIop();
-        if (objectiveAndIop == null) {
-            objectiveAndIop = new ObjectiveAndIop();
-            sightTest.setObjectiveAndIop(objectiveAndIop);
-        }
+        return mutation(sightTestId, version, sightTest -> {
+            var objectiveAndIop = sightTest.getObjectiveAndIop();
+            if (objectiveAndIop == null) {
+                objectiveAndIop = new ObjectiveAndIop();
+                sightTest.setObjectiveAndIop(objectiveAndIop);
+            }
 
-        objectiveAndIop.setDrugInfo(sightTestMapper.map(input));
-
-        return sightTestMapper
-            .map(sightTestRepository.save(sightTest))
-            .getObjectiveAndIop()
-            .getDrugInfo();
+            objectiveAndIop.setDrugInfo(sightTestMapper.map(input));
+        });
     }
     //endregion
 
     //region OptionRecommendations
-    public OptionRecommendationsDto updateOptionRecommendations(UUID sightTestId, @Valid OptionRecommendationsDto input) {
+    public SightTestDto updateOptionRecommendations(UUID sightTestId, long version, @Valid OptionRecommendationsDto input) {
         log.info("Called updateOptionRecommendations: sightTestId={}", sightTestId);
-        var sightTest = getSightTest(sightTestId);
 
-        sightTest.setOptionRecommendations(sightTestMapper.map(input));
-        sightTest = sightTestRepository.save(sightTest);
-
-        return sightTestMapper.map(sightTest.getOptionRecommendations());
+        return mutation(sightTestId, version, sightTest -> {
+            var recommendations = sightTestMapper.map(input);
+            sightTest.setOptionRecommendations(recommendations);
+        });
     }
 
-    public String updateDispenseNote(UUID sightTestId, String text) {
+    public SightTestDto updateDispenseNote(UUID sightTestId, long version, String text) {
         log.info("Called updateDispenseNote: sightTestId={}", sightTestId);
         checkNotes(text);
-        var sightTest = getSightTest(sightTestId);
 
-        sightTest.setDispenseNotes(text);
-        sightTest = sightTestRepository.save(sightTest);
-
-        return sightTest.getDispenseNotes();
+        return mutation(sightTestId, version, sightTest -> sightTest.setDispenseNotes(text));
     }
     //endregion
 
     //region Helpers
-    private SightTest getSightTest(UUID sightTestId){
-        return sightTestRepository
-                .findById(sightTestId)
-                .orElseThrow(() -> new NotFoundException(sightTestId));
+    private SightTestDto mutation(UUID id, long version, Consumer<SightTest> mutation) {
+        var sightTest = sightTestRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(id));
+
+        return withVersioned(sightTest, version, () -> {
+            mutation.accept(sightTest);
+            var saved = save(sightTest);
+            return sightTestMapper.map(saved);
+        });
     }
 
     private void checkNotes(String text){
         var textCheck = new FieldChecks("Text", text);
         textCheck.notBlank();
         textCheck.maxLength(220);
+    }
+
+    private SightTest save(SightTest sightTest) {
+        sightTest.setUpdated(OffsetDateTime.now(clock));
+        return sightTestRepository.saveAndFlush(sightTest);
     }
     //endregion
 }

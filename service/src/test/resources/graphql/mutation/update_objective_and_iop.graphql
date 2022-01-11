@@ -1,26 +1,29 @@
-mutation ($sightTestId: ID!, $input: ObjectiveAndIopInput!){
+mutation ($sightTestId: ID!, $version: Int!, $input: ObjectiveAndIopInput!){
   updateObjectiveAndIop(
     sightTestId: $sightTestId
+    version: $version
     input: $input
   )
   {
-    time
-    notes
-    rightEye{
-      sphere
-      cylinder
-      axis
-      visualAcuity
-      iop1
-      iop2
-      iop3
-      iop4
-    }
-    drugInfo{
+    objectiveAndIop {
       time
-      drugUsed
-      batchNo
-      expiryDate
+      notes
+      rightEye{
+        sphere
+        cylinder
+        axis
+        visualAcuity
+        iop1
+        iop2
+        iop3
+        iop4
+      }
+      drugInfo{
+        time
+        drugUsed
+        batchNo
+        expiryDate
+      }
     }
   }
 }
