@@ -39,7 +39,7 @@ class ContactLensAssessmentServiceTest {
     @BeforeEach
     void setUp() {
         var clAssignment = CommonStaticValues.CONTACT_LENS_ASSESSMENT.build();
-        lenient().when(contactLensRepository.save(any())).thenReturn(clAssignment);
+        lenient().when(contactLensRepository.saveAndFlush(any())).thenReturn(clAssignment);
         lenient().when(contactLensRepository.findById(any())).thenReturn(Optional.of(clAssignment));
         lenient().when(contactLensMapper.fromEntity(clAssignment)).thenReturn(contactLensAssessmentDto);
     }
@@ -47,7 +47,7 @@ class ContactLensAssessmentServiceTest {
     @Test
     void testPersistingContactLensAssessment() {
         var savedClAssignment = contactLensAssessmentService.save(contactLensAssessment);
-        verify(contactLensRepository).save(any());
+        verify(contactLensRepository).saveAndFlush(any());
         assertNotNull(savedClAssignment);
         assertEquals(savedClAssignment.getId(), contactLensAssessment.getId());
         assertEquals(savedClAssignment.getCreationDate(), contactLensAssessment.getCreationDate());

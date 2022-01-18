@@ -20,7 +20,7 @@ public class ContactLensAssessmentService {
     ContactLensMapper contactLensMapper;
 
     public ContactLensAssessmentDto save(ContactLensAssessment clAssessment) {
-        return contactLensMapper.fromEntity(contactLensRepository.save(clAssessment));
+        return contactLensMapper.fromEntity(contactLensRepository.saveAndFlush(clAssessment));
     }
 
     public ContactLensAssessmentDto getContactLensAssessment(UUID id) {

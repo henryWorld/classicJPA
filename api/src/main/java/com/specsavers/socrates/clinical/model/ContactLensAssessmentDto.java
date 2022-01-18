@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
@@ -14,7 +14,6 @@ import java.util.UUID;
 @NoArgsConstructor
 public final class ContactLensAssessmentDto {
     private UUID id;
-    private int trNumber;
-    private Instant creationDate;
+    private LocalDateTime creationDate;
     private Long version;
 }

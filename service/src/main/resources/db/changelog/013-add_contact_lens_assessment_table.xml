@@ -4,7 +4,7 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
 
-    <changeSet id="002-add012-add_contact_lens_assessment_table" author="henry.efor">
+    <changeSet id="013-add_contact_lens_assessment_table" author="henry.efor">
         <createTable tableName="contact_lens_assessment">
             <column name="id" type="uuid">
                 <constraints nullable="false" primaryKey="true"/>
@@ -16,7 +16,7 @@
                 <constraints nullable="false"/>
             </column>
             <column name="updated_date" type="timestamp"/>
-            <column name="created_date" type="timestamp"/>
+            <column name="creation_date" type="timestamp"/>
         </createTable>
     </changeSet>
 

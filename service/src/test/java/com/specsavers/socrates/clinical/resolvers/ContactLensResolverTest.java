@@ -1,53 +1,97 @@
 package com.specsavers.socrates.clinical.resolvers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.graphql.spring.boot.test.GraphQLResponse;
+import com.graphql.spring.boot.test.GraphQLTestTemplate;
 import com.specsavers.socrates.clinical.model.ContactLensAssessmentDto;
 import com.specsavers.socrates.clinical.service.ContactLensAssessmentService;
-import com.specsavers.socrates.clinical.util.CommonStaticValues;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
-import java.time.Clock;
-import java.time.Instant;
-import java.time.ZoneId;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static com.specsavers.socrates.clinical.util.CommonStaticValues.*;
+import static com.specsavers.socrates.common.util.GraphQLUtils.CORRELATION_ID_HEADER_NAME;
+import static graphql.Assert.assertTrue;
 import static org.mockito.Mockito.*;
+import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 
-@ExtendWith(MockitoExtension.class)
+
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@AutoConfigureTestDatabase(replace = Replace.ANY)
 class ContactLensResolverTest {
     private static final int TR_NUMBER = 24;
-    @Mock
+
+    @MockBean
     ContactLensAssessmentService contactLensAssessmentService;
-    @InjectMocks
-    ContactLensResolver contactLensResolver;
-    private final Clock clock = Clock.fixed(Instant.parse("2022-01-01T00:00:00.00Z"), ZoneId.systemDefault());
+
+    @Autowired
+    private GraphQLTestTemplate graphQLTestTemplate;
+
     private ContactLensAssessmentDto contactLensAssessmentDto;
+    private ObjectNode parameter;
 
     @BeforeEach
     void setUp() {
-        contactLensAssessmentDto = CommonStaticValues.CONTACT_LENS_ASSESSMENT_DTO
-                .trNumber(TR_NUMBER)
+        parameter = new ObjectMapper()
+                .registerModule(new JavaTimeModule())
+                .createObjectNode();
+        parameter.put("trNumber", TR_NUMBER);
+
+        this.graphQLTestTemplate
+                .withClearHeaders()
+                .withAdditionalHeader(CORRELATION_ID_HEADER_NAME, UUID.randomUUID().toString())
+                .withAdditionalHeader(STORE_ID_HTTP_HEADER_NAME, VALID_STORE_ID);
+
+        contactLensAssessmentDto = CONTACT_LENS_ASSESSMENT_DTO
                 .build();
 
         lenient().when(contactLensAssessmentService.save(any())).thenReturn(contactLensAssessmentDto);
         lenient().when(contactLensAssessmentService.getContactLensAssessment(any())).thenReturn(contactLensAssessmentDto);
-        contactLensResolver = new ContactLensResolver(contactLensAssessmentService, clock);
     }
 
     @Test
-    void testPersistingContactLensAssessment() {
-        var createdContactLensAssessmentDto = contactLensResolver.createContactLensAssessment(TR_NUMBER);
-        assertEquals(createdContactLensAssessmentDto, contactLensAssessmentDto);
+    void testPersistingContactLensAssessment() throws IOException {
+        GraphQLResponse response = graphQLTestTemplate
+                .perform(CREATE_CL_ASSESSMENT, parameter);
+        assertTrue(response.isOk());
+        response.assertThatNoErrorsArePresent()
+                .assertThatField("$.data.createContactLensAssessment.id").as(UUID.class)
+                .and().assertThatField("$.data.createContactLensAssessment.version").asInteger()
+                .and().assertThatField("$.data.createContactLensAssessment.creationDate").as(LocalDate.class);
+        verify(contactLensAssessmentService).save(any());
     }
 
+
     @Test
-    void testGetContactLensAssessment() {
-        var createdContactLensAssessmentDto = contactLensResolver.createContactLensAssessment(TR_NUMBER);
-        var retrievedContactLensAssessmentDto = contactLensResolver.retrieveContactLensAssessment(createdContactLensAssessmentDto.getId());
-        assertEquals(retrievedContactLensAssessmentDto, createdContactLensAssessmentDto);
+    void testGetContactLensAssessmentGivenId() throws IOException {
+
+        GraphQLResponse response = graphQLTestTemplate
+                .perform(CREATE_CL_ASSESSMENT, parameter);
+        assertTrue(response.isOk());
+        final var uuid = response.get("$.data.createContactLensAssessment.id");
+
+        var variables = new ObjectMapper()
+                .registerModule(new JavaTimeModule())
+                .createObjectNode();
+        variables.put("id", uuid);
+
+        GraphQLResponse clDtoResponse = graphQLTestTemplate
+                .perform(GET_CL_ASSESSMENT, variables);
+        assertTrue(clDtoResponse.isOk());
+
+        clDtoResponse.assertThatNoErrorsArePresent()
+                .assertThatField("$.data.contactLensAssessment.id").asString().isEqualTo(uuid)
+                .and().assertThatField("$.data.contactLensAssessment.version").asInteger()
+                .and().assertThatField("$.data.contactLensAssessment.creationDate").as(LocalDate.class);
+        verify(contactLensAssessmentService).getContactLensAssessment(any());
     }
 }

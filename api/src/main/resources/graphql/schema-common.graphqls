@@ -326,7 +326,7 @@ type Query {
 
     sightTests(customerID: ID!): [SightTest]
 
-    retrieveContactLensAssessment(id: ID!): ContactLensAssessment!
+    contactLensAssessment(id: ID!): ContactLensAssessment!
 }
 
 type Mutation {

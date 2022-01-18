@@ -5,11 +5,12 @@ import com.specsavers.socrates.clinical.legacy.model.rx.Prism;
 import com.specsavers.socrates.clinical.model.ContactLensAssessmentDto;
 import com.specsavers.socrates.clinical.model.entity.ContactLensAssessment;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 public class CommonStaticValues {
     public static final String CREATE_SIGHT_TEST = "graphql/mutation/create_sight_test.graphql";
+    public static final String CREATE_CL_ASSESSMENT = "graphql/mutation/create_cl_assessment.graphql";
     public static final String GET_PRESCRIBEDRX_BY_TRNUMBER = "graphql/query/get_prescribedRX_by_trNumber.graphql";
     public static final String GET_PRESCRIBEDRX_BY_ID = "graphql/query/get_prescribedRX_by_ID.graphql";
     public static final String CREATE_HABITUAL_RX = "graphql/mutation/create_habitual_rx.graphql";
@@ -20,6 +21,7 @@ public class CommonStaticValues {
     public static final String UPDATE_PRESCRIBED_RX_NOTE = "graphql/mutation/update_prescribed_rx_note.graphql";
     public static final String UPDATE_HISTORY_SYMPTOMS = "graphql/mutation/update_history_symptoms.graphql";
     public static final String GET_SIGHT_TEST = "graphql/query/get_sight_test.graphql";
+    public static final String GET_CL_ASSESSMENT = "graphql/query/get_cl_assessment.graphql";
     public static final String UNKNOWN_REQUEST = "graphql/query/unknown_request.graphql";
     public static final String UPDATE_OBJECTIVE_AND_IOP = "graphql/mutation/update_objective_and_iop.graphql";
     public static final String UPDATE_OBJECTIVE_AND_IOP_DRUG_INFO = "graphql/mutation/update_objective_and_iop_drug_info.graphql";
@@ -66,13 +68,11 @@ public class CommonStaticValues {
                 .id(VALID_CONTACT_LENS_ID)
                 .trNumber(23)
                 .version(20L)
-                .creationDate(Instant.now())
-                .updatedDate(Instant.now());
+                .creationDate(LocalDateTime.now())
+                .updatedDate(LocalDateTime.now());
 
     public static final ContactLensAssessmentDto.ContactLensAssessmentDtoBuilder CONTACT_LENS_ASSESSMENT_DTO =  ContactLensAssessmentDto.builder()
             .id(VALID_CONTACT_LENS_ID)
-            .trNumber(23)
             .version(20L)
-            .creationDate(Instant.now());
-
+            .creationDate(LocalDateTime.now());
 }
