@@ -127,7 +127,7 @@ class MutationResolverTest {
     }
 
     @Nested
-    class UpdateHistoryAndSymptoms {
+    class UpdateHistoryAndSymptomsTests {
         private HistoryAndSymptomsDto historyAndSymptoms;
 
         @BeforeEach

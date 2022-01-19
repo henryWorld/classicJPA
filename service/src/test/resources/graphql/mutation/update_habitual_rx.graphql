@@ -7,14 +7,14 @@ mutation ($sightTestId: ID!, $version: Int!, $pairNumber: Int!, $clinicianName: 
       clinicianName: $clinicianName
       age: 2
       leftEye: {
-        addition: 1.23
-        axis: 2.25
+        addition: 1.25
+        axis: 2.00
         cylinder: $leftCylinder
         sphere: "+1.50"
       }
       rightEye: {
-        addition: 1.23
-        axis: 4.56
+        addition: 1.25
+        axis: 4.50
         cylinder: "+1.25"
         sphere: "+1.50"
       }

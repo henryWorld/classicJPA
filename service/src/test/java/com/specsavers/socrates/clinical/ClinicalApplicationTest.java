@@ -171,7 +171,7 @@ class ClinicalApplicationTest {
             response
                     .assertThatField("$.errors[*].message")
                     .asListOf(String.class)
-                    .contains("Left cylinder must be between -20 and 20")
+                    .contains("Left eye: Cylinder must be between -20 and 20")
                     .and()
                     .assertThatDataField()
                     .isNull();
@@ -502,7 +502,7 @@ class ClinicalApplicationTest {
     }
 
     @Nested
-    class UpdateOptionRecommendations {
+    class UpdateOptionRecommendationsTests {
         @Test
         void testUpdateDispenseNotes() throws IOException {
             var input = "Some Notes";
