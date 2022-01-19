@@ -1,0 +1,7 @@
+mutation ($trNumber: Int!) {
+    createContactLensAssessment(trNumber: $trNumber) {
+        id
+        version
+        creationDate
+    }
+}

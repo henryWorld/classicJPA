@@ -311,6 +311,12 @@ type OptionRecommendations {
     recommendations: Recommendations
 }
 
+type ContactLensAssessment {
+    id: ID!
+    version: Int!
+    creationDate: Date!
+}
+
 type Query {
     "Returns a prescribedRX from legacy DB, searching by id OR testRoomNumber"
     prescribedRX(id: ID, testRoomNumber: Int): PrescribedRx
@@ -319,6 +325,8 @@ type Query {
     sightTest(id: ID!): SightTest!
 
     sightTests(customerID: ID!): [SightTest]
+
+    contactLensAssessment(id: ID!): ContactLensAssessment!
 }
 
 type Mutation {
@@ -354,4 +362,7 @@ type Mutation {
 
     "Updates Dispense Note field"
     updateDispenseNote(sightTestId: ID!, version: Int!, text: String): SightTest!
+
+    "Create a new contact lens assessment"
+    createContactLensAssessment(trNumber: Int!): ContactLensAssessment!
 }

@@ -1,0 +1,7 @@
+query($id: ID!) {
+    contactLensAssessment(id: $id) {
+        id
+        version
+        creationDate
+    }
+}

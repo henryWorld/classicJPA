@@ -2,11 +2,15 @@ package com.specsavers.socrates.clinical.util;
 
 import com.specsavers.socrates.clinical.legacy.model.rx.EyeRX;
 import com.specsavers.socrates.clinical.legacy.model.rx.Prism;
+import com.specsavers.socrates.clinical.model.ContactLensAssessmentDto;
+import com.specsavers.socrates.clinical.model.entity.ContactLensAssessment;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 public class CommonStaticValues {
     public static final String CREATE_SIGHT_TEST = "graphql/mutation/create_sight_test.graphql";
+    public static final String CREATE_CL_ASSESSMENT = "graphql/mutation/create_cl_assessment.graphql";
     public static final String GET_PRESCRIBEDRX_BY_TRNUMBER = "graphql/query/get_prescribedRX_by_trNumber.graphql";
     public static final String GET_PRESCRIBEDRX_BY_ID = "graphql/query/get_prescribedRX_by_ID.graphql";
     public static final String CREATE_HABITUAL_RX = "graphql/mutation/create_habitual_rx.graphql";
@@ -17,6 +21,7 @@ public class CommonStaticValues {
     public static final String UPDATE_PRESCRIBED_RX_NOTE = "graphql/mutation/update_prescribed_rx_note.graphql";
     public static final String UPDATE_HISTORY_SYMPTOMS = "graphql/mutation/update_history_symptoms.graphql";
     public static final String GET_SIGHT_TEST = "graphql/query/get_sight_test.graphql";
+    public static final String GET_CL_ASSESSMENT = "graphql/query/get_cl_assessment.graphql";
     public static final String UNKNOWN_REQUEST = "graphql/query/unknown_request.graphql";
     public static final String UPDATE_OBJECTIVE_AND_IOP = "graphql/mutation/update_objective_and_iop.graphql";
     public static final String UPDATE_OBJECTIVE_AND_IOP_DRUG_INFO = "graphql/mutation/update_objective_and_iop_drug_info.graphql";
@@ -31,6 +36,7 @@ public class CommonStaticValues {
     public static final int NOT_FOUND_ID = 999;
     public static final String SIGHT_TEST = "SIGHT_TEST";
     public static final UUID VALID_SIGHT_TEST_ID = UUID.fromString("17396D3B-FD1F-4454-B309-41990D705E6B");
+    public static final UUID VALID_CONTACT_LENS_ID = UUID.fromString("20354d7a-e4fe-47af-8ff6-187bca92f3f9");
     public static final long VALID_SIGHT_TEST_VERSION = 1L;
 
     public static final EyeRX RIGHT_EYE = EyeRX.builder()
@@ -57,4 +63,16 @@ public class CommonStaticValues {
             .pupillaryDistance(29f)
             .sphere("-3.25")
             .build();
+
+    public static final ContactLensAssessment.ContactLensAssessmentBuilder CONTACT_LENS_ASSESSMENT =  ContactLensAssessment.builder()
+                .id(VALID_CONTACT_LENS_ID)
+                .trNumber(23)
+                .version(20L)
+                .creationDate(LocalDateTime.now())
+                .updatedDate(LocalDateTime.now());
+
+    public static final ContactLensAssessmentDto.ContactLensAssessmentDtoBuilder CONTACT_LENS_ASSESSMENT_DTO =  ContactLensAssessmentDto.builder()
+            .id(VALID_CONTACT_LENS_ID)
+            .version(20L)
+            .creationDate(LocalDateTime.now());
 }
