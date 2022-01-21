@@ -3,6 +3,8 @@ package com.specsavers.socrates.clinical.util;
 import com.specsavers.socrates.clinical.legacy.model.rx.EyeRX;
 import com.specsavers.socrates.clinical.legacy.model.rx.Prism;
 import com.specsavers.socrates.clinical.model.ContactLensAssessmentDto;
+import com.specsavers.socrates.clinical.model.entity.ContactLensAssessment;
+import com.specsavers.socrates.clinical.model.ContactLensAssessmentDto;
 import com.specsavers.socrates.clinical.model.TearAssessmentEyeInputDto;
 import com.specsavers.socrates.clinical.model.TearAssessmentInputDto;
 import com.specsavers.socrates.clinical.model.entity.ContactLensAssessment;
@@ -67,6 +69,18 @@ public class CommonStaticValues {
             .pupillaryDistance(29f)
             .sphere("-3.25")
             .build();
+
+    public static final ContactLensAssessment.ContactLensAssessmentBuilder CONTACT_LENS_ASSESSMENT =  ContactLensAssessment.builder()
+                .id(VALID_CONTACT_LENS_ID)
+                .trNumber(23)
+                .version(20L)
+                .creationDate(LocalDateTime.now())
+                .updatedDate(LocalDateTime.now());
+
+    public static final ContactLensAssessmentDto.ContactLensAssessmentDtoBuilder CONTACT_LENS_ASSESSMENT_DTO =  ContactLensAssessmentDto.builder()
+            .id(VALID_CONTACT_LENS_ID)
+            .version(20L)
+            .creationDate(LocalDateTime.now());
 
     public static final ContactLensAssessment.ContactLensAssessmentBuilder CONTACT_LENS_ASSESSMENT =  ContactLensAssessment.builder()
                 .id(VALID_CONTACT_LENS_ID)
