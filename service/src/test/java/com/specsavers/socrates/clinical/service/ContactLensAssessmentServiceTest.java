@@ -2,7 +2,9 @@ package com.specsavers.socrates.clinical.service;
 
 import com.specsavers.socrates.clinical.mapper.ContactLensMapper;
 import com.specsavers.socrates.clinical.model.ContactLensAssessmentDto;
+import com.specsavers.socrates.clinical.model.TearAssessmentInputDto;
 import com.specsavers.socrates.clinical.model.entity.ContactLensAssessment;
+import com.specsavers.socrates.clinical.model.entity.TearAssessment;
 import com.specsavers.socrates.clinical.repository.ContactLensRepository;
 import com.specsavers.socrates.clinical.util.CommonStaticValues;
 import com.specsavers.socrates.common.exception.NotFoundException;
@@ -16,6 +18,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 import java.util.UUID;
 
+import static com.specsavers.socrates.clinical.util.CommonStaticValues.TEAR_ASSESSMENT_DTO;
+import static com.specsavers.socrates.clinical.util.CommonStaticValues.VALID_CONTACT_LENS_ID;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -24,43 +28,46 @@ import static org.mockito.Mockito.*;
 class ContactLensAssessmentServiceTest {
     @Mock
     private ContactLensRepository contactLensRepository;
+
     @Mock
-    private ContactLensAssessment contactLensAssessment;
+    private TearAssessment tearAssessmentEntity;
+
     @Mock
-    private ContactLensAssessmentDto contactLensAssessmentDto;
+    private TearAssessmentInputDto tearAssessmentDto;
 
     @Mock
     private ContactLensMapper contactLensMapper;
 
     @InjectMocks
     private ContactLensAssessmentService contactLensAssessmentService;
-
+    private ContactLensAssessment clAssignment;
+   private ContactLensAssessmentDto clAssessmentDto;
 
     @BeforeEach
     void setUp() {
-        var clAssignment = CommonStaticValues.CONTACT_LENS_ASSESSMENT.build();
+        clAssignment = CommonStaticValues.CONTACT_LENS_ASSESSMENT.build();
+        clAssessmentDto = CommonStaticValues.CONTACT_LENS_ASSESSMENT_DTO.build();
         lenient().when(contactLensRepository.saveAndFlush(any())).thenReturn(clAssignment);
-        lenient().when(contactLensRepository.findById(any())).thenReturn(Optional.of(clAssignment));
-        lenient().when(contactLensMapper.fromEntity(clAssignment)).thenReturn(contactLensAssessmentDto);
+        lenient().when(contactLensRepository.findById(VALID_CONTACT_LENS_ID)).thenReturn(Optional.of(clAssignment));
+        lenient().when(contactLensMapper.fromEntity(clAssignment)).thenReturn(clAssessmentDto);
+        lenient().doNothing().when(contactLensMapper).update(tearAssessmentDto, tearAssessmentEntity);
     }
 
     @Test
     void testPersistingContactLensAssessment() {
-        var savedClAssignment = contactLensAssessmentService.save(contactLensAssessment);
+        var savedClAssignment = contactLensAssessmentService.save(clAssignment);
         verify(contactLensRepository).saveAndFlush(any());
         assertNotNull(savedClAssignment);
-        assertEquals(savedClAssignment.getId(), contactLensAssessment.getId());
-        assertEquals(savedClAssignment.getCreationDate(), contactLensAssessment.getCreationDate());
-        assertEquals(savedClAssignment.getVersion(), contactLensAssessment.getVersion());
+        assertEquals(savedClAssignment.getId(),  clAssignment.getId());
+        assertEquals(savedClAssignment.getCreationDate().getHour(),  clAssignment.getCreationDate().getHour());
+        assertEquals(savedClAssignment.getVersion(),  clAssignment.getVersion());
     }
 
     @Test
     void testGetContactLensAssessmentGivenId() {
-        var savedClAssignmentDto = contactLensAssessmentService.save(contactLensAssessment);
-        var id = savedClAssignmentDto.getId();
         var retrievedClAssignmentDto
-                = contactLensAssessmentService.getContactLensAssessment(id);
-        assertEquals(savedClAssignmentDto, retrievedClAssignmentDto);
+                = contactLensAssessmentService.getContactLensAssessment(VALID_CONTACT_LENS_ID);
+        assertEquals(clAssessmentDto, retrievedClAssignmentDto);
     }
 
     @Test
@@ -71,5 +78,13 @@ class ContactLensAssessmentServiceTest {
                 NotFoundException.class,
                 () -> contactLensAssessmentService.getContactLensAssessment(uuid)
         );
+    }
+
+
+    @Test
+    void testPersistTestAssessment() {
+        ContactLensAssessmentDto updatedClAssessment = contactLensAssessmentService
+                .update(VALID_CONTACT_LENS_ID, 20L, TEAR_ASSESSMENT_DTO.build());
+        assertEquals(20L, updatedClAssessment.getVersion());
     }
 }

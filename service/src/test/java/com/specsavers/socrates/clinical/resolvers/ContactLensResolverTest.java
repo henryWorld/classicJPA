@@ -8,6 +8,7 @@ import com.graphql.spring.boot.test.GraphQLTestTemplate;
 import com.specsavers.socrates.clinical.model.ContactLensAssessmentDto;
 import com.specsavers.socrates.clinical.service.ContactLensAssessmentService;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -93,5 +94,12 @@ class ContactLensResolverTest {
                 .and().assertThatField("$.data.contactLensAssessment.version").asInteger()
                 .and().assertThatField("$.data.contactLensAssessment.creationDate").as(LocalDate.class);
         verify(contactLensAssessmentService).getContactLensAssessment(any());
+    }
+
+    // TODO: 21/01/2022 add test for this!
+    @Disabled
+    @Test
+    void testPersistTearAssessment() {
+
     }
 }

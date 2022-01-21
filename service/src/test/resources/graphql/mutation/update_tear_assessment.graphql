@@ -1,0 +1,21 @@
+mutation ($contactLensId: ID!, $version: Int!) {
+    updateTearAssessment(
+        contactLensId: $contactLensId
+        version: $version
+        input: {
+            observations: "Strings",
+            leftEye: {
+                tbut: "strings"
+                prism: "strings"
+                schirmer: "strings"
+                scope: "strings"
+            },
+            rightEye: {
+                tbut: "strings"
+                prism: "strings"
+                schirmer: "strings"
+                scope: "strings"
+            },
+        }
+    )
+}

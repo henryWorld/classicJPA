@@ -1,6 +1,7 @@
 package com.specsavers.socrates.clinical.resolvers;
 
 import com.specsavers.socrates.clinical.model.ContactLensAssessmentDto;
+import com.specsavers.socrates.clinical.model.TearAssessmentInputDto;
 import com.specsavers.socrates.clinical.model.entity.ContactLensAssessment;
 import com.specsavers.socrates.clinical.service.ContactLensAssessmentService;
 import graphql.kickstart.tools.GraphQLMutationResolver;
@@ -39,6 +40,14 @@ public class ContactLensResolver implements GraphQLMutationResolver, GraphQLQuer
     public ContactLensAssessmentDto contactLensAssessment(UUID id) {
         log.info("Called contactLensAssessment query with the Id={}", id);
         return contactLensAssessmentService.getContactLensAssessment(id);
+    }
+
+
+    @Transactional(propagation = Propagation.MANDATORY)
+    public Integer updateTearAssessment(UUID contactLensId, long version, TearAssessmentInputDto input) {
+        log.info("Called updateTearAssessment: contactLensId={}", contactLensId);
+        var updatedCLAssessment = contactLensAssessmentService.update(contactLensId, version, input);
+        return Math.toIntExact(updatedCLAssessment.getVersion());
     }
 
 }

@@ -336,6 +336,9 @@ type Mutation {
     "Updates and returns an existing habitual rx pair"
     updateHabitualRx(sightTestId: ID!, version: Int!, pairNumber: Int!, pair: HabitualRxInput!): SightTest!
 
+    "Updates the tear assessment and returns the version"
+    updateTearAssessment(contactLensId: ID!, version: Int!, input: TearAssessmentInput!):Int!
+
     "Updates the history and symptoms on a sight test"
     updateHistoryAndSymptoms(sightTestId: ID!, version: Int!, input: HistoryAndSymptomsInput!): SightTest!
 

@@ -18,4 +18,5 @@
     <include file="/db/changelog/012-add_version_fields.xml"/>
     <include file="/db/changelog/013-alter_clinician_name_field.xml"/>
     <include file="/db/changelog/013-add_contact_lens_assessment_table.xml"/>
+    <include file="/db/changelog/014-add_tear_assessment_table.xml"/>
 </databaseChangeLog>

@@ -239,3 +239,17 @@ input OptionRecommendationsInput {
     recommendations: RecommendationsInput
 }
 
+
+input TearAssessmentEyeInput {
+    tbut: String
+    prism: String
+    scope: String
+    schirmer: String
+}
+
+input TearAssessmentInput {
+    rightEye: TearAssessmentEyeInput!
+    leftEye: TearAssessmentEyeInput!
+    observations: String
+}
+

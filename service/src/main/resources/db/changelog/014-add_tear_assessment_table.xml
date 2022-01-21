@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
+
+    <changeSet id="014-add_tear_assessment_table" author="henry.efor">
+        <createTable tableName="tear_assessment_eye">
+            <column name="id" type="uuid">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="tbut" type="varchar(30)"/>
+            <column name="prism" type="varchar(30)"/>
+            <column name="schirmer" type="varchar(30)"/>
+            <column name="scope" type="varchar(30)"/>
+        </createTable>
+
+
+        <createTable tableName="tear_assessment">
+            <column name="id" type="uuid">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="left_ta_eye_id" type="uuid">
+                <constraints foreignKeyName="fk_tear_assessment_left_ta_eye" references="tear_assessment_eye(id)"/>
+            </column>
+            <column name="right_ta_eye_id" type="uuid">
+                <constraints foreignKeyName="fk_tear_assessment_right_ta_eye" references="tear_assessment_eye(id)"/>
+            </column>
+            <column name="observations" type="varchar(255)"/>
+        </createTable>
+
+        <addColumn tableName="contact_lens_assessment">
+            <column name="tear_assessment_id" type="uuid">
+                <constraints foreignKeyName="fk_contact_lens_assessment_tear_assessment"
+                             references="tear_assessment(id)"/>
+            </column>
+        </addColumn>
+    </changeSet>
+</databaseChangeLog>
