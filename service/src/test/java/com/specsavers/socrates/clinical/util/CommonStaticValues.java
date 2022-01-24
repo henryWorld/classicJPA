@@ -21,6 +21,7 @@ public class CommonStaticValues {
     public static final String GET_PRESCRIBEDRX_BY_ID = "graphql/query/get_prescribedRX_by_ID.graphql";
     public static final String CREATE_HABITUAL_RX = "graphql/mutation/create_habitual_rx.graphql";
     public static final String UPDATE_HABITUAL_RX = "graphql/mutation/update_habitual_rx.graphql";
+    public static final String UPDATE_TEAR_ASSESSMENT = "graphql/mutation/update_tear_assessment.graphql";
     public static final String UPDATE_REFRACTED_RX = "graphql/mutation/update_refracted_rx.graphql";
     public static final String UPDATE_REFRACTED_RX_NOTE = "graphql/mutation/update_refracted_rx_note.graphql";
     public static final String UPDATE_PRESCRIBED_RX = "graphql/mutation/update_prescribed_rx.graphql";
@@ -70,26 +71,14 @@ public class CommonStaticValues {
             .sphere("-3.25")
             .build();
 
-    public static final ContactLensAssessment.ContactLensAssessmentBuilder CONTACT_LENS_ASSESSMENT =  ContactLensAssessment.builder()
-                .id(VALID_CONTACT_LENS_ID)
-                .trNumber(23)
-                .version(20L)
-                .creationDate(LocalDateTime.now())
-                .updatedDate(LocalDateTime.now());
-
-    public static final ContactLensAssessmentDto.ContactLensAssessmentDtoBuilder CONTACT_LENS_ASSESSMENT_DTO =  ContactLensAssessmentDto.builder()
+    public static final ContactLensAssessment.ContactLensAssessmentBuilder CONTACT_LENS_ASSESSMENT = ContactLensAssessment.builder()
             .id(VALID_CONTACT_LENS_ID)
+            .trNumber(23)
             .version(20L)
-            .creationDate(LocalDateTime.now());
+            .creationDate(LocalDateTime.now())
+            .updatedDate(LocalDateTime.now());
 
-    public static final ContactLensAssessment.ContactLensAssessmentBuilder CONTACT_LENS_ASSESSMENT =  ContactLensAssessment.builder()
-                .id(VALID_CONTACT_LENS_ID)
-                .trNumber(23)
-                .version(20L)
-                .creationDate(LocalDateTime.now())
-                .updatedDate(LocalDateTime.now());
-
-    public static final ContactLensAssessmentDto.ContactLensAssessmentDtoBuilder CONTACT_LENS_ASSESSMENT_DTO =  ContactLensAssessmentDto.builder()
+    public static final ContactLensAssessmentDto.ContactLensAssessmentDtoBuilder CONTACT_LENS_ASSESSMENT_DTO = ContactLensAssessmentDto.builder()
             .id(VALID_CONTACT_LENS_ID)
             .version(20L)
             .creationDate(LocalDateTime.now());

@@ -46,7 +46,9 @@ class ContactLensAssessmentServiceTest {
     @BeforeEach
     void setUp() {
         clAssignment = CommonStaticValues.CONTACT_LENS_ASSESSMENT.build();
-        clAssessmentDto = CommonStaticValues.CONTACT_LENS_ASSESSMENT_DTO.build();
+        clAssessmentDto = CommonStaticValues.CONTACT_LENS_ASSESSMENT_DTO
+                .creationDate(clAssignment.getCreationDate())
+                .build();
         lenient().when(contactLensRepository.saveAndFlush(any())).thenReturn(clAssignment);
         lenient().when(contactLensRepository.findById(VALID_CONTACT_LENS_ID)).thenReturn(Optional.of(clAssignment));
         lenient().when(contactLensMapper.fromEntity(clAssignment)).thenReturn(clAssessmentDto);
@@ -59,7 +61,7 @@ class ContactLensAssessmentServiceTest {
         verify(contactLensRepository).saveAndFlush(any());
         assertNotNull(savedClAssignment);
         assertEquals(savedClAssignment.getId(),  clAssignment.getId());
-        assertEquals(savedClAssignment.getCreationDate().getHour(),  clAssignment.getCreationDate().getHour());
+        assertEquals(savedClAssignment.getCreationDate(),  clAssignment.getCreationDate());
         assertEquals(savedClAssignment.getVersion(),  clAssignment.getVersion());
     }
 

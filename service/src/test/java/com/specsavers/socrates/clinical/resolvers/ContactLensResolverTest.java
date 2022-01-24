@@ -57,6 +57,8 @@ class ContactLensResolverTest {
 
         lenient().when(contactLensAssessmentService.save(any())).thenReturn(contactLensAssessmentDto);
         lenient().when(contactLensAssessmentService.getContactLensAssessment(any())).thenReturn(contactLensAssessmentDto);
+        lenient().when(contactLensAssessmentService.update(VALID_CONTACT_LENS_ID, 20L, TEAR_ASSESSMENT_DTO.build()))
+                .thenReturn(contactLensAssessmentDto);
     }
 
     @Test
@@ -96,10 +98,15 @@ class ContactLensResolverTest {
         verify(contactLensAssessmentService).getContactLensAssessment(any());
     }
 
-    // TODO: 21/01/2022 add test for this!
-    @Disabled
-    @Test
-    void testPersistTearAssessment() {
 
+    @Test
+    void testPersistTearAssessment() throws IOException {
+        var variables = new ObjectMapper().createObjectNode()
+                .put("contactLensId", VALID_CONTACT_LENS_ID.toString())
+                .put("version", 20L);
+
+        var response = graphQLTestTemplate.perform(UPDATE_TEAR_ASSESSMENT, variables);
+        response.assertThatNoErrorsArePresent();
+        verify(contactLensAssessmentService).update(VALID_CONTACT_LENS_ID, 20L, TEAR_ASSESSMENT_DTO.build());
     }
 }
