@@ -22,5 +22,5 @@ public class TearAssessmentEye {
     private String tbut;
     private String prism;
     private String schirmer;
-    private Float scope;
+    private String scope;
 }

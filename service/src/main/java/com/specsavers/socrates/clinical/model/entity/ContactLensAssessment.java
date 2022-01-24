@@ -8,13 +8,13 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
-import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-@Data
+@Getter
+@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -29,11 +29,11 @@ public class ContactLensAssessment implements Versioned {
 
     @Column(nullable = false, updatable = false)
     @CreatedDate
-    private LocalDateTime creationDate;
+    private OffsetDateTime creationDate;
 
     @Column(nullable = false)
     @LastModifiedDate
-    private LocalDateTime updatedDate;
+    private OffsetDateTime updatedDate;
 
     @Version
     private Long version;

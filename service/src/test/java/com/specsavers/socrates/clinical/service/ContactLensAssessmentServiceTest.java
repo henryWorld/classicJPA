@@ -57,7 +57,7 @@ class ContactLensAssessmentServiceTest {
 
     @Test
     void testPersistingContactLensAssessment() {
-        var savedClAssignment = contactLensAssessmentService.save(clAssignment);
+        final var savedClAssignment = contactLensAssessmentService.save(clAssignment);
         verify(contactLensRepository).saveAndFlush(any());
         assertNotNull(savedClAssignment);
         assertEquals(savedClAssignment.getId(),  clAssignment.getId());
@@ -67,7 +67,7 @@ class ContactLensAssessmentServiceTest {
 
     @Test
     void testGetContactLensAssessmentGivenId() {
-        var retrievedClAssignmentDto
+        final var retrievedClAssignmentDto
                 = contactLensAssessmentService.getContactLensAssessment(VALID_CONTACT_LENS_ID);
         assertEquals(clAssessmentDto, retrievedClAssignmentDto);
     }
@@ -75,7 +75,7 @@ class ContactLensAssessmentServiceTest {
     @Test
     void testGetContactLensAssessmentWithInvalidId() {
         doThrow(NotFoundException.class).when(contactLensRepository).findById(any());
-        var uuid = UUID.randomUUID();
+        final var uuid = UUID.randomUUID();
         assertThrows(
                 NotFoundException.class,
                 () -> contactLensAssessmentService.getContactLensAssessment(uuid)

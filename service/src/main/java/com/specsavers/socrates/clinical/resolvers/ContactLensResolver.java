@@ -44,10 +44,9 @@ public class ContactLensResolver implements GraphQLMutationResolver, GraphQLQuer
 
 
     @Transactional(propagation = Propagation.MANDATORY)
-    public Integer updateTearAssessment(UUID contactLensId, long version, TearAssessmentInputDto input) {
+    public ContactLensAssessmentDto updateTearAssessment(UUID contactLensId, long version, TearAssessmentInputDto input) {
         log.info("Called updateTearAssessment: contactLensId={}", contactLensId);
-        var updatedCLAssessment = contactLensAssessmentService.update(contactLensId, version, input);
-        return Math.toIntExact(updatedCLAssessment.getVersion());
+        return contactLensAssessmentService.update(contactLensId, version, input);
     }
 
 }

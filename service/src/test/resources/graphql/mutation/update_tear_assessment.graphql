@@ -17,5 +17,7 @@ mutation ($contactLensId: ID!, $version: Int!) {
                 scope: "strings"
             },
         }
-    )
+    ) {
+        version
+    }
 }

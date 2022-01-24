@@ -3,15 +3,13 @@ package com.specsavers.socrates.clinical.util;
 import com.specsavers.socrates.clinical.legacy.model.rx.EyeRX;
 import com.specsavers.socrates.clinical.legacy.model.rx.Prism;
 import com.specsavers.socrates.clinical.model.ContactLensAssessmentDto;
-import com.specsavers.socrates.clinical.model.entity.ContactLensAssessment;
-import com.specsavers.socrates.clinical.model.ContactLensAssessmentDto;
 import com.specsavers.socrates.clinical.model.TearAssessmentEyeInputDto;
 import com.specsavers.socrates.clinical.model.TearAssessmentInputDto;
 import com.specsavers.socrates.clinical.model.entity.ContactLensAssessment;
 import com.specsavers.socrates.clinical.model.entity.TearAssessment;
 import com.specsavers.socrates.clinical.model.entity.TearAssessmentEye;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 public class CommonStaticValues {
@@ -75,13 +73,13 @@ public class CommonStaticValues {
             .id(VALID_CONTACT_LENS_ID)
             .trNumber(23)
             .version(20L)
-            .creationDate(LocalDateTime.now())
-            .updatedDate(LocalDateTime.now());
+            .creationDate(OffsetDateTime.now())
+            .updatedDate(OffsetDateTime.now());
 
     public static final ContactLensAssessmentDto.ContactLensAssessmentDtoBuilder CONTACT_LENS_ASSESSMENT_DTO = ContactLensAssessmentDto.builder()
             .id(VALID_CONTACT_LENS_ID)
             .version(20L)
-            .creationDate(LocalDateTime.now());
+            .creationDate(OffsetDateTime.now());
 
     public static final TearAssessmentInputDto.TearAssessmentInputDtoBuilder TEAR_ASSESSMENT_DTO = TearAssessmentInputDto
             .builder()

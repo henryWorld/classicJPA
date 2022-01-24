@@ -7,7 +7,7 @@ import com.specsavers.socrates.clinical.model.entity.TearAssessment;
 import com.specsavers.socrates.clinical.model.entity.TearAssessmentEye;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -40,7 +40,7 @@ class ContactLensMapperTest {
     private ContactLensAssessment buildContactLensAssessmentEntity() {
         return ContactLensAssessment.builder()
                 .trNumber(23)
-                .creationDate(LocalDateTime.now())
+                .creationDate(OffsetDateTime.now())
                 .version(20L)
                 .build();
     }

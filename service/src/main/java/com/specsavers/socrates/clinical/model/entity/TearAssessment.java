@@ -14,13 +14,14 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TearAssessment {
+    @Column(name ="ta_observations")
     private String observations;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "left_ta_eye_id")
+    @JoinColumn(name = "ta_left_eye_id")
     private TearAssessmentEye leftEye;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "right_ta_eye_id")
+    @JoinColumn(name = "ta_right_eye_id")
     private TearAssessmentEye rightEye;
 }

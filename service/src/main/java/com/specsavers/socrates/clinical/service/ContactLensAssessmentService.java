@@ -35,7 +35,7 @@ public class ContactLensAssessmentService {
     }
 
 
-    public  ContactLensAssessmentDto update(UUID contactLensId, long version, TearAssessmentInputDto input) {
+    public ContactLensAssessmentDto update(UUID contactLensId, long version, TearAssessmentInputDto input) {
 
         return mutation(contactLensId, version, contactLensAssessment -> {
             if (contactLensAssessment.getTearAssessment() == null) {
