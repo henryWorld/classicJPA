@@ -2,7 +2,7 @@ package com.specsavers.socrates.clinical.service;
 
 import com.specsavers.socrates.clinical.mapper.ContactLensMapper;
 import com.specsavers.socrates.clinical.model.ContactLensAssessmentDto;
-import com.specsavers.socrates.clinical.model.TearAssessmentInputDto;
+import com.specsavers.socrates.clinical.model.TearAssessmentDto;
 import com.specsavers.socrates.clinical.model.entity.ContactLensAssessment;
 import com.specsavers.socrates.clinical.model.entity.TearAssessment;
 import com.specsavers.socrates.clinical.repository.ContactLensRepository;
@@ -25,7 +25,11 @@ public class ContactLensAssessmentService {
     ContactLensMapper contactLensMapper;
 
     public ContactLensAssessmentDto save(ContactLensAssessment clAssessment) {
-        return contactLensMapper.fromEntity(contactLensRepository.saveAndFlush(clAssessment));
+        ContactLensAssessment contactLensAssessment = contactLensRepository.saveAndFlush(clAssessment);
+        ContactLensAssessmentDto contactLensAssessmentDto = contactLensMapper.fromEntity(contactLensAssessment);
+        return contactLensAssessmentDto;
+
+        //return contactLensMapper.fromEntity(contactLensRepository.saveAndFlush(clAssessment));
     }
 
     public ContactLensAssessmentDto getContactLensAssessment(UUID id) {
@@ -35,7 +39,7 @@ public class ContactLensAssessmentService {
     }
 
 
-    public ContactLensAssessmentDto update(UUID contactLensId, long version, TearAssessmentInputDto input) {
+    public ContactLensAssessmentDto update(UUID contactLensId, long version, TearAssessmentDto input) {
 
         return mutation(contactLensId, version, contactLensAssessment -> {
             if (contactLensAssessment.getTearAssessment() == null) {

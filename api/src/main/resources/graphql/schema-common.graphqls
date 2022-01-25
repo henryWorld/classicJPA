@@ -311,10 +311,24 @@ type OptionRecommendations {
     recommendations: Recommendations
 }
 
+type TearAssessmentEye {
+    tbut: String
+    prism: String
+    scope: String
+    schirmer: String
+}
+
+type TearAssessment {
+    rightEye: TearAssessmentEye!
+    leftEye: TearAssessmentEye!
+    observations: String
+}
+
 type ContactLensAssessment {
     id: ID!
     version: Int!
     creationDate: DateTime!
+    tearAssessment: TearAssessment
 }
 
 type Query {

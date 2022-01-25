@@ -2,7 +2,7 @@ package com.specsavers.socrates.clinical.service;
 
 import com.specsavers.socrates.clinical.mapper.ContactLensMapper;
 import com.specsavers.socrates.clinical.model.ContactLensAssessmentDto;
-import com.specsavers.socrates.clinical.model.TearAssessmentInputDto;
+import com.specsavers.socrates.clinical.model.TearAssessmentDto;
 import com.specsavers.socrates.clinical.model.entity.ContactLensAssessment;
 import com.specsavers.socrates.clinical.model.entity.TearAssessment;
 import com.specsavers.socrates.clinical.repository.ContactLensRepository;
@@ -33,7 +33,7 @@ class ContactLensAssessmentServiceTest {
     private TearAssessment tearAssessmentEntity;
 
     @Mock
-    private TearAssessmentInputDto tearAssessmentDto;
+    private TearAssessmentDto tearAssessmentDto;
 
     @Mock
     private ContactLensMapper contactLensMapper;

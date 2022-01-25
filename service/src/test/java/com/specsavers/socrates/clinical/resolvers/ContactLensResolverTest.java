@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.graphql.spring.boot.test.GraphQLTestTemplate;
 import com.specsavers.socrates.clinical.model.ContactLensAssessmentDto;
-import com.specsavers.socrates.clinical.model.TearAssessmentInputDto;
 import com.specsavers.socrates.clinical.service.ContactLensAssessmentService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,8 +22,6 @@ import static com.specsavers.socrates.common.util.GraphQLUtils.CORRELATION_ID_HE
 import static graphql.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
 import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 
@@ -40,7 +37,7 @@ class ContactLensResolverTest {
     @Autowired
     private GraphQLTestTemplate graphQLTestTemplate;
 
-    private ContactLensAssessmentDto contactLensAssessmentDto;
+
     private ObjectNode parameter;
 
     @BeforeEach
@@ -48,20 +45,12 @@ class ContactLensResolverTest {
         parameter = new ObjectMapper()
                 .registerModule(new JavaTimeModule())
                 .createObjectNode();
-        parameter.put("trNumber", TR_NUMBER);
+        parameter.put("trNumber", 26);
 
         this.graphQLTestTemplate
                 .withClearHeaders()
                 .withAdditionalHeader(CORRELATION_ID_HEADER_NAME, UUID.randomUUID().toString())
                 .withAdditionalHeader(STORE_ID_HTTP_HEADER_NAME, VALID_STORE_ID);
-
-        contactLensAssessmentDto = CONTACT_LENS_ASSESSMENT_DTO
-                .build();
-
-        lenient().when(contactLensAssessmentService.save(any())).thenReturn(contactLensAssessmentDto);
-        lenient().when(contactLensAssessmentService.getContactLensAssessment(any())).thenReturn(contactLensAssessmentDto);
-        lenient().when(contactLensAssessmentService.update(any(), anyLong(), any(TearAssessmentInputDto.class)))
-                .thenReturn(contactLensAssessmentDto);
     }
 
     @Test
@@ -76,7 +65,6 @@ class ContactLensResolverTest {
                 .and().assertThatField("$.data.createContactLensAssessment.version").asInteger()
                 .and().assertThatField("$.data.createContactLensAssessment.creationDate").as(OffsetDateTime.class);
 
-        verify(contactLensAssessmentService).save(any());
     }
 
 
@@ -86,9 +74,6 @@ class ContactLensResolverTest {
         final var response = graphQLTestTemplate
                 .perform(CREATE_CL_ASSESSMENT, parameter);
         assertTrue(response.isOk());
-
-        final var persistedClDto = response.get("$.data.createContactLensAssessment",
-                ContactLensAssessmentDto.class);
 
         final var uuid = response.get("$.data.createContactLensAssessment.id");
 
@@ -103,12 +88,11 @@ class ContactLensResolverTest {
 
         assertTrue(clDtoResponse.isOk());
 
-        final var retrievedClDto = clDtoResponse.get("$.data.contactLensAssessment",
-                ContactLensAssessmentDto.class);
+        clDtoResponse.assertThatNoErrorsArePresent()
+                .assertThatField("$.data.contactLensAssessment.id").asString().isEqualTo(uuid)
+                .and().assertThatField("$.data.contactLensAssessment.version").asInteger().isEqualTo(VALID_VERSION)
+                .and().assertThatField("$.data.contactLensAssessment.creationDate").as(OffsetDateTime.class);
 
-        assertEquals(persistedClDto, retrievedClDto);
-
-        verify(contactLensAssessmentService).getContactLensAssessment(any());
     }
 
 
@@ -134,7 +118,5 @@ class ContactLensResolverTest {
                 .assertThatField("$.data.updateTearAssessment.version")
                 .as(Long.class)
                 .isEqualTo(persistedClDto.getVersion());
-
-        verify(contactLensAssessmentService).update(any(), anyLong(), any(TearAssessmentInputDto.class));
     }
 }

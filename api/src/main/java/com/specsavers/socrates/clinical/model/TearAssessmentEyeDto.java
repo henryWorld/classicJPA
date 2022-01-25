@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public final class TearAssessmentEyeInputDto {
+public final class TearAssessmentEyeDto {
     private String tbut;
     private String prism;
     private String scope;

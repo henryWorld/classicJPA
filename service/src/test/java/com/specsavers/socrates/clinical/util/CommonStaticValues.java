@@ -3,8 +3,8 @@ package com.specsavers.socrates.clinical.util;
 import com.specsavers.socrates.clinical.legacy.model.rx.EyeRX;
 import com.specsavers.socrates.clinical.legacy.model.rx.Prism;
 import com.specsavers.socrates.clinical.model.ContactLensAssessmentDto;
-import com.specsavers.socrates.clinical.model.TearAssessmentEyeInputDto;
-import com.specsavers.socrates.clinical.model.TearAssessmentInputDto;
+import com.specsavers.socrates.clinical.model.TearAssessmentEyeDto;
+import com.specsavers.socrates.clinical.model.TearAssessmentDto;
 import com.specsavers.socrates.clinical.model.entity.ContactLensAssessment;
 import com.specsavers.socrates.clinical.model.entity.TearAssessment;
 import com.specsavers.socrates.clinical.model.entity.TearAssessmentEye;
@@ -43,6 +43,7 @@ public class CommonStaticValues {
     public static final UUID VALID_SIGHT_TEST_ID = UUID.fromString("17396D3B-FD1F-4454-B309-41990D705E6B");
     public static final UUID VALID_CONTACT_LENS_ID = UUID.fromString("20354d7a-e4fe-47af-8ff6-187bca92f3f9");
     public static final long VALID_SIGHT_TEST_VERSION = 1L;
+    public static final long VALID_VERSION = 20L;
 
     public static final EyeRX RIGHT_EYE = EyeRX.builder()
             .axis(50f)
@@ -72,26 +73,26 @@ public class CommonStaticValues {
     public static final ContactLensAssessment.ContactLensAssessmentBuilder CONTACT_LENS_ASSESSMENT = ContactLensAssessment.builder()
             .id(VALID_CONTACT_LENS_ID)
             .trNumber(23)
-            .version(20L)
+            .version(VALID_VERSION)
             .creationDate(OffsetDateTime.now())
             .updatedDate(OffsetDateTime.now());
 
     public static final ContactLensAssessmentDto.ContactLensAssessmentDtoBuilder CONTACT_LENS_ASSESSMENT_DTO = ContactLensAssessmentDto.builder()
             .id(VALID_CONTACT_LENS_ID)
-            .version(20L)
+            .version(VALID_VERSION)
             .creationDate(OffsetDateTime.now());
 
-    public static final TearAssessmentInputDto.TearAssessmentInputDtoBuilder TEAR_ASSESSMENT_DTO = TearAssessmentInputDto
+    public static final TearAssessmentDto.TearAssessmentDtoBuilder TEAR_ASSESSMENT_DTO = TearAssessmentDto
             .builder()
-            .leftEye(TearAssessmentEyeInputDto.builder().build())
-            .rightEye(TearAssessmentEyeInputDto.builder().build());
+            .leftEye(TearAssessmentEyeDto.builder().build())
+            .rightEye(TearAssessmentEyeDto.builder().build());
 
     public static final TearAssessment.TearAssessmentBuilder TEAR_ASSESSMENT_ENTITY = TearAssessment.builder()
             .leftEye(TearAssessmentEye.builder().prism("DDDD").build());
 
 
-    public static final TearAssessmentEyeInputDto.TearAssessmentEyeInputDtoBuilder TEAR_ASSESSMENT_EYE_DTO =
-            TearAssessmentEyeInputDto.builder().prism("yyyy");
+    public static final TearAssessmentEyeDto.TearAssessmentEyeDtoBuilder TEAR_ASSESSMENT_EYE_DTO =
+            TearAssessmentEyeDto.builder().prism("yyyy");
 
     public static final TearAssessmentEye.TearAssessmentEyeBuilder TEAR_ASSESSMENT_EYE_ENTITY =
             TearAssessmentEye.builder().prism("DDDD");

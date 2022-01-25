@@ -5,8 +5,8 @@ import lombok.Data;
 
 @Data
 @Builder
-public class TearAssessmentInputDto {
+public class TearAssessmentDto {
     private String observations;
-    private TearAssessmentEyeInputDto rightEye;
-    private TearAssessmentEyeInputDto leftEye;
+    private TearAssessmentEyeDto rightEye;
+    private TearAssessmentEyeDto leftEye;
 }

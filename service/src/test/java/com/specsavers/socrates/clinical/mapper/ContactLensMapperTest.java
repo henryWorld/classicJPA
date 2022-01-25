@@ -1,7 +1,7 @@
 package com.specsavers.socrates.clinical.mapper;
 
-import com.specsavers.socrates.clinical.model.TearAssessmentEyeInputDto;
-import com.specsavers.socrates.clinical.model.TearAssessmentInputDto;
+import com.specsavers.socrates.clinical.model.TearAssessmentDto;
+import com.specsavers.socrates.clinical.model.TearAssessmentEyeDto;
 import com.specsavers.socrates.clinical.model.entity.ContactLensAssessment;
 import com.specsavers.socrates.clinical.model.entity.TearAssessment;
 import com.specsavers.socrates.clinical.model.entity.TearAssessmentEye;
@@ -45,13 +45,13 @@ class ContactLensMapperTest {
                 .build();
     }
 
-    private TearAssessmentInputDto.TearAssessmentInputDtoBuilder buildTearAssessmentInputDto() {
-        return TearAssessmentInputDto.builder()
+    private TearAssessmentDto.TearAssessmentDtoBuilder buildTearAssessmentInputDto() {
+        return TearAssessmentDto.builder()
                 .leftEye(buildTAEyeInputDto().build());
     }
 
-    private TearAssessmentEyeInputDto.TearAssessmentEyeInputDtoBuilder buildTAEyeInputDto() {
-        return TearAssessmentEyeInputDto.builder().prism("yyyy");
+    private TearAssessmentEyeDto.TearAssessmentEyeDtoBuilder buildTAEyeInputDto() {
+        return TearAssessmentEyeDto.builder().prism("yyyy");
     }
 
     private TearAssessment.TearAssessmentBuilder buildTearAssessmentEntity() {

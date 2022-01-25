@@ -10,5 +10,5 @@ import org.springframework.stereotype.Component;
 public interface ContactLensMapper {
     ContactLensAssessmentDto fromEntity(ContactLensAssessment entity);
 
-    void update(TearAssessmentInputDto modal, @MappingTarget TearAssessment entity);
+    void update(TearAssessmentDto modal, @MappingTarget TearAssessment entity);
 }
