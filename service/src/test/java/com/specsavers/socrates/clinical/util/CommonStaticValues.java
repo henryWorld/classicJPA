@@ -20,6 +20,7 @@ public class CommonStaticValues {
     public static final String CREATE_HABITUAL_RX = "graphql/mutation/create_habitual_rx.graphql";
     public static final String UPDATE_HABITUAL_RX = "graphql/mutation/update_habitual_rx.graphql";
     public static final String UPDATE_TEAR_ASSESSMENT = "graphql/mutation/update_tear_assessment.graphql";
+    public static final String UPDATE_TEAR_ASSESSMENT_VALIDATION = "graphql/mutation/update_tear_assessment_validation.graphql";
     public static final String UPDATE_REFRACTED_RX = "graphql/mutation/update_refracted_rx.graphql";
     public static final String UPDATE_REFRACTED_RX_NOTE = "graphql/mutation/update_refracted_rx_note.graphql";
     public static final String UPDATE_PRESCRIBED_RX = "graphql/mutation/update_prescribed_rx.graphql";
@@ -27,6 +28,7 @@ public class CommonStaticValues {
     public static final String UPDATE_HISTORY_SYMPTOMS = "graphql/mutation/update_history_symptoms.graphql";
     public static final String GET_SIGHT_TEST = "graphql/query/get_sight_test.graphql";
     public static final String GET_CL_ASSESSMENT = "graphql/query/get_cl_assessment.graphql";
+    public static final String GET_TEAR_ASSESSMENT = "graphql/query/get_tear_assessment.graphql";
     public static final String UNKNOWN_REQUEST = "graphql/query/unknown_request.graphql";
     public static final String UPDATE_OBJECTIVE_AND_IOP = "graphql/mutation/update_objective_and_iop.graphql";
     public static final String UPDATE_OBJECTIVE_AND_IOP_DRUG_INFO = "graphql/mutation/update_objective_and_iop_drug_info.graphql";
@@ -43,7 +45,7 @@ public class CommonStaticValues {
     public static final UUID VALID_SIGHT_TEST_ID = UUID.fromString("17396D3B-FD1F-4454-B309-41990D705E6B");
     public static final UUID VALID_CONTACT_LENS_ID = UUID.fromString("20354d7a-e4fe-47af-8ff6-187bca92f3f9");
     public static final long VALID_SIGHT_TEST_VERSION = 1L;
-    public static final long VALID_VERSION = 20L;
+    public static final long VALID_VERSION = 0L;
 
     public static final EyeRX RIGHT_EYE = EyeRX.builder()
             .axis(50f)

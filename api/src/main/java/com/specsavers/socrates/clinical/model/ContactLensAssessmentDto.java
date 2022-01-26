@@ -16,5 +16,5 @@ public final class ContactLensAssessmentDto {
     private UUID id;
     private OffsetDateTime creationDate;
     private Long version;
-    private TearAssessmentDto tearAssessmentDto;
+    private TearAssessmentDto tearAssessment;
 }

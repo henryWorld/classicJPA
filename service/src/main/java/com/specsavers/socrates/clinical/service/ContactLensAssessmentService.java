@@ -24,12 +24,8 @@ public class ContactLensAssessmentService {
     ContactLensRepository contactLensRepository;
     ContactLensMapper contactLensMapper;
 
-    public ContactLensAssessmentDto save(ContactLensAssessment clAssessment) {
-        ContactLensAssessment contactLensAssessment = contactLensRepository.saveAndFlush(clAssessment);
-        ContactLensAssessmentDto contactLensAssessmentDto = contactLensMapper.fromEntity(contactLensAssessment);
-        return contactLensAssessmentDto;
-
-        //return contactLensMapper.fromEntity(contactLensRepository.saveAndFlush(clAssessment));
+    public ContactLensAssessmentDto save(ContactLensAssessment assessment) {
+        return contactLensMapper.fromEntity(contactLensRepository.saveAndFlush(assessment));
     }
 
     public ContactLensAssessmentDto getContactLensAssessment(UUID id) {

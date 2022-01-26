@@ -18,14 +18,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 import java.util.UUID;
 
-import static com.specsavers.socrates.clinical.util.CommonStaticValues.TEAR_ASSESSMENT_DTO;
-import static com.specsavers.socrates.clinical.util.CommonStaticValues.VALID_CONTACT_LENS_ID;
+import static com.specsavers.socrates.clinical.util.CommonStaticValues.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ContactLensAssessmentServiceTest {
+    private static UUID INVALID_CONTACT_LENS_ID = UUID.randomUUID();
     @Mock
     private ContactLensRepository contactLensRepository;
 
@@ -40,36 +40,37 @@ class ContactLensAssessmentServiceTest {
 
     @InjectMocks
     private ContactLensAssessmentService contactLensAssessmentService;
-    private ContactLensAssessment clAssignment;
-   private ContactLensAssessmentDto clAssessmentDto;
+    private ContactLensAssessment assignment;
+    private ContactLensAssessmentDto assessmentDto;
+
 
     @BeforeEach
     void setUp() {
-        clAssignment = CommonStaticValues.CONTACT_LENS_ASSESSMENT.build();
-        clAssessmentDto = CommonStaticValues.CONTACT_LENS_ASSESSMENT_DTO
-                .creationDate(clAssignment.getCreationDate())
+        assignment = CommonStaticValues.CONTACT_LENS_ASSESSMENT.build();
+        assessmentDto = CommonStaticValues.CONTACT_LENS_ASSESSMENT_DTO
+                .creationDate(assignment.getCreationDate())
                 .build();
-        lenient().when(contactLensRepository.saveAndFlush(any())).thenReturn(clAssignment);
-        lenient().when(contactLensRepository.findById(VALID_CONTACT_LENS_ID)).thenReturn(Optional.of(clAssignment));
-        lenient().when(contactLensMapper.fromEntity(clAssignment)).thenReturn(clAssessmentDto);
+        lenient().when(contactLensRepository.saveAndFlush(any())).thenReturn(assignment);
+        lenient().when(contactLensRepository.findById(VALID_CONTACT_LENS_ID)).thenReturn(Optional.of(assignment));
+        lenient().when(contactLensMapper.fromEntity(assignment)).thenReturn(assessmentDto);
         lenient().doNothing().when(contactLensMapper).update(tearAssessmentDto, tearAssessmentEntity);
     }
 
     @Test
     void testPersistingContactLensAssessment() {
-        final var savedClAssignment = contactLensAssessmentService.save(clAssignment);
+        final var savedClAssignment = contactLensAssessmentService.save(assignment);
         verify(contactLensRepository).saveAndFlush(any());
         assertNotNull(savedClAssignment);
-        assertEquals(savedClAssignment.getId(),  clAssignment.getId());
-        assertEquals(savedClAssignment.getCreationDate(),  clAssignment.getCreationDate());
-        assertEquals(savedClAssignment.getVersion(),  clAssignment.getVersion());
+        assertEquals(savedClAssignment.getId(), assignment.getId());
+        assertEquals(savedClAssignment.getCreationDate(), assignment.getCreationDate());
+        assertEquals(savedClAssignment.getVersion(), assignment.getVersion());
     }
 
     @Test
     void testGetContactLensAssessmentGivenId() {
         final var retrievedClAssignmentDto
                 = contactLensAssessmentService.getContactLensAssessment(VALID_CONTACT_LENS_ID);
-        assertEquals(clAssessmentDto, retrievedClAssignmentDto);
+        assertEquals(assessmentDto, retrievedClAssignmentDto);
     }
 
     @Test
@@ -84,9 +85,19 @@ class ContactLensAssessmentServiceTest {
 
 
     @Test
-    void testPersistTestAssessment() {
-        ContactLensAssessmentDto updatedClAssessment = contactLensAssessmentService
-                .update(VALID_CONTACT_LENS_ID, 20L, TEAR_ASSESSMENT_DTO.build());
-        assertEquals(20L, updatedClAssessment.getVersion());
+    void testPersistTestAssessmentGivenValidId() {
+        ContactLensAssessmentDto updatedAssessment = contactLensAssessmentService
+                .update(VALID_CONTACT_LENS_ID, VALID_VERSION, TEAR_ASSESSMENT_DTO.build());
+        assertEquals(VALID_VERSION, updatedAssessment.getVersion());
+    }
+
+    @Test
+    void testPersistTestAssessmentGivenInvalidId() {
+        doThrow(NotFoundException.class).when(contactLensRepository).findById(any());
+        assertThrows(
+                NotFoundException.class,
+                () -> contactLensAssessmentService.
+                        update(INVALID_CONTACT_LENS_ID, VALID_VERSION, TEAR_ASSESSMENT_DTO.build())
+        );
     }
 }

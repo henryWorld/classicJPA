@@ -3,6 +3,7 @@ package com.specsavers.socrates.clinical.resolvers;
 import com.specsavers.socrates.clinical.model.ContactLensAssessmentDto;
 import com.specsavers.socrates.clinical.model.TearAssessmentDto;
 import com.specsavers.socrates.clinical.model.entity.ContactLensAssessment;
+import com.specsavers.socrates.clinical.model.entity.TearAssessmentEye;
 import com.specsavers.socrates.clinical.service.ContactLensAssessmentService;
 import graphql.kickstart.tools.GraphQLMutationResolver;
 import graphql.kickstart.tools.GraphQLQueryResolver;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
+import javax.validation.Valid;
 import java.util.UUID;
 
 @Slf4j
@@ -29,10 +31,11 @@ public class ContactLensResolver implements GraphQLMutationResolver, GraphQLQuer
     @Transactional(propagation = Propagation.MANDATORY)
     public ContactLensAssessmentDto createContactLensAssessment(int trNumber) {
         log.info("Called createContactLensAssessment mutation with the trNumber={}", trNumber);
-        var clAssessment = ContactLensAssessment.builder()
+        TearAssessmentEye.builder().build();
+        var assessment = ContactLensAssessment.builder()
                 .trNumber(trNumber)
                 .build();
-        return contactLensAssessmentService.save(clAssessment);
+        return contactLensAssessmentService.save(assessment);
     }
 
 
@@ -42,9 +45,17 @@ public class ContactLensResolver implements GraphQLMutationResolver, GraphQLQuer
         return contactLensAssessmentService.getContactLensAssessment(id);
     }
 
+    @Transactional(propagation = Propagation.MANDATORY)
+    public TearAssessmentDto tearAssessment(UUID id) {
+        log.info("Called contactLensAssessment query with the Id={}", id);
+        ContactLensAssessmentDto contactLensAssessment = contactLensAssessmentService
+                .getContactLensAssessment(id);
+        return contactLensAssessment.getTearAssessment();
+    }
+
 
     @Transactional(propagation = Propagation.MANDATORY)
-    public ContactLensAssessmentDto updateTearAssessment(UUID contactLensId, long version, TearAssessmentDto input) {
+    public ContactLensAssessmentDto updateTearAssessment(UUID contactLensId, long version, @Valid TearAssessmentDto input) {
         log.info("Called updateTearAssessment: contactLensId={}", contactLensId);
         return contactLensAssessmentService.update(contactLensId, version, input);
     }
