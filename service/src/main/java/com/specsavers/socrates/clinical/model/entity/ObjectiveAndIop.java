@@ -1,5 +1,6 @@
 package com.specsavers.socrates.clinical.model.entity;
 
+import javax.persistence.AttributeOverride;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -28,5 +29,9 @@ public class ObjectiveAndIop {
     String notes;
 
     @Embedded
+    @AttributeOverride(name = "time", column = @Column(name = "iop_drug_time"))
+    @AttributeOverride(name = "drugUsed", column = @Column(name = "iop_drug_desc"))
+    @AttributeOverride(name = "batchNo", column = @Column(name = "iop_drug_batch"))
+    @AttributeOverride(name = "expiryDate", column = @Column(name = "iop_drug_exp_date"))
     DrugInfo drugInfo;
 }

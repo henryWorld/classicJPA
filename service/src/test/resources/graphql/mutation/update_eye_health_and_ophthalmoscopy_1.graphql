@@ -1,0 +1,32 @@
+mutation ($sightTestId: ID!, $version: Int!, $input: EyeHealthAndOphthalmoscopy1Input!){
+  updateEyeHealthAndOphthalmoscopy1(
+    sightTestId: $sightTestId
+    version: $version
+    input: $input
+  )
+  {
+    eyeHealthAndOphthalmoscopy1 {
+      dilated
+      direct
+      indirect
+      slitLamp
+      volk
+      anteriorChamberLeft
+      anteriorChamberRight
+      externalEyeLeft
+      externalEyeRight
+      drugInfoEyeHealth {
+        postPressure
+        postPressureTime
+        prePressure
+        prePressureTime
+        drugInfo {
+          time
+          drugUsed
+          batchNo
+          expiryDate
+        }
+      }
+    }
+  }
+}

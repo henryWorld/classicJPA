@@ -168,6 +168,7 @@ type SightTest {
     historyAndSymptoms: HistoryAndSymptoms!
     objectiveAndIop: ObjectiveAndIop
     optionRecommendations: OptionRecommendations
+    eyeHealthAndOphthalmoscopy1: EyeHealthAndOphthalmoscopy1
     dispenseNotes: String
 }
 
@@ -311,6 +312,27 @@ type OptionRecommendations {
     recommendations: Recommendations
 }
 
+type EyeHealthDrugInfo {
+    drugInfo: DrugInfo
+    prePressure: String
+    prePressureTime: String
+    postPressure: String
+    postPressureTime: String
+}
+
+type EyeHealthAndOphthalmoscopy1 {
+    direct: Boolean
+    indirect: Boolean
+    volk: Boolean
+    dilated: Boolean
+    slitLamp: Boolean
+    externalEyeRight: String
+    anteriorChamberRight: String
+    externalEyeLeft: String
+    anteriorChamberLeft: String
+    drugInfoEyeHealth: EyeHealthDrugInfo
+}
+
 type ContactLensAssessment {
     id: ID!
     version: Int!
@@ -365,4 +387,10 @@ type Mutation {
 
     "Create a new contact lens assessment"
     createContactLensAssessment(trNumber: Int!): ContactLensAssessment!
+
+    "Updates 'Eye Health and Ophthalmoscopy 1' main fields"
+    updateEyeHealthAndOphthalmoscopy1(sightTestId: ID!, version: Int!, input: EyeHealthAndOphthalmoscopy1Input): SightTest!
+
+    "Updates 'Eye Health and Ophthalmoscopy 1' DrugInfo fields"
+    updateEyeHealthAndOphthalmoscopy1DrugInfo(sightTestId: ID!, version: Int!, input: EyeHealthDrugInfoInput!): SightTest!
 }

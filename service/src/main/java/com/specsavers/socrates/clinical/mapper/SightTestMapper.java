@@ -2,6 +2,8 @@ package com.specsavers.socrates.clinical.mapper;
 
 import com.specsavers.socrates.clinical.model.CurrentSpecsVaDto;
 import com.specsavers.socrates.clinical.model.DrugInfoDto;
+import com.specsavers.socrates.clinical.model.EyeHealthAndOphthalmoscopy1Dto;
+import com.specsavers.socrates.clinical.model.EyeHealthDrugInfoDto;
 import com.specsavers.socrates.clinical.model.EyeRxDto;
 import com.specsavers.socrates.clinical.model.HabitualRxDto;
 import com.specsavers.socrates.clinical.model.HistoryAndSymptomsDto;
@@ -15,6 +17,8 @@ import com.specsavers.socrates.clinical.model.SpecificAdditionDto;
 import com.specsavers.socrates.clinical.model.UnaidedVisualAcuityDto;
 import com.specsavers.socrates.clinical.model.entity.CurrentSpecsVA;
 import com.specsavers.socrates.clinical.model.entity.DrugInfo;
+import com.specsavers.socrates.clinical.model.entity.EyeHealthAndOphthalmoscopy1;
+import com.specsavers.socrates.clinical.model.entity.EyeHealthDrugInfo;
 import com.specsavers.socrates.clinical.model.entity.HabitualRx;
 import com.specsavers.socrates.clinical.model.entity.ObjectiveAndIop;
 import com.specsavers.socrates.clinical.model.entity.OptionRecommendations;
@@ -40,6 +44,7 @@ public interface SightTestMapper {
     @Mapping(target = ".", source = "historyAndSymptoms.lifestyle")
     void update(@MappingTarget SightTest entity, HistoryAndSymptomsDto historyAndSymptoms);
 
+    //region Refracted
     @Mapping(target = "distanceBinVisualAcuity", source = "rx.distanceBinVA")
     @Mapping(target = "bvd", source = "rx.bvd")
     @Mapping(target = "unaidedVisualAcuity.binocular", source = "rx.unaidedBinVA")
@@ -52,7 +57,10 @@ public interface SightTestMapper {
     @InheritInverseConfiguration
     @Mapping(target = "notes", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void update(RefractedRxDto source, @MappingTarget RefractedRx target);
-    
+
+    SpecificAdditionDto map(SpecificAddition value);
+    CurrentSpecsVaDto map(CurrentSpecsVA value);
+
     @BeforeMapping
     default void beforeUpdate(RefractedRxDto source){
         // Workaround to avoid deleting RX when UnaidedVisualAcuity is null
@@ -60,7 +68,9 @@ public interface SightTestMapper {
             source.setUnaidedVisualAcuity(new UnaidedVisualAcuityDto(null, null, null));
         }  
     }
+    //endregion
 
+    //region Prescribed
     @Mapping(target = "distanceBinVisualAcuity", source = "rx.distanceBinVA")
     @Mapping(target = "bvd", source = "rx.bvd")
     @Mapping(target = "unaidedVisualAcuity.binocular", source = "rx.unaidedBinVA")
@@ -73,6 +83,7 @@ public interface SightTestMapper {
     @InheritInverseConfiguration
     @Mapping(target = "notes", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void update(PrescribedRxDto source, @MappingTarget PrescribedRx target);
+    //endregion
 
     @Mapping(target = "distanceVisualAcuity", source = "distanceVA")
     @Mapping(target = "nearVisualAcuity", source = "nearVA")
@@ -91,20 +102,26 @@ public interface SightTestMapper {
     @InheritInverseConfiguration
     DrugInfo map(DrugInfoDto source);
 
-    SpecificAdditionDto map(SpecificAddition value);
-
-    CurrentSpecsVaDto map(CurrentSpecsVA value);
-
-    SightTestType map(SightTestTypeDto dto);
-
-    SightTestTypeDto map(SightTestType entity);
-
-    OptionRecommendations map(OptionRecommendationsDto dto);
-
-    OptionRecommendationsDto map(OptionRecommendations entity);
-
     @Mapping(target = "notes", source = "rx.notes")
     @Mapping(target = "leftEye", source = "rx.leftEye")
     @Mapping(target = "rightEye", source = "rx.rightEye")
     HabitualRxDto fromEntity(HabitualRx entity);
+
+    //region SightTestType
+    SightTestType map(SightTestTypeDto dto);
+    SightTestTypeDto map(SightTestType entity);
+    //endregion
+
+    //region OptionRecommendations
+    OptionRecommendations map(OptionRecommendationsDto dto);
+
+    OptionRecommendationsDto map(OptionRecommendations entity);
+    //endregion
+
+    //region EyeHealth
+    EyeHealthDrugInfo map(EyeHealthDrugInfoDto value);
+
+    @Mapping(target = "drugInfoEyeHealth", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    void update(EyeHealthAndOphthalmoscopy1Dto source, @MappingTarget EyeHealthAndOphthalmoscopy1 target);
+    //endregion
 }

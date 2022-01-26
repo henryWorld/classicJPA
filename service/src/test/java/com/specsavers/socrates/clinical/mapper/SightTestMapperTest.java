@@ -1,6 +1,8 @@
 package com.specsavers.socrates.clinical.mapper;
 
 import com.specsavers.socrates.clinical.model.DrugInfoDto;
+import com.specsavers.socrates.clinical.model.EyeHealthAndOphthalmoscopy1Dto;
+import com.specsavers.socrates.clinical.model.EyeHealthDrugInfoDto;
 import com.specsavers.socrates.clinical.model.EyeIopDto;
 import com.specsavers.socrates.clinical.model.HistoryAndSymptomsDto;
 import com.specsavers.socrates.clinical.model.LifestyleDto;
@@ -11,6 +13,8 @@ import com.specsavers.socrates.clinical.model.RxNotesDto;
 import com.specsavers.socrates.clinical.model.SightTestTypeDto;
 import com.specsavers.socrates.clinical.model.entity.CurrentSpecsVA;
 import com.specsavers.socrates.clinical.model.entity.DrugInfo;
+import com.specsavers.socrates.clinical.model.entity.EyeHealthAndOphthalmoscopy1;
+import com.specsavers.socrates.clinical.model.entity.EyeHealthDrugInfo;
 import com.specsavers.socrates.clinical.model.entity.ObjectiveAndIop;
 import com.specsavers.socrates.clinical.model.entity.PrescribedRx;
 import com.specsavers.socrates.clinical.model.entity.RefractedRx;
@@ -340,6 +344,54 @@ class SightTestMapperTest {
             source.setTime("13:55");
             source.setBatchNo("X123");
             source.setExpiryDate("12/2022");
+
+            var target = sightTestMapper.map(source);
+
+            assertThat(source)
+                    .usingRecursiveComparison()
+                    .isEqualTo(target);
+        }
+    }
+
+    @Nested
+    class EyeHealthAndOphthalmoscopy1Tests {
+        @Test
+        void testMapEyeHealthAndOphthalmoscopy1() {
+            var target = new EyeHealthAndOphthalmoscopy1();
+            var source = EyeHealthAndOphthalmoscopy1Dto.builder()
+                .anteriorChamberRight("AnteriorChamberRight")
+                .anteriorChamberLeft("AnteriorChamberLeft")
+                .externalEyeRight("ExternalEyeRight")
+                .externalEyeLeft("ExternalEyeLeft")
+                .dilated(true)
+                .direct(true)
+                .indirect(true)
+                .slitLamp(true)
+                .volk(true)
+                .build();
+
+            // Null drugInfo on source should not overwrite notes on target
+            source.setDrugInfoEyeHealth(null);
+            target.setDrugInfoEyeHealth(new EyeHealthDrugInfo());
+
+            sightTestMapper.update(source, target);
+
+            assertNotNull(target.getDrugInfoEyeHealth());
+            assertThat(source)
+                    .usingRecursiveComparison()
+                    .ignoringFields("drugInfoEyeHealth")
+                    .isEqualTo(target);
+        }
+
+        @Test
+        void testMapEyeHealthDrugInfo() {
+            var source = EyeHealthDrugInfoDto.builder()
+                .postPressureTime("12:53")
+                .prePressureTime("11:12")
+                .postPressure("PostPressure")
+                .prePressure("PrePressure")
+                .drugInfo(new DrugInfoDto())
+                .build();
 
             var target = sightTestMapper.map(source);
 

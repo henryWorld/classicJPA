@@ -3,6 +3,8 @@ package com.specsavers.socrates.clinical.resolvers;
 import com.specsavers.socrates.clinical.mapper.HabitualRxMapper;
 import com.specsavers.socrates.clinical.mapper.SightTestMapper;
 import com.specsavers.socrates.clinical.model.DrugInfoDto;
+import com.specsavers.socrates.clinical.model.EyeHealthAndOphthalmoscopy1Dto;
+import com.specsavers.socrates.clinical.model.EyeHealthDrugInfoDto;
 import com.specsavers.socrates.clinical.model.HabitualRxDto;
 import com.specsavers.socrates.clinical.model.HistoryAndSymptomsDto;
 import com.specsavers.socrates.clinical.model.ObjectiveAndIopDto;
@@ -571,6 +573,74 @@ class MutationResolverTest {
             var input = "input";
             assertThrows(OutdatedEntityException.class,
                     () -> mutationResolver.updateDispenseNote(SIGHT_TEST_ID, INVALID_VERSION, input));
+        }
+    }
+
+    @Nested
+    class UpdateEyeHealthAndOphthalmoscopy1Tests {
+        @Test
+        void testWithInvalidId() {
+            when(sightTestRepository.findById(any())).thenReturn(Optional.empty());
+
+            assertThrows(NotFoundException.class, () -> mutationResolver.updateEyeHealthAndOphthalmoscopy1(SIGHT_TEST_ID, VALID_VERSION, null));
+
+            verify(sightTestRepository).findById(SIGHT_TEST_ID);
+        }
+
+        @Test
+        void testValidInput() {
+            var input = new EyeHealthAndOphthalmoscopy1Dto();
+            // Sample field, other fields are tested on mapper tests
+            input.setExternalEyeLeft("ExternalEyeLeft");
+
+            var response = mutationResolver.updateEyeHealthAndOphthalmoscopy1(SIGHT_TEST_ID, VALID_VERSION, input);
+
+            var actual = response.getEyeHealthAndOphthalmoscopy1();
+            verify(sightTestMapper).update(same(input), same(sightTest.getEyeHealthAndOphthalmoscopy1()));
+            verify(sightTestRepository).saveAndFlush(same(sightTest));
+            assertThat(sightTest.getUpdated()).isEqualTo(OffsetDateTime.now(fixedClock));
+            assertEquals(input, actual);
+        }
+
+        @Test
+        void throwsWhenIncorrectVersion() {
+            var input = new EyeHealthAndOphthalmoscopy1Dto();
+            assertThrows(OutdatedEntityException.class,
+                    () -> mutationResolver.updateEyeHealthAndOphthalmoscopy1(SIGHT_TEST_ID, INVALID_VERSION, input));
+        }
+    }
+
+    @Nested
+    class UpdateEyeHealthAndOphthalmoscopy1DrugInfoTests {
+        @Test
+        void testWithInvalidId() {
+            when(sightTestRepository.findById(any())).thenReturn(Optional.empty());
+
+            assertThrows(NotFoundException.class, () -> mutationResolver.updateEyeHealthAndOphthalmoscopy1DrugInfo(SIGHT_TEST_ID, VALID_VERSION, null));
+
+            verify(sightTestRepository).findById(SIGHT_TEST_ID);
+        }
+
+        @Test
+        void testValidDrugInfo() {
+            var input = new EyeHealthDrugInfoDto();
+            // Sample field, other fields are tested on mapper tests
+            input.setPrePressure("XYZ");
+
+            var response = mutationResolver.updateEyeHealthAndOphthalmoscopy1DrugInfo(SIGHT_TEST_ID, VALID_VERSION, input);
+
+            var actual = response.getEyeHealthAndOphthalmoscopy1().getDrugInfoEyeHealth();
+            verify(sightTestMapper).map(same(input));
+            verify(sightTestRepository).saveAndFlush(same(sightTest));
+            assertThat(sightTest.getUpdated()).isEqualTo(OffsetDateTime.now(fixedClock));
+            assertEquals(input, actual);
+        }
+
+        @Test
+        void throwsWhenIncorrectVersion() {
+            var input = new EyeHealthDrugInfoDto();
+            assertThrows(OutdatedEntityException.class,
+                    () -> mutationResolver.updateEyeHealthAndOphthalmoscopy1DrugInfo(SIGHT_TEST_ID, INVALID_VERSION, input));
         }
     }
 }

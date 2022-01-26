@@ -239,3 +239,22 @@ input OptionRecommendationsInput {
     recommendations: RecommendationsInput
 }
 
+input EyeHealthDrugInfoInput {
+    drugInfo: DrugInfoInput
+    prePressure: String
+    prePressureTime: String
+    postPressure: String
+    postPressureTime: String
+}
+
+input EyeHealthAndOphthalmoscopy1Input {
+    direct: Boolean
+    indirect: Boolean
+    volk: Boolean
+    dilated: Boolean
+    slitLamp: Boolean
+    externalEyeRight: String
+    anteriorChamberRight: String
+    externalEyeLeft: String
+    anteriorChamberLeft: String
+}

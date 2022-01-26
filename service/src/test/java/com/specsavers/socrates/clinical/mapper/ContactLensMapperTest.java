@@ -2,6 +2,7 @@ package com.specsavers.socrates.clinical.mapper;
 
 import com.specsavers.socrates.clinical.model.entity.ContactLensAssessment;
 import org.junit.jupiter.api.Test;
+import org.mapstruct.factory.Mappers;
 
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
@@ -9,7 +10,7 @@ import java.time.ZonedDateTime;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class ContactLensMapperTest {
-    private final ContactLensMapper contactLensMapper = new ContactLensMapperImpl();
+    private final ContactLensMapper contactLensMapper = Mappers.getMapper(ContactLensMapper.class);
 
     @Test
     void testTransformFromEntityToDto() {
