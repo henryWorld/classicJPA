@@ -341,8 +341,6 @@ type Query {
     sightTests(customerID: ID!): [SightTest]
 
     contactLensAssessment(id: ID!): ContactLensAssessment!
-
-    tearAssessment(id: ID!): TearAssessment!
 }
 
 type Mutation {

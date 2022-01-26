@@ -71,6 +71,7 @@ class ContactLensAssessmentServiceTest {
         final var retrievedClAssignmentDto
                 = contactLensAssessmentService.getContactLensAssessment(VALID_CONTACT_LENS_ID);
         assertEquals(assessmentDto, retrievedClAssignmentDto);
+        verify(contactLensRepository).findById(VALID_CONTACT_LENS_ID);
     }
 
     @Test
@@ -89,6 +90,7 @@ class ContactLensAssessmentServiceTest {
         ContactLensAssessmentDto updatedAssessment = contactLensAssessmentService
                 .update(VALID_CONTACT_LENS_ID, VALID_VERSION, TEAR_ASSESSMENT_DTO.build());
         assertEquals(VALID_VERSION, updatedAssessment.getVersion());
+        verify(contactLensRepository).findById(VALID_CONTACT_LENS_ID);
     }
 
     @Test

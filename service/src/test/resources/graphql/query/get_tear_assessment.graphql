@@ -1,19 +1,23 @@
 query($id: ID!) {
-    tearAssessment(id: $id) {
-        rightEye{
-            tbut
-            prism
-            scope
-            schirmer
+    contactLensAssessment(id: $id) {
+        tearAssessment{
+            rightEye{
+                tbut
+                prism
+                scope
+                schirmer
+            }
+            leftEye{
+                tbut
+                prism
+                scope
+                schirmer
+            }
+            observations
         }
-        leftEye{
-            tbut
-            prism
-            scope
-            schirmer
-        }
-        observations
     }
 }
+
+
 
 

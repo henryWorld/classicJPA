@@ -3,18 +3,18 @@ package com.specsavers.socrates.clinical.resolvers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.graphql.spring.boot.test.GraphQLResponse;
 import com.graphql.spring.boot.test.GraphQLTestTemplate;
 import com.specsavers.socrates.clinical.model.ContactLensAssessmentDto;
-import com.specsavers.socrates.clinical.model.RefractedRxDto;
 import com.specsavers.socrates.clinical.model.TearAssessmentDto;
 import com.specsavers.socrates.clinical.model.TearAssessmentEyeDto;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.thymeleaf.util.StringUtils;
 
 import java.io.IOException;
 import java.time.OffsetDateTime;
@@ -30,21 +30,14 @@ import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTest
 @AutoConfigureTestDatabase(replace = Replace.ANY)
 class ContactLensResolverTest {
     private static final int TR_NUMBER = 24;
-    private static final long INVALID_VERSION = 2L;
+    private UUID assessmentId;
 
     @Autowired
     private GraphQLTestTemplate graphQLTestTemplate;
 
 
-    private ObjectNode parameter;
-
     @BeforeEach
     void setUp() {
-        //given
-        parameter = new ObjectMapper()
-                .registerModule(new JavaTimeModule())
-                .createObjectNode();
-        parameter.put("trNumber", TR_NUMBER);
 
         this.graphQLTestTemplate
                 .withClearHeaders()
@@ -52,60 +45,44 @@ class ContactLensResolverTest {
                 .withAdditionalHeader(STORE_ID_HTTP_HEADER_NAME, VALID_STORE_ID);
     }
 
+    @DisplayName("test contact lens is created")
     @Test
     void testPersistingContactLensAssessment() throws IOException {
         //when
-        var response = graphQLTestTemplate
-                .perform(CREATE_CL_ASSESSMENT, parameter);
+        var response = createContactLensAssessment();
 
         //then
         assertTrue(response.isOk());
 
-        response.assertThatNoErrorsArePresent()
+        response
                 .assertThatField("$.data.createContactLensAssessment.id").as(UUID.class)
                 .and().assertThatField("$.data.createContactLensAssessment.version").asInteger()
                 .and().assertThatField("$.data.createContactLensAssessment.creationDate").as(OffsetDateTime.class);
 
     }
 
-
+    @DisplayName("test loading contact lens with valid id")
     @Test
     void testGetContactLensAssessmentGivenId() throws IOException {
         //when
-        var response = graphQLTestTemplate
-                .perform(CREATE_CL_ASSESSMENT, parameter);
-        assertTrue(response.isOk());
-
-        var uuid = response.get("$.data.createContactLensAssessment.id");
-
-        var variables = new ObjectMapper()
-                .registerModule(new JavaTimeModule())
-                .createObjectNode();
-
-        variables.put("id", uuid);
-
-        var clDtoResponse = graphQLTestTemplate
-                .perform(GET_CL_ASSESSMENT, variables);
+        var clDtoResponse = loadContactLensAssessmentResponse();
 
         //then
         assertTrue(clDtoResponse.isOk());
-
-        clDtoResponse.assertThatNoErrorsArePresent()
-                .assertThatField("$.data.contactLensAssessment.id").asString().isEqualTo(uuid)
+        clDtoResponse
+                .assertThatField("$.data.contactLensAssessment.id").as(UUID.class)
                 .and().assertThatField("$.data.contactLensAssessment.version").asInteger()
                 .and().assertThatField("$.data.contactLensAssessment.creationDate").as(OffsetDateTime.class);
 
     }
 
-
+    @DisplayName("test loading contact lens with an invalid id")
     @Test
     void testGetContactLensAssessmentGivenInvalidId() throws IOException {
         //given
         String uuid = UUID.randomUUID().toString();
-        var variables = new ObjectMapper()
-                .registerModule(new JavaTimeModule())
-                .createObjectNode()
-                .put("id", uuid);
+
+        var variables = getRequestParameter("id", uuid);
 
         //when
         var response = graphQLTestTemplate.perform(GET_CL_ASSESSMENT, variables);
@@ -118,30 +95,40 @@ class ContactLensResolverTest {
     }
 
 
+    @DisplayName("test creating tear assessment with a valid version")
     @Test
     void testPersistTearAssessmentGivenValidVersion() throws IOException {
+        //given
+        var variables = getTearAssessmentRequestParameters(VALID_VERSION);
+
         //when
-        var response = graphQLTestTemplate
-                .perform(CREATE_CL_ASSESSMENT, parameter);
-
-        assertTrue(response.isOk());
-
-        var persistedClDto = response.get("$.data.createContactLensAssessment",
-                ContactLensAssessmentDto.class);
-
-        var uuid = response.get("$.data.createContactLensAssessment.id");
-
-        var variables = new ObjectMapper().createObjectNode()
-                .put("contactLensId", uuid)
-                .put("version", VALID_VERSION);
-
         var clDtoResponse = graphQLTestTemplate.perform(UPDATE_TEAR_ASSESSMENT, variables);
 
         //then
         clDtoResponse.assertThatNoErrorsArePresent()
                 .assertThatField("$.data.updateTearAssessment.version")
                 .as(Long.class)
-                .isEqualTo(persistedClDto.getVersion() + 1);
+                .isEqualTo(VALID_VERSION + 1);
+    }
+
+    @DisplayName("test creating tear assessment with an invalid version")
+    @Test
+    void testPersistTearAssessmentGivenInvalidVersion() throws IOException {
+
+        //given
+        var variables = getTearAssessmentRequestParameters(INVALID_VERSION);
+
+        //when
+        var clDtoResponse = graphQLTestTemplate.perform(UPDATE_TEAR_ASSESSMENT, variables);
+
+        //then
+        clDtoResponse
+                .assertThatField("$.errors[*].message")
+                .asListOf(String.class)
+                .contains("Exception while fetching data (/updateTearAssessment) : " +
+                        "ContactLensAssessment with id " + assessmentId +
+                        " is currently at version " + VALID_VERSION + ", but the expected version is " +
+                        INVALID_VERSION);
     }
 
 
@@ -149,8 +136,8 @@ class ContactLensResolverTest {
     @Test
     void testUpdateInvalidTearAssessmentGivenInvalidFieldValue() throws IOException {
         //given
-        var variables = variablesForTearAssessmentUpdate();
-        variables.put("leftTbut", " ");
+        var variables = getTearAssessmentRequestParameters(VALID_VERSION)
+                .put("leftTbut", " ");
 
         //when
         var updatedResponse = graphQLTestTemplate
@@ -163,31 +150,37 @@ class ContactLensResolverTest {
                 .contains("Left eye: tbut must not be blank");
     }
 
-
+    @DisplayName("Validate left Eye tbut value length")
     @Test
-    void testGetTearAssessmentGivenValidId() throws IOException {
+    void testUpdateInvalidTearAssessmentGivenInvalidFieldLength() throws IOException {
         //given
-        var response = graphQLTestTemplate
-                .perform(CREATE_CL_ASSESSMENT, parameter);
+        var invalidLeftEyeFieldLength = StringUtils.randomAlphanumeric(31);
+        var variables = getTearAssessmentRequestParameters(VALID_VERSION)
+                .put("leftTbut", "OK")
+                .put("leftTbut", invalidLeftEyeFieldLength);
 
-        assertTrue(response.isOk());
-
-        var persistedClDto = response
-                .get("$.data.createContactLensAssessment",
-                        ContactLensAssessmentDto.class);
-
-        var updateTearAssessmentVariables = new ObjectMapper().createObjectNode()
-                .put("contactLensId", persistedClDto.getId().toString())
-                .put("version", persistedClDto.getVersion())
-                .put("leftTbut", "BM");
-
+        //when
         var updatedResponse = graphQLTestTemplate
-                .perform(UPDATE_TEAR_ASSESSMENT_VALIDATION, updateTearAssessmentVariables);
+                .perform(UPDATE_TEAR_ASSESSMENT_VALIDATION, variables);
+
+        //then
+        updatedResponse
+                .assertThatField("$.errors[*].message")
+                .asListOf(String.class)
+                .contains("Left eye: tbut must not be longer than 30 characters");
+    }
+
+
+    @DisplayName("test loading tear assessment")
+    @Test
+    void testGetTearAssessment() throws IOException {
+        //given
+        prepareTearAssessment();
 
         var variables = new ObjectMapper()
                 .registerModule(new JavaTimeModule())
                 .createObjectNode()
-                .put("id", persistedClDto.getId().toString());
+                .put("id", assessmentId.toString());
 
 
         //when
@@ -196,32 +189,74 @@ class ContactLensResolverTest {
 
         //then
         tearAssessmentDtoResponse
-        .assertThatNoErrorsArePresent()
-                .assertThatField("$.data.tearAssessment")
+                .assertThatNoErrorsArePresent()
+                .assertThatField("$.data.contactLensAssessment.tearAssessment")
                 .as(TearAssessmentDto.class)
-                .isEqualTo(getTearAssessmentTestData());
-
-        assertTrue(tearAssessmentDtoResponse.isOk());
+                .isEqualTo(expectedTearAssessment());
     }
 
 
-    private ObjectNode variablesForTearAssessmentUpdate() throws IOException {
+    private ObjectNode getRequestParameter(String field, int value) {
+        return new ObjectMapper()
+                .registerModule(new JavaTimeModule())
+                .createObjectNode().put(field, value);
+    }
+
+    private ObjectNode getRequestParameter(String field, String value) {
+        return new ObjectMapper()
+                .registerModule(new JavaTimeModule())
+                .createObjectNode().put(field, value);
+    }
+
+    private GraphQLResponse createContactLensAssessment() throws IOException {
+        var parameter = getRequestParameter("trNumber", TR_NUMBER);
         var response = graphQLTestTemplate
                 .perform(CREATE_CL_ASSESSMENT, parameter);
 
-        assertTrue(response.isOk());
-
-        var persistedClDto = response
-                .get("$.data.createContactLensAssessment",
-                        ContactLensAssessmentDto.class);
-
-        return new ObjectMapper().createObjectNode()
-                .put("contactLensId", persistedClDto.getId().toString())
-                .put("version", VALID_VERSION)
-                .put("leftTbut", "OK");
+        response.assertThatNoErrorsArePresent();
+        return response;
     }
 
-    private TearAssessmentDto getTearAssessmentTestData() {
+    private GraphQLResponse loadContactLensAssessmentResponse() throws IOException {
+        var response = createContactLensAssessment();
+
+        var persistedClDto = response.get("$.data.createContactLensAssessment",
+                ContactLensAssessmentDto.class);
+
+        assessmentId = persistedClDto.getId();
+
+        var variables = getRequestParameter("id", assessmentId.toString());
+
+        var clDtoResponse = graphQLTestTemplate
+                .perform(GET_CL_ASSESSMENT, variables);
+
+        clDtoResponse.assertThatNoErrorsArePresent();
+
+        return clDtoResponse;
+    }
+
+    private void prepareTearAssessment() throws IOException {
+        var updateTearAssessmentVariables = getTearAssessmentRequestParameters(VALID_VERSION)
+                .put("leftTbut", "BM");
+
+        graphQLTestTemplate
+                .perform(UPDATE_TEAR_ASSESSMENT_VALIDATION, updateTearAssessmentVariables);
+    }
+
+    private ObjectNode getTearAssessmentRequestParameters(long version) throws IOException {
+        var response = createContactLensAssessment();
+
+        var persistedClDto = response.get("$.data.createContactLensAssessment",
+                ContactLensAssessmentDto.class);
+
+        assessmentId = persistedClDto.getId();
+
+        return new ObjectMapper().createObjectNode()
+                .put("contactLensId", assessmentId.toString())
+                .put("version", version);
+    }
+
+    private TearAssessmentDto expectedTearAssessment() {
         return TearAssessmentDto.builder()
                 .rightEye(TearAssessmentEyeDto.builder()
                         .tbut("strings")
@@ -238,4 +273,5 @@ class ContactLensResolverTest {
                 .observations("Strings")
                 .build();
     }
+
 }

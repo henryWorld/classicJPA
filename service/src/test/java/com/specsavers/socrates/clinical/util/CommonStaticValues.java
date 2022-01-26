@@ -46,6 +46,7 @@ public class CommonStaticValues {
     public static final UUID VALID_CONTACT_LENS_ID = UUID.fromString("20354d7a-e4fe-47af-8ff6-187bca92f3f9");
     public static final long VALID_SIGHT_TEST_VERSION = 1L;
     public static final long VALID_VERSION = 0L;
+    public static final long INVALID_VERSION = 2L;
 
     public static final EyeRX RIGHT_EYE = EyeRX.builder()
             .axis(50f)
