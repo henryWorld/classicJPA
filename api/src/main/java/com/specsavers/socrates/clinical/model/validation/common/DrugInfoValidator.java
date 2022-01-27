@@ -25,6 +25,10 @@ public class DrugInfoValidator extends Validator<DrugInfoDto> {
 
     @Override
     public void validate(DrugInfoDto item) {
+        if (item == null){
+            return;
+        }
+
         checkTime(item.getTime());
 
         var drugCheck = check("DrugUsed", item.getDrugUsed());

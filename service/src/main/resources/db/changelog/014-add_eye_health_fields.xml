@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
+    <changeSet id="014-add_eye_health_fields" author="paulo.giron">
+        <addColumn tableName="sight_test">
+            <column name="health_direct" type="bit" />
+            <column name="health_indirect" type="bit" />
+            <column name="health_volk" type="bit" />
+            <column name="health_dilated" type="bit" />
+            <column name="health_slit_lamp" type="bit" />
+
+            <column name="health_ext_eye_right" type="varchar(550)" />
+            <column name="health_anterior_chamber_right" type="varchar(150)" />
+            <column name="health_ext_eye_left" type="varchar(550)" />
+            <column name="health_anterior_chamber_left" type="varchar(150)" />
+
+            <column name="health_drug_pre_pressure" type="varchar(25)" />
+            <column name="health_drug_pre_pressure_time" type="char(5)" />
+            <column name="health_drug_post_pressure" type="varchar(25)" />
+            <column name="health_drug_post_pressure_time" type="char(5)" />
+
+            <column name="health_drug_time" type="char(5)" />
+            <column name="health_drug_desc" type="varchar(25)" />
+            <column name="health_drug_batch" type="varchar(25)" />
+            <column name="health_drug_exp_date" type="char(7)" />
+        </addColumn>
+        
+    </changeSet>
+</databaseChangeLog>

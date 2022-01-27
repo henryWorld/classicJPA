@@ -17,7 +17,6 @@ public class CommonStaticValues {
     public static final String CREATE_CL_ASSESSMENT = "graphql/mutation/create_cl_assessment.graphql";
     public static final String GET_PRESCRIBEDRX_BY_TRNUMBER = "graphql/query/get_prescribedRX_by_trNumber.graphql";
     public static final String GET_PRESCRIBEDRX_BY_ID = "graphql/query/get_prescribedRX_by_ID.graphql";
-    public static final String CREATE_HABITUAL_RX = "graphql/mutation/create_habitual_rx.graphql";
     public static final String UPDATE_HABITUAL_RX = "graphql/mutation/update_habitual_rx.graphql";
     public static final String UPDATE_TEAR_ASSESSMENT = "graphql/mutation/update_tear_assessment.graphql";
     public static final String UPDATE_TEAR_ASSESSMENT_VALIDATION = "graphql/mutation/update_tear_assessment_validation.graphql";
@@ -34,6 +33,8 @@ public class CommonStaticValues {
     public static final String UPDATE_OBJECTIVE_AND_IOP_DRUG_INFO = "graphql/mutation/update_objective_and_iop_drug_info.graphql";
     public static final String UPDATE_OPTION_RECOMMENDATIONS = "graphql/mutation/update_option_recommendations.graphql";
     public static final String UPDATE_DISPENSE_NOTE = "graphql/mutation/update_dispense_note.graphql";
+    public static final String UPDATE_EYE_HEALTH_AND_OPHTHALMOSCOPY_1 = "graphql/mutation/update_eye_health_and_ophthalmoscopy_1.graphql";
+    public static final String UPDATE_EYE_HEALTH_AND_OPHTHALMOSCOPY_1_DRUG_INFO = "graphql/mutation/update_eye_health_and_ophthalmoscopy_1_drug_info.graphql";
 
     public static final String VALID_STORE_ID = "8306";
     public static final String STORE_ID_HTTP_HEADER_NAME = "SOCRATES_STORE_ID";

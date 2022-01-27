@@ -48,6 +48,9 @@ public class SightTest implements Versioned {
     @Embedded
     private OptionRecommendations optionRecommendations;
 
+    @Embedded
+    private EyeHealthAndOphthalmoscopy1 eyeHealthAndOphthalmoscopy1;
+
     @Column(name = "dispense_notes")
     private String dispenseNotes;
     

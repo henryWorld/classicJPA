@@ -6,13 +6,14 @@ import com.specsavers.socrates.clinical.model.entity.ContactLensAssessment;
 import com.specsavers.socrates.clinical.model.entity.TearAssessment;
 import com.specsavers.socrates.clinical.model.entity.TearAssessmentEye;
 import org.junit.jupiter.api.Test;
+import org.mapstruct.factory.Mappers;
 
 import java.time.OffsetDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class ContactLensMapperTest {
-    private final ContactLensMapper contactLensMapper = new ContactLensMapperImpl();
+    private final ContactLensMapper contactLensMapper = Mappers.getMapper(ContactLensMapper.class);
 
     @Test
     void testTransformFromEntityToDto() {

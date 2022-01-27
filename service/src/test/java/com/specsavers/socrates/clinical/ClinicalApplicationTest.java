@@ -2,12 +2,13 @@ package com.specsavers.socrates.clinical;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.graphql.spring.boot.test.GraphQLResponse;
 import com.graphql.spring.boot.test.GraphQLTestTemplate;
 import com.specsavers.socrates.clinical.legacy.model.rx.EyeRX;
 import com.specsavers.socrates.clinical.model.CurrentSpecsVaDto;
 import com.specsavers.socrates.clinical.model.DrugInfoDto;
+import com.specsavers.socrates.clinical.model.EyeHealthAndOphthalmoscopy1Dto;
+import com.specsavers.socrates.clinical.model.EyeHealthDrugInfoDto;
 import com.specsavers.socrates.clinical.model.EyeIopDto;
 import com.specsavers.socrates.clinical.model.EyeRxDto;
 import com.specsavers.socrates.clinical.model.ObjectiveAndIopDto;
@@ -43,6 +44,8 @@ import static com.specsavers.socrates.clinical.util.CommonStaticValues.RIGHT_EYE
 import static com.specsavers.socrates.clinical.util.CommonStaticValues.SIGHT_TEST;
 import static com.specsavers.socrates.clinical.util.CommonStaticValues.STORE_ID_HTTP_HEADER_NAME;
 import static com.specsavers.socrates.clinical.util.CommonStaticValues.UPDATE_DISPENSE_NOTE;
+import static com.specsavers.socrates.clinical.util.CommonStaticValues.UPDATE_EYE_HEALTH_AND_OPHTHALMOSCOPY_1;
+import static com.specsavers.socrates.clinical.util.CommonStaticValues.UPDATE_EYE_HEALTH_AND_OPHTHALMOSCOPY_1_DRUG_INFO;
 import static com.specsavers.socrates.clinical.util.CommonStaticValues.UPDATE_HABITUAL_RX;
 import static com.specsavers.socrates.clinical.util.CommonStaticValues.UPDATE_HISTORY_SYMPTOMS;
 import static com.specsavers.socrates.clinical.util.CommonStaticValues.UPDATE_OBJECTIVE_AND_IOP;
@@ -63,6 +66,7 @@ import static java.util.Collections.nCopies;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ClinicalApplicationTest {
+    private final ObjectMapper mapper = new ObjectMapper();
 
     @Autowired
     private GraphQLTestTemplate graphQLTestTemplate;
@@ -507,9 +511,7 @@ class ClinicalApplicationTest {
         void testUpdateDispenseNotes() throws IOException {
             var input = "Some Notes";
 
-            var variables = new ObjectMapper().createObjectNode()
-                .put("sightTestId", VALID_SIGHT_TEST_ID.toString())
-                .put("version", VALID_SIGHT_TEST_VERSION)
+            var variables = variables()
                 .put("input", input);
 
             var response = graphQLTestTemplate.perform(UPDATE_DISPENSE_NOTE, variables);
@@ -589,6 +591,89 @@ class ClinicalApplicationTest {
             optionRecommendations.setRecommendations(rec);
 
             return optionRecommendations;
+        }
+    }
+
+    @Nested
+    class UpdateEyeHealthAndOphthalmoscopy1Tests {
+
+        @Test
+        void testUpdateEyeHealthDrugInfo() throws IOException {
+            var drugInfo = new DrugInfoDto();
+            drugInfo.setExpiryDate("12/2050");
+
+            var eyeHealthDrugInfo = EyeHealthDrugInfoDto.builder()
+                .drugInfo(drugInfo)
+                .prePressure("PrePressure")
+                .postPressure("PostPressure")
+                .prePressureTime("15:22")
+                .postPressureTime("11:36")
+                .build();
+
+            var variables = variables();
+            variables.set("input", mapper.valueToTree(eyeHealthDrugInfo));
+
+            graphQLTestTemplate.perform(UPDATE_EYE_HEALTH_AND_OPHTHALMOSCOPY_1_DRUG_INFO, variables)
+                .assertThatNoErrorsArePresent()
+                .assertThatField("$.data.updateEyeHealthAndOphthalmoscopy1DrugInfo.eyeHealthAndOphthalmoscopy1.drugInfoEyeHealth")
+                .as(EyeHealthDrugInfoDto.class)
+                .isEqualTo(eyeHealthDrugInfo);
+        }
+
+        @Test
+        void testUpdateEyeHealthDrugInfoTriggersValidation() throws IOException {
+            var drugInfo = new EyeHealthDrugInfoDto();
+            drugInfo.setPostPressure(stringOfLength(50));
+
+            var variables = variables();
+            variables.set("input", mapper.valueToTree(drugInfo));
+
+            graphQLTestTemplate.perform(UPDATE_EYE_HEALTH_AND_OPHTHALMOSCOPY_1_DRUG_INFO, variables)
+                    .assertThatField("$.errors[*].message")
+                    .asListOf(String.class)
+                    .contains("PostPressure must not be longer than 25 characters")
+                    .and()
+                    .assertThatDataField()
+                    .isNull();
+        }
+
+        @Test
+        void testUpdateEyeHealthAndOphthalmoscopy1() throws IOException {
+            var eyeHealth = new EyeHealthAndOphthalmoscopy1Dto();
+            eyeHealth.setExternalEyeLeft("ExternalEyeLeft");
+            eyeHealth.setVolk(true);
+
+            ObjectNode input = mapper.valueToTree(eyeHealth);
+            input.remove("drugInfoEyeHealth");
+
+            var variables = variables();
+            variables.set("input", input);
+
+            graphQLTestTemplate.perform(UPDATE_EYE_HEALTH_AND_OPHTHALMOSCOPY_1, variables)
+                    .assertThatNoErrorsArePresent()
+                    .assertThatField("$.data.updateEyeHealthAndOphthalmoscopy1.eyeHealthAndOphthalmoscopy1")
+                    .as(EyeHealthAndOphthalmoscopy1Dto.class)
+                    .isEqualTo(eyeHealth);
+        }
+
+        @Test
+        void testUpdateEyeHealthAndOphthalmoscopy1TriggersValidation() throws IOException {
+            var eyeHealth = new EyeHealthAndOphthalmoscopy1Dto();
+            eyeHealth.setExternalEyeLeft(stringOfLength(600));
+
+            ObjectNode input = mapper.valueToTree(eyeHealth);
+            input.remove("drugInfoEyeHealth");
+
+            var variables = variables();
+            variables.set("input", input);
+
+            graphQLTestTemplate.perform(UPDATE_EYE_HEALTH_AND_OPHTHALMOSCOPY_1, variables)
+                    .assertThatField("$.errors[*].message")
+                    .asListOf(String.class)
+                    .contains("ExternalEyeLeft must not be longer than 550 characters")
+                    .and()
+                    .assertThatDataField()
+                    .isNull();
         }
     }
 
