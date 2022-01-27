@@ -3,7 +3,6 @@ package com.specsavers.socrates.clinical.resolvers;
 import com.specsavers.socrates.clinical.model.ContactLensAssessmentDto;
 import com.specsavers.socrates.clinical.model.TearAssessmentDto;
 import com.specsavers.socrates.clinical.model.entity.ContactLensAssessment;
-import com.specsavers.socrates.clinical.model.entity.TearAssessmentEye;
 import com.specsavers.socrates.clinical.service.ContactLensAssessmentService;
 import graphql.kickstart.tools.GraphQLMutationResolver;
 import graphql.kickstart.tools.GraphQLQueryResolver;
@@ -31,7 +30,6 @@ public class ContactLensResolver implements GraphQLMutationResolver, GraphQLQuer
     @Transactional(propagation = Propagation.MANDATORY)
     public ContactLensAssessmentDto createContactLensAssessment(int trNumber) {
         log.info("Called createContactLensAssessment mutation with the trNumber={}", trNumber);
-        TearAssessmentEye.builder().build();
         var assessment = ContactLensAssessment.builder()
                 .trNumber(trNumber)
                 .build();
