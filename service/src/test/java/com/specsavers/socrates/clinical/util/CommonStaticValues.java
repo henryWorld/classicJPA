@@ -35,6 +35,7 @@ public class CommonStaticValues {
     public static final String UPDATE_DISPENSE_NOTE = "graphql/mutation/update_dispense_note.graphql";
     public static final String UPDATE_EYE_HEALTH_AND_OPHTHALMOSCOPY_1 = "graphql/mutation/update_eye_health_and_ophthalmoscopy_1.graphql";
     public static final String UPDATE_EYE_HEALTH_AND_OPHTHALMOSCOPY_1_DRUG_INFO = "graphql/mutation/update_eye_health_and_ophthalmoscopy_1_drug_info.graphql";
+    public static final String UPDATE_EYE_HEALTH_AND_OPHTHALMOSCOPY_2 = "graphql/mutation/update_eye_health_and_ophthalmoscopy_2.graphql";
 
     public static final String VALID_STORE_ID = "8306";
     public static final String STORE_ID_HTTP_HEADER_NAME = "SOCRATES_STORE_ID";

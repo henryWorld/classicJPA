@@ -5,6 +5,7 @@ import com.specsavers.socrates.clinical.mapper.SightTestMapper;
 import com.specsavers.socrates.clinical.model.DrugInfoDto;
 import com.specsavers.socrates.clinical.model.EyeHealthAndOphthalmoscopy1Dto;
 import com.specsavers.socrates.clinical.model.EyeHealthDrugInfoDto;
+import com.specsavers.socrates.clinical.model.EyeHealthAndOphthalmoscopy2Dto;
 import com.specsavers.socrates.clinical.model.HabitualRxDto;
 import com.specsavers.socrates.clinical.model.HistoryAndSymptomsDto;
 import com.specsavers.socrates.clinical.model.ObjectiveAndIopDto;
@@ -14,6 +15,7 @@ import com.specsavers.socrates.clinical.model.RefractedRxDto;
 import com.specsavers.socrates.clinical.model.SightTestDto;
 import com.specsavers.socrates.clinical.model.SightTestTypeDto;
 import com.specsavers.socrates.clinical.model.entity.EyeHealthAndOphthalmoscopy1;
+import com.specsavers.socrates.clinical.model.entity.EyeHealthAndOphthalmoscopy2;
 import com.specsavers.socrates.clinical.model.entity.HabitualRx;
 import com.specsavers.socrates.clinical.model.entity.ObjectiveAndIop;
 import com.specsavers.socrates.clinical.model.entity.PrescribedRx;
@@ -241,6 +243,23 @@ public class MutationResolver implements GraphQLMutationResolver {
             }
 
             eyeHealth.setDrugInfoEyeHealth(sightTestMapper.map(input));
+        });
+    }
+    //endregion
+
+    //region EyeHealthAndOphthalmoscopy
+    public SightTestDto updateEyeHealthAndOphthalmoscopy2(UUID sightTestId, long version, @Valid EyeHealthAndOphthalmoscopy2Dto input) {
+        log.info("Called updateEyeHealthAndOphthalmoscopy2: sightTestId={}", sightTestId);
+
+        return mutation(sightTestId, version, sightTest -> {
+            var eyeHealth = sightTest.getEyeHealthAndOphthalmoscopy2();
+            if (eyeHealth == null) {
+                eyeHealth = new EyeHealthAndOphthalmoscopy2();
+            }
+
+            sightTestMapper.update(input, eyeHealth);
+
+            sightTest.setEyeHealthAndOphthalmoscopy2(eyeHealth);
         });
     }
     //endregion

@@ -169,6 +169,7 @@ type SightTest {
     objectiveAndIop: ObjectiveAndIop
     optionRecommendations: OptionRecommendations
     eyeHealthAndOphthalmoscopy1: EyeHealthAndOphthalmoscopy1
+    eyeHealthAndOphthalmoscopy2: EyeHealthAndOphthalmoscopy2
     dispenseNotes: String
 }
 
@@ -325,6 +326,13 @@ type TearAssessment {
     observations: String
 }
 
+type ContactLensAssessment {
+    id: ID!
+    version: Int!
+    creationDate: Date!
+    tearAssessment: TearAssessment!
+}
+
 type EyeHealthDrugInfo {
     drugInfo: DrugInfo
     prePressure: String
@@ -346,11 +354,11 @@ type EyeHealthAndOphthalmoscopy1 {
     drugInfoEyeHealth: EyeHealthDrugInfo
 }
 
-type ContactLensAssessment {
-    id: ID!
-    version: Int!
-    creationDate: DateTime!
-    tearAssessment: TearAssessment
+type EyeHealthAndOphthalmoscopy2{
+    lensRight: String
+    lensLeft: String
+    vitreousRight: String
+    vitreousLeft: String
 }
 
 type Query {
@@ -410,4 +418,8 @@ type Mutation {
 
     "Updates 'Eye Health and Ophthalmoscopy 1' DrugInfo fields"
     updateEyeHealthAndOphthalmoscopy1DrugInfo(sightTestId: ID!, version: Int!, input: EyeHealthDrugInfoInput!): SightTest!
+
+    "Updates 'Eye Health and Ophthalmoscopy 2'"
+    updateEyeHealthAndOphthalmoscopy2(sightTestId: ID!, version: Int!, input: EyeHealthAndOphthalmoscopy2Input): SightTest!
+
 }

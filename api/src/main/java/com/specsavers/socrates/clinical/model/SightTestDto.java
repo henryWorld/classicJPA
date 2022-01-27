@@ -24,5 +24,6 @@ public final class SightTestDto {
     private ObjectiveAndIopDto objectiveAndIop;
     private OptionRecommendationsDto optionRecommendations;
     private EyeHealthAndOphthalmoscopy1Dto eyeHealthAndOphthalmoscopy1;
+    private EyeHealthAndOphthalmoscopy2Dto eyeHealthAndOphthalmoscopy2;
     private String dispenseNotes;
 }

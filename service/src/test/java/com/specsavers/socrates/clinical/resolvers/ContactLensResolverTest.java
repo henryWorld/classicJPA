@@ -5,22 +5,29 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.graphql.spring.boot.test.GraphQLResponse;
 import com.graphql.spring.boot.test.GraphQLTestTemplate;
-import com.specsavers.socrates.clinical.model.ContactLensAssessmentDto;
 import com.specsavers.socrates.clinical.model.TearAssessmentDto;
 import com.specsavers.socrates.clinical.model.TearAssessmentEyeDto;
+import com.specsavers.socrates.clinical.util.TestHelpers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.thymeleaf.util.StringUtils;
 
 import java.io.IOException;
-import java.time.OffsetDateTime;
+import java.time.LocalDate;
 import java.util.UUID;
 
-import static com.specsavers.socrates.clinical.util.CommonStaticValues.*;
+import static com.specsavers.socrates.clinical.util.CommonStaticValues.CREATE_CL_ASSESSMENT;
+import static com.specsavers.socrates.clinical.util.CommonStaticValues.GET_CL_ASSESSMENT;
+import static com.specsavers.socrates.clinical.util.CommonStaticValues.GET_TEAR_ASSESSMENT;
+import static com.specsavers.socrates.clinical.util.CommonStaticValues.INVALID_VERSION;
+import static com.specsavers.socrates.clinical.util.CommonStaticValues.STORE_ID_HTTP_HEADER_NAME;
+import static com.specsavers.socrates.clinical.util.CommonStaticValues.UPDATE_TEAR_ASSESSMENT;
+import static com.specsavers.socrates.clinical.util.CommonStaticValues.UPDATE_TEAR_ASSESSMENT_VALIDATION;
+import static com.specsavers.socrates.clinical.util.CommonStaticValues.VALID_STORE_ID;
+import static com.specsavers.socrates.clinical.util.CommonStaticValues.VALID_VERSION;
 import static com.specsavers.socrates.common.util.GraphQLUtils.CORRELATION_ID_HEADER_NAME;
 import static graphql.Assert.assertTrue;
 import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
@@ -57,8 +64,7 @@ class ContactLensResolverTest {
         response
                 .assertThatField("$.data.createContactLensAssessment.id").as(UUID.class)
                 .and().assertThatField("$.data.createContactLensAssessment.version").asInteger()
-                .and().assertThatField("$.data.createContactLensAssessment.creationDate").as(OffsetDateTime.class);
-
+                .and().assertThatField("$.data.createContactLensAssessment.creationDate").as(LocalDate.class);
     }
 
     @DisplayName("test loading contact lens with valid id")
@@ -72,8 +78,7 @@ class ContactLensResolverTest {
         clDtoResponse
                 .assertThatField("$.data.contactLensAssessment.id").as(UUID.class)
                 .and().assertThatField("$.data.contactLensAssessment.version").asInteger()
-                .and().assertThatField("$.data.contactLensAssessment.creationDate").as(OffsetDateTime.class);
-
+                .and().assertThatField("$.data.contactLensAssessment.creationDate").as(LocalDate.class);
     }
 
     @DisplayName("test loading contact lens with an invalid id")
@@ -154,7 +159,7 @@ class ContactLensResolverTest {
     @Test
     void testUpdateInvalidTearAssessmentGivenInvalidFieldLength() throws IOException {
         //given
-        var invalidLeftEyeFieldLength = StringUtils.randomAlphanumeric(31);
+        var invalidLeftEyeFieldLength = TestHelpers.stringOfLength(31);
         var variables = getTearAssessmentRequestParameters(VALID_VERSION)
                 .put("leftTbut", "OK")
                 .put("leftTbut", invalidLeftEyeFieldLength);
@@ -220,10 +225,7 @@ class ContactLensResolverTest {
     private GraphQLResponse loadContactLensAssessmentResponse() throws IOException {
         var response = createContactLensAssessment();
 
-        var persistedClDto = response.get("$.data.createContactLensAssessment",
-                ContactLensAssessmentDto.class);
-
-        assessmentId = persistedClDto.getId();
+        assessmentId = response.get("$.data.createContactLensAssessment.id", UUID.class);
 
         var variables = getRequestParameter("id", assessmentId.toString());
 
@@ -246,10 +248,7 @@ class ContactLensResolverTest {
     private ObjectNode getTearAssessmentRequestParameters(long version) throws IOException {
         var response = createContactLensAssessment();
 
-        var persistedClDto = response.get("$.data.createContactLensAssessment",
-                ContactLensAssessmentDto.class);
-
-        assessmentId = persistedClDto.getId();
+        assessmentId = response.get("$.data.createContactLensAssessment.id", UUID.class);
 
         return new ObjectMapper().createObjectNode()
                 .put("contactLensId", assessmentId.toString())
