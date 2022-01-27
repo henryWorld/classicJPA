@@ -3,6 +3,7 @@ package com.specsavers.socrates.clinical.mapper;
 import com.specsavers.socrates.clinical.model.DrugInfoDto;
 import com.specsavers.socrates.clinical.model.EyeHealthAndOphthalmoscopy1Dto;
 import com.specsavers.socrates.clinical.model.EyeHealthDrugInfoDto;
+import com.specsavers.socrates.clinical.model.EyeHealthAndOphthalmoscopy2Dto;
 import com.specsavers.socrates.clinical.model.EyeIopDto;
 import com.specsavers.socrates.clinical.model.HistoryAndSymptomsDto;
 import com.specsavers.socrates.clinical.model.LifestyleDto;
@@ -15,6 +16,7 @@ import com.specsavers.socrates.clinical.model.entity.CurrentSpecsVA;
 import com.specsavers.socrates.clinical.model.entity.DrugInfo;
 import com.specsavers.socrates.clinical.model.entity.EyeHealthAndOphthalmoscopy1;
 import com.specsavers.socrates.clinical.model.entity.EyeHealthDrugInfo;
+import com.specsavers.socrates.clinical.model.entity.EyeHealthAndOphthalmoscopy2;
 import com.specsavers.socrates.clinical.model.entity.ObjectiveAndIop;
 import com.specsavers.socrates.clinical.model.entity.PrescribedRx;
 import com.specsavers.socrates.clinical.model.entity.RefractedRx;
@@ -394,6 +396,27 @@ class SightTestMapperTest {
                 .build();
 
             var target = sightTestMapper.map(source);
+
+            assertThat(source)
+                    .usingRecursiveComparison()
+                    .isEqualTo(target);
+        }
+    }
+
+    @Nested
+    class EyeHealthAndOpththalmology2Tests{
+        @Test
+        void testMapEyeHealthAndOphthalmoscopy2(){
+            var target = new EyeHealthAndOphthalmoscopy2();
+            var source = EyeHealthAndOphthalmoscopy2Dto
+                    .builder()
+                    .lensLeft("lensLeft")
+                    .lensRight("lensRight")
+                    .vitreousLeft("vitreousLeft")
+                    .vitreousRight("vitreousRight")
+                    .build();
+
+            sightTestMapper.update(source, target);
 
             assertThat(source)
                     .usingRecursiveComparison()

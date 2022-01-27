@@ -5,6 +5,7 @@ import com.specsavers.socrates.clinical.mapper.SightTestMapper;
 import com.specsavers.socrates.clinical.model.DrugInfoDto;
 import com.specsavers.socrates.clinical.model.EyeHealthAndOphthalmoscopy1Dto;
 import com.specsavers.socrates.clinical.model.EyeHealthDrugInfoDto;
+import com.specsavers.socrates.clinical.model.EyeHealthAndOphthalmoscopy2Dto;
 import com.specsavers.socrates.clinical.model.HabitualRxDto;
 import com.specsavers.socrates.clinical.model.HistoryAndSymptomsDto;
 import com.specsavers.socrates.clinical.model.ObjectiveAndIopDto;
@@ -643,4 +644,43 @@ class MutationResolverTest {
                     () -> mutationResolver.updateEyeHealthAndOphthalmoscopy1DrugInfo(SIGHT_TEST_ID, INVALID_VERSION, input));
         }
     }
+
+    @Nested
+    class UpdateEyeHealthAndOphthalmoscopy2Tests {
+        @Test
+        void testWithInvalidId() {
+            when(sightTestRepository.findById(any())).thenReturn(Optional.empty());
+
+            assertThrows(NotFoundException.class, () -> mutationResolver.updateEyeHealthAndOphthalmoscopy2(SIGHT_TEST_ID, VALID_VERSION, null));
+
+            verify(sightTestRepository).findById(SIGHT_TEST_ID);
+        }
+
+        @Test
+        void testValidInput() {
+            var input = EyeHealthAndOphthalmoscopy2Dto
+                    .builder()
+                    .lensLeft("lensLeft")
+                    .lensRight("lensRight")
+                    .vitreousLeft("vitreousLeft")
+                    .vitreousRight("vitreousRight")
+                    .build();
+
+            var response = mutationResolver.updateEyeHealthAndOphthalmoscopy2(SIGHT_TEST_ID, VALID_VERSION, input);
+
+            var actual = response.getEyeHealthAndOphthalmoscopy2();
+            verify(sightTestMapper).update(same(input), same(sightTest.getEyeHealthAndOphthalmoscopy2()));
+            verify(sightTestRepository).saveAndFlush(same(sightTest));
+            assertThat(sightTest.getUpdated()).isEqualTo(OffsetDateTime.now(fixedClock));
+            assertEquals(input, actual);
+        }
+
+        @Test
+        void throwsWhenIncorrectVersion() {
+            var input = EyeHealthAndOphthalmoscopy2Dto.builder().build();
+            assertThrows(OutdatedEntityException.class,
+                    () -> mutationResolver.updateEyeHealthAndOphthalmoscopy2(SIGHT_TEST_ID, INVALID_VERSION, input));
+        }
+    }
+
 }

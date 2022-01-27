@@ -1,0 +1,15 @@
+mutation ($sightTestId: ID!, $version: Int!, $input: EyeHealthAndOphthalmoscopy2Input!){
+  updateEyeHealthAndOphthalmoscopy2(
+    sightTestId: $sightTestId
+    version: $version
+    input: $input
+  )
+  {
+    eyeHealthAndOphthalmoscopy2 {
+      lensLeft
+      lensRight
+      vitreousLeft
+      vitreousRight
+    }
+  }
+}

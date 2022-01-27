@@ -258,3 +258,10 @@ input EyeHealthAndOphthalmoscopy1Input {
     externalEyeLeft: String
     anteriorChamberLeft: String
 }
+
+input EyeHealthAndOphthalmoscopy2Input{
+    lensRight: String
+    lensLeft: String
+    vitreousRight: String
+    vitreousLeft: String
+}

@@ -4,6 +4,7 @@ import com.specsavers.socrates.clinical.model.CurrentSpecsVaDto;
 import com.specsavers.socrates.clinical.model.DrugInfoDto;
 import com.specsavers.socrates.clinical.model.EyeHealthAndOphthalmoscopy1Dto;
 import com.specsavers.socrates.clinical.model.EyeHealthDrugInfoDto;
+import com.specsavers.socrates.clinical.model.EyeHealthAndOphthalmoscopy2Dto;
 import com.specsavers.socrates.clinical.model.EyeRxDto;
 import com.specsavers.socrates.clinical.model.HabitualRxDto;
 import com.specsavers.socrates.clinical.model.HistoryAndSymptomsDto;
@@ -19,6 +20,7 @@ import com.specsavers.socrates.clinical.model.entity.CurrentSpecsVA;
 import com.specsavers.socrates.clinical.model.entity.DrugInfo;
 import com.specsavers.socrates.clinical.model.entity.EyeHealthAndOphthalmoscopy1;
 import com.specsavers.socrates.clinical.model.entity.EyeHealthDrugInfo;
+import com.specsavers.socrates.clinical.model.entity.EyeHealthAndOphthalmoscopy2;
 import com.specsavers.socrates.clinical.model.entity.HabitualRx;
 import com.specsavers.socrates.clinical.model.entity.ObjectiveAndIop;
 import com.specsavers.socrates.clinical.model.entity.OptionRecommendations;
@@ -94,6 +96,9 @@ public interface SightTestMapper {
 
     @Mapping(target = "lifestyle", source = "entity")
     HistoryAndSymptomsDto mapHistoryAndSymptoms(SightTest entity);
+
+    @InheritInverseConfiguration
+    void update(EyeHealthAndOphthalmoscopy2Dto source, @MappingTarget EyeHealthAndOphthalmoscopy2 target);
 
     @InheritInverseConfiguration
     @Mapping(target = "drugInfo", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)

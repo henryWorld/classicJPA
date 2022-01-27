@@ -12,7 +12,6 @@ public class TestHelpers {
         if (length == null) {
             return null;
         }
-
         return String.join("", nCopies(length, "a"));
     }
 }

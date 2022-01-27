@@ -9,6 +9,7 @@ import com.specsavers.socrates.clinical.model.CurrentSpecsVaDto;
 import com.specsavers.socrates.clinical.model.DrugInfoDto;
 import com.specsavers.socrates.clinical.model.EyeHealthAndOphthalmoscopy1Dto;
 import com.specsavers.socrates.clinical.model.EyeHealthDrugInfoDto;
+import com.specsavers.socrates.clinical.model.EyeHealthAndOphthalmoscopy2Dto;
 import com.specsavers.socrates.clinical.model.EyeIopDto;
 import com.specsavers.socrates.clinical.model.EyeRxDto;
 import com.specsavers.socrates.clinical.model.ObjectiveAndIopDto;
@@ -46,6 +47,7 @@ import static com.specsavers.socrates.clinical.util.CommonStaticValues.STORE_ID_
 import static com.specsavers.socrates.clinical.util.CommonStaticValues.UPDATE_DISPENSE_NOTE;
 import static com.specsavers.socrates.clinical.util.CommonStaticValues.UPDATE_EYE_HEALTH_AND_OPHTHALMOSCOPY_1;
 import static com.specsavers.socrates.clinical.util.CommonStaticValues.UPDATE_EYE_HEALTH_AND_OPHTHALMOSCOPY_1_DRUG_INFO;
+import static com.specsavers.socrates.clinical.util.CommonStaticValues.UPDATE_EYE_HEALTH_AND_OPHTHALMOSCOPY_2;
 import static com.specsavers.socrates.clinical.util.CommonStaticValues.UPDATE_HABITUAL_RX;
 import static com.specsavers.socrates.clinical.util.CommonStaticValues.UPDATE_HISTORY_SYMPTOMS;
 import static com.specsavers.socrates.clinical.util.CommonStaticValues.UPDATE_OBJECTIVE_AND_IOP;
@@ -671,6 +673,55 @@ class ClinicalApplicationTest {
                     .assertThatField("$.errors[*].message")
                     .asListOf(String.class)
                     .contains("ExternalEyeLeft must not be longer than 550 characters")
+                    .and()
+                    .assertThatDataField()
+                    .isNull();
+        }
+    }
+
+    @Nested
+    class UpdateEyeHealthAndOphthalmoscopy2Tests {
+        @Test
+        void testUpdateEyeHealthAndOphthalmoscopy2() throws IOException {
+            var eyeHealth = EyeHealthAndOphthalmoscopy2Dto
+                    .builder()
+                    .lensLeft("lensLeft")
+                    .lensRight("lensRight")
+                    .vitreousLeft("vitreousLeft")
+                    .vitreousRight("vitreousRight")
+                    .build();
+
+            ObjectNode input = mapper.valueToTree(eyeHealth);
+
+            var variables = variables();
+            variables.set("input", input);
+
+            graphQLTestTemplate.perform(UPDATE_EYE_HEALTH_AND_OPHTHALMOSCOPY_2, variables)
+                    .assertThatNoErrorsArePresent()
+                    .assertThatField("$.data.updateEyeHealthAndOphthalmoscopy2.eyeHealthAndOphthalmoscopy2")
+                    .as(EyeHealthAndOphthalmoscopy2Dto.class)
+                    .isEqualTo(eyeHealth);
+        }
+
+        @Test
+        void testUpdateEyeHealthAndOphthalmoscopy2TriggersValidation() throws IOException {
+            var eyeHealth = EyeHealthAndOphthalmoscopy2Dto
+                    .builder()
+                    .lensLeft(stringOfLength(401))
+                    .lensRight("lensRight")
+                    .vitreousLeft("vitreousLeft")
+                    .vitreousRight("vitreousRight")
+                    .build();
+
+            ObjectNode input = mapper.valueToTree(eyeHealth);
+
+            var variables = variables();
+            variables.set("input", input);
+
+            graphQLTestTemplate.perform(UPDATE_EYE_HEALTH_AND_OPHTHALMOSCOPY_2, variables)
+                    .assertThatField("$.errors[*].message")
+                    .asListOf(String.class)
+                    .contains("lensLeft must not be longer than 400 characters")
                     .and()
                     .assertThatDataField()
                     .isNull();

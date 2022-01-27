@@ -51,6 +51,9 @@ public class SightTest implements Versioned {
     @Embedded
     private EyeHealthAndOphthalmoscopy1 eyeHealthAndOphthalmoscopy1;
 
+    @Embedded
+    private EyeHealthAndOphthalmoscopy2 eyeHealthAndOphthalmoscopy2;
+
     @Column(name = "dispense_notes")
     private String dispenseNotes;
     

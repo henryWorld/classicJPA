@@ -19,4 +19,5 @@
     <include file="/db/changelog/013-alter_clinician_name_field.xml"/>
     <include file="/db/changelog/013-add_contact_lens_assessment_table.xml"/>
     <include file="/db/changelog/014-add_eye_health_fields.xml"/>
+    <include file="/db/changelog/015-add_opthalmoscopy2_fields.xml"/>
 </databaseChangeLog>
