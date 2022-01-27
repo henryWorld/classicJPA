@@ -17,6 +17,7 @@ public class TearAssessmentValidator extends Validator<TearAssessmentDto> {
     public void validate(TearAssessmentDto item) {
         validate(item.getLeftEye(), item.getRightEye());
         FieldChecks check = check("observations", item.getObservations());
+        check.notBlank();
         check.maxLength(200);
     }
 
