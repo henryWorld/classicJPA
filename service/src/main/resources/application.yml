@@ -20,6 +20,10 @@ spring:
         - "serviceDev"
   datasource:
     url: jdbc:sqlserver://${DATABASE_SERVER};databaseName=clinical_microservice
+  jpa:
+    properties:
+      hibernate:
+        integrator_provider: com.specsavers.socrates.clinical.tools.ClassImportIntegratorProvider
 
 logging:
   level:
